@@ -89,46 +89,10 @@ export function BuilderPane(props: BuilderPaneProps) {
         tooltip: true,
       },
       encoding: {
-        x: xField && {
-          field: xField,
-          //type: xType,
-          type: getColType(
-            xType,
-            xField,
-            props.colSpecs,
-            DEFAULTS.xType,
-          )
-        },
-        y: yField && {
-          field: yField,
-          //type: yType,
-          type: getColType(
-            yType,
-            yField,
-            props.colSpecs,
-            DEFAULTS.yType,
-          )
-        },
-        color: colorField && {
-          field: colorField,
-          //type: colorType,
-          type: getColType(
-            colorType,
-            colorField,
-            props.colSpecs,
-            DEFAULTS.colorType,
-          )
-        },
-        size: sizeField && {
-          field: sizeField,
-          //type: sizeType,
-          type: getColType(
-            sizeType,
-            sizeField,
-            props.colSpecs,
-            DEFAULTS.sizeType,
-          )
-        },
+        x: buildEncoding(xField, xType, DEFAULTS.xType, props.colSpecs),
+        y: buildEncoding(yField, yType, DEFAULTS.yType, props.colSpecs),
+        color: buildEncoding(colorField, colorType, DEFAULTS.colorType, props.colSpecs),
+        size: buildEncoding(sizeField, sizeType, DEFAULTS.sizeType, props.colSpecs),
       },
       params: [{
         name: 'grid',
@@ -220,9 +184,21 @@ export function useBuilderState(origSpec) {
   }
 }
 
-function getColType(colType, colName, colSpecs, fallback) {
+function buildEncoding(field, type, defaultType, colSpecs) {
+  return field == null ? null : {
+    field,
+    type: getColType(
+      type,
+      field,
+      defaultType,
+      colSpecs,
+    )
+  }
+}
+
+function getColType(colType, colName, defaultType, colSpecs) {
   if (colType != 'auto') return colType
 
   const colSpec = colSpecs.find(s => s.field == colName)
-  return colSpec.detectedType ?? fallback;
+  return colSpec?.detectedType ?? defaultType
 }

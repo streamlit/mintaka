@@ -101,10 +101,6 @@ function Label({children}) {
 
 // items can be list or object of label->value.
 function SelectBox({items, value, setValue}) {
-  const setValueCallback = useCallback(
-    (ev) => setValue(ev.currentTarget.value)
-  )
-
   let labels, values
 
   if (Array.isArray(items)) {
@@ -115,15 +111,22 @@ function SelectBox({items, value, setValue}) {
     values = Object.values(items)
   }
 
+  const setValueCallback = useCallback((ev) => {
+    const label = ev.currentTarget.value
+    const value = values[labels.indexOf(label)]
+
+    setValue(value)
+  }, [labels, values])
+
   return (
     <select
       className="col-start-2 col-span-2 text-md border border-slate-200 rounded-md text-sm py-0.5 px-1"
-      defaultValue={value}
+      defaultValue={labels[values.indexOf(value)]}
       onChange={setValueCallback}
     >
-      {values.map((value, i) => (
-        <option value={value} key={value}>
-          {labels[i]}
+      {labels.map(label => (
+        <option value={label} key={label}>
+          {label}
         </option>
       ))}
     </select>
