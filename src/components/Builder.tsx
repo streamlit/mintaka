@@ -15,7 +15,7 @@ const MARKS = [
   'point', // Properties: none needed. Use encoding + value instead.
   //'rect',
   //'rule',
-  //'text', // Need to show "text" encoding. Properties: dx, dy, fontSize, limit, align, baseline
+  //'text', // Need to show 'text' encoding. Properties: dx, dy, fontSize, limit, align, baseline
   //'tick',
   //'trail',
   'circle', // Properties: none needed. Use encoding + value instead.
@@ -24,7 +24,7 @@ const MARKS = [
 ]
 
 const FIELD_TYPES = {
-  'Auto': 'auto',  // We added this.
+  'Auto': null,  // We added this.
   'Nominal': 'nominal',
   'Ordinal': 'ordinal',
   'Quantitative': 'quantitative',
@@ -82,7 +82,7 @@ export function BuilderPane(props: BuilderPaneProps) {
 
   const xEncodingState = useEncodingState({
     field: encoding?.x?.field ?? props.colSpecs?.[DEFAULTS.x.fieldIndex + 1]?.field,
-    type: encoding?.x?.type ?? 'auto',
+    type: encoding?.x?.type,
     value: null,
     // title
     // timeUnit (if temporal)
@@ -92,7 +92,7 @@ export function BuilderPane(props: BuilderPaneProps) {
 
   const yEncodingState = useEncodingState({
     field: encoding?.y?.field ?? props.colSpecs?.[DEFAULTS.y.fieldIndex + 1]?.field,
-    type: encoding?.y?.type ?? 'auto',
+    type: encoding?.y?.type,
     value: null,
     // title
     // timeUnit (if temporal)
@@ -102,7 +102,7 @@ export function BuilderPane(props: BuilderPaneProps) {
 
   const colorEncodingState = useEncodingState({
     field: encoding?.color?.field,
-    type: encoding?.color?.type ?? 'auto',
+    type: encoding?.color?.type,
     value: null,
     // title
     // timeUnit (if temporal)
@@ -112,7 +112,7 @@ export function BuilderPane(props: BuilderPaneProps) {
 
   const sizeEncodingState = useEncodingState({
     field: encoding?.size?.field,
-    type: encoding?.size?.type ?? 'auto',
+    type: encoding?.size?.type,
     value: null,
     // title
     // timeUnit (if temporal)
@@ -122,7 +122,7 @@ export function BuilderPane(props: BuilderPaneProps) {
 
   const opacityEncodingState = useEncodingState({
     field: encoding?.opacity?.field,
-    type: encoding?.opacity?.type ?? 'auto',
+    type: encoding?.opacity?.type,
     value: null,
     // title
     // timeUnit (if temporal)
@@ -131,11 +131,11 @@ export function BuilderPane(props: BuilderPaneProps) {
   })
 
   const encodings = [
-    ["X", xEncodingState],
-    ["Y", yEncodingState],
-    ["Color", colorEncodingState],
-    ["Size", sizeEncodingState],
-    ["Opacity", opacityEncodingState],
+    ['X', xEncodingState],
+    ['Y', yEncodingState],
+    ['Color', colorEncodingState],
+    ['Size', sizeEncodingState],
+    ['Opacity', opacityEncodingState],
   ]
 
   // tooltip
@@ -176,7 +176,7 @@ export function BuilderPane(props: BuilderPaneProps) {
     <props.components.BuilderWrapper>
       <props.components.WidgetGroup>
           <props.components.SelectBox
-            label="Mark"
+            label='Mark'
             items={MARKS}
             value={markType}
             setValue={setMarkType}
@@ -231,7 +231,7 @@ function buildEncoding(key, state, colSpecs) {
 }
 
 function getColType(colType, colName, defaultType, colSpecs) {
-  if (colType != 'auto') return colType
+  if (colType != null) return colType
 
   const colSpec = colSpecs.find(s => s.field == colName)
   return colSpec?.detectedType ?? defaultType
