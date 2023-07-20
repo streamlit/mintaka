@@ -3,34 +3,6 @@ import merge from 'lodash/merge'
 
 import { EncodingPicker, useEncodingState } from './EncodingPicker.tsx'
 
-const MARKS = [
-  //'arc',
-  'area', // Properties: point, line, interpolate
-  'bar', // Properties: orient, binSpacing
-  //'boxplot',
-  //'errorband',
-  //'errorbar',
-  //'image',
-  'line', // Properties: point, interpolate
-  'point', // Properties: none needed. Use encoding + value instead.
-  //'rect',
-  //'rule',
-  //'text', // Need to show 'text' encoding. Properties: dx, dy, fontSize, limit, align, baseline
-  //'tick',
-  //'trail',
-  'circle', // Properties: none needed. Use encoding + value instead.
-  'square', // Properties: none needed. Use encoding + value instead.
-  //'geoshape',
-]
-
-const FIELD_TYPES = {
-  'Auto': null,  // We added this.
-  'Nominal': 'nominal',
-  'Ordinal': 'ordinal',
-  'Quantitative': 'quantitative',
-  'Temporal': 'temporal',
-}
-
 const DEFAULTS = {
   mark: {
     type: 'circle',
@@ -52,6 +24,35 @@ const DEFAULTS = {
   opacity: {
     type: 'quantitative',
   },
+}
+
+const MARKS = [
+  //'arc',
+  'area', // Properties: point, line, interpolate
+  'bar', // Properties: orient, binSpacing
+  'boxplot',
+  //'errorband',
+  //'errorbar',
+  //'image',
+  'line', // Properties: point, interpolate
+  'point', // Properties: none needed. Use encoding + value instead.
+  //'rect',
+  //'rule',
+  //'text', // Need to show 'text' encoding. Properties: dx, dy, fontSize, limit, align, baseline
+  //'tick',
+  //'trail',
+  'circle', // Properties: none needed. Use encoding + value instead.
+  'square', // Properties: none needed. Use encoding + value instead.
+  //'geoshape',
+]
+
+const FIELD_TYPES = {
+  'Auto': null,  // We added this.
+  'Nominal': 'nominal',
+  'Ordinal': 'ordinal',
+  'Quantitative': 'quantitative',
+  'Temporal': 'temporal',
+  //'GeoJSON': 'geojson',
 }
 
 interface ColSpec {
@@ -84,50 +85,55 @@ export function BuilderPane(props: BuilderPaneProps) {
     field: encoding?.x?.field ?? props.colSpecs?.[DEFAULTS.x.fieldIndex + 1]?.field,
     type: encoding?.x?.type,
     value: null,
+    aggregate: null,
+    binStep: null,
     // title
     // timeUnit (if temporal)
     // axis
-    // aggregate
   })
 
   const yEncodingState = useEncodingState({
     field: encoding?.y?.field ?? props.colSpecs?.[DEFAULTS.y.fieldIndex + 1]?.field,
     type: encoding?.y?.type,
     value: null,
+    aggregate: null,
+    binStep: null,
     // title
     // timeUnit (if temporal)
     // axis
-    // aggregate
   })
 
   const colorEncodingState = useEncodingState({
     field: encoding?.color?.field,
     type: encoding?.color?.type,
     value: null,
+    aggregate: null,
+    binStep: null,
     // title
     // timeUnit (if temporal)
     // axis
-    // aggregate
   })
 
   const sizeEncodingState = useEncodingState({
     field: encoding?.size?.field,
     type: encoding?.size?.type,
     value: null,
+    aggregate: null,
+    binStep: null,
     // title
     // timeUnit (if temporal)
     // axis
-    // aggregate
   })
 
   const opacityEncodingState = useEncodingState({
     field: encoding?.opacity?.field,
     type: encoding?.opacity?.type,
     value: null,
+    aggregate: null,
+    binStep: null,
     // title
     // timeUnit (if temporal)
     // axis
-    // aggregate
   })
 
   const encodings = [
@@ -225,6 +231,9 @@ function buildEncoding(key, state, colSpecs) {
       DEFAULTS[key].type,
       colSpecs,
     )
+
+    if (state.aggregate) enc.aggregate = state.aggregate
+    if (state.binStep) enc.bin = { step: state.binStep }
   }
 
   return encWrapper

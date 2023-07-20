@@ -140,7 +140,7 @@ function SelectBox({label, items, value, setValue}) {
   )
 }
 
-function TextBox({label, value, setValue}) {
+function TextBox({label, value, placeholder, setValue}) {
   const setValueCallback = useCallback((ev) => {
     const newValue = ev.currentTarget.value
     setValue(newValue == "" ? null : newValue)
@@ -154,7 +154,7 @@ function TextBox({label, value, setValue}) {
         className="col-start-2 col-span-2 border border-slate-200 rounded-md text-sm py-0.5 px-1"
         type="text"
         value={value ?? ""}
-        placeholder={"Default"}
+        placeholder={placeholder}
         onChange={setValueCallback}
       />
     </>
