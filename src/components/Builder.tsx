@@ -62,7 +62,6 @@ interface ColSpec {
 
 interface BuilderPaneProps {
   components: {
-    Label: React.Node,
     SelectBox: React.Node,
     TextBox: React.Node,
     BuilderWrapper: React.Node,
@@ -86,7 +85,6 @@ export function BuilderPane(props: BuilderPaneProps) {
     type: encoding?.x?.type ?? 'auto',
     value: null,
     // title
-    // value (maybe skip?)
     // timeUnit (if temporal)
     // axis
     // aggregate
@@ -97,7 +95,6 @@ export function BuilderPane(props: BuilderPaneProps) {
     type: encoding?.y?.type ?? 'auto',
     value: null,
     // title
-    // value (maybe skip?)
     // timeUnit (if temporal)
     // axis
     // aggregate
@@ -108,7 +105,6 @@ export function BuilderPane(props: BuilderPaneProps) {
     type: encoding?.color?.type ?? 'auto',
     value: null,
     // title
-    // value
     // timeUnit (if temporal)
     // axis
     // aggregate
@@ -119,7 +115,6 @@ export function BuilderPane(props: BuilderPaneProps) {
     type: encoding?.size?.type ?? 'auto',
     value: null,
     // title
-    // value
     // timeUnit (if temporal)
     // axis
     // aggregate
@@ -130,7 +125,6 @@ export function BuilderPane(props: BuilderPaneProps) {
     type: encoding?.opacity?.type ?? 'auto',
     value: null,
     // title
-    // value
     // timeUnit (if temporal)
     // axis
     // aggregate
@@ -181,22 +175,19 @@ export function BuilderPane(props: BuilderPaneProps) {
   return (
     <props.components.BuilderWrapper>
       <props.components.WidgetGroup>
-        <props.components.WidgetWrapper>
-          <props.components.Label>Mark</props.components.Label>
           <props.components.SelectBox
+            label="Mark"
             items={MARKS}
             value={markType}
             setValue={setMarkType}
           />
-        </props.components.WidgetWrapper>
       </props.components.WidgetGroup>
 
       {encodings.map(([title, encodingState]) => (
         <EncodingPicker
           components={props.components}
           title={title}
-          state={encodingState.state}
-          setComponent={encodingState.setComponent}
+          encodingState={encodingState}
           fields={fields}
           types={FIELD_TYPES}
           key={title}
@@ -210,10 +201,10 @@ export function BuilderPane(props: BuilderPaneProps) {
 export function useBuilderState(origSpec) {
   const [spec, setSpec] = useState(origSpec)
 
-  return useCallback({
+  return {
     spec,
     setSpec,
-  }, [spec, setSpec])
+  }
 }
 
 function buildEncoding(key, state, colSpecs) {

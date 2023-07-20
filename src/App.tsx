@@ -13,6 +13,7 @@ import './App.css'
 formats('arrow', arrow);
 
 const spec = {
+  mark: "circle", // Anything. So Vega doesn't throw a warning.
   width: 600,
   height: 600,
   data: { name: 'main' }, // note: Vega-Lite data attribute is a plain Object instead of an array
@@ -52,8 +53,6 @@ function App() {
           components={{
             BuilderWrapper,
             WidgetGroup,
-            WidgetWrapper,
-            Label,
             SelectBox,
             TextBox,
           }}
@@ -95,12 +94,6 @@ function WidgetGroup({title, children}) {
   )
 }
 
-function WidgetWrapper({children}) {
-  return (
-    children
-  )
-}
-
 function Label({children}) {
   return (
     <label className="block text-xs text-slate-500 col-start-1 col-span-1">
@@ -110,7 +103,7 @@ function Label({children}) {
 }
 
 // items can be list or object of label->value.
-function SelectBox({items, value, setValue}) {
+function SelectBox({label, items, value, setValue}) {
   let labels, values
 
   if (Array.isArray(items)) {
@@ -129,34 +122,42 @@ function SelectBox({items, value, setValue}) {
   }, [labels, values, setValue])
 
   return (
-    <select
-      className="col-start-2 col-span-2 border border-slate-200 rounded-md text-sm py-0.5 px-1"
-      defaultValue={labels[values.indexOf(value)]}
-      onChange={setValueCallback}
-    >
-      {labels.map(label => (
-        <option value={label} key={label}>
-          {label}
-        </option>
-      ))}
-    </select>
+    <>
+      <Label>{label}</Label>
+
+      <select
+        className="col-start-2 col-span-2 border border-slate-200 rounded-md text-sm py-0.5 px-1"
+        defaultValue={labels[values.indexOf(value)]}
+        onChange={setValueCallback}
+      >
+        {labels.map(label => (
+          <option value={label} key={label}>
+            {label}
+          </option>
+        ))}
+      </select>
+    </>
   )
 }
 
-function TextBox({value, setValue}) {
+function TextBox({label, value, setValue}) {
   const setValueCallback = useCallback((ev) => {
     const newValue = ev.currentTarget.value
     setValue(newValue == "" ? null : newValue)
   }, [setValue])
 
   return (
-    <input
-      className="col-start-2 col-span-2 border border-slate-200 rounded-md text-sm py-0.5 px-1"
-      type="text"
-      value={value ?? ""}
-      placeholder={"Default"}
-      onChange={setValueCallback}
-    />
+    <>
+      <Label>{label}</Label>
+
+      <input
+        className="col-start-2 col-span-2 border border-slate-200 rounded-md text-sm py-0.5 px-1"
+        type="text"
+        value={value ?? ""}
+        placeholder={"Default"}
+        onChange={setValueCallback}
+      />
+    </>
   )
 }
 

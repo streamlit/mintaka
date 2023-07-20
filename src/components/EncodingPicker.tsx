@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react'
 export function useEncodingState(initialState: Object) {
   const [internalState, setInternalState] = useState(initialState)
 
-  return useCallback({
+  return {
     state: internalState,
     setComponent: (key: str, newValue: any) => {
       setInternalState({
@@ -11,19 +11,17 @@ export function useEncodingState(initialState: Object) {
         [key]: newValue,
       })
     },
-  }, [internalState, setInternalState])
+  }
 }
 
 export function EncodingPicker({
   components,
   title,
-  state,
-  setComponent,
   encodingState,
   fields,
   types,
 }): React.Node {
-  //const {state, setComponent} = encodingState
+  const {state, setComponent} = encodingState
 
   const makeSetter = useCallback((key: str) => (
     (newValue: any) => setComponent(key, newValue)
@@ -31,32 +29,26 @@ export function EncodingPicker({
 
   return (
     <components.WidgetGroup title={title}>
-      <components.WidgetWrapper>
-        <components.Label>Field</components.Label>
-        <components.SelectBox
-          items={fields}
-          value={state.field}
-          setValue={makeSetter('field')}
-        />
-      </components.WidgetWrapper>
+      <components.SelectBox
+        label="Field"
+        items={fields}
+        value={state.field}
+        setValue={makeSetter('field')}
+      />
 
       {state.field == null ? (
-        <components.WidgetWrapper>
-          <components.Label>Value</components.Label>
-          <components.TextBox
-            value={state.value}
-            setValue={makeSetter('value')}
-          />
-        </components.WidgetWrapper>
+        <components.TextBox
+          label="Value"
+          value={state.value}
+          setValue={makeSetter('value')}
+        />
       ) : (
-        <components.WidgetWrapper>
-          <components.Label>Type</components.Label>
-          <components.SelectBox
-            items={types}
-            value={state.type}
-            setValue={makeSetter('type')}
-          />
-        </components.WidgetWrapper>
+        <components.SelectBox
+          label="Type"
+          items={types}
+          value={state.type}
+          setValue={makeSetter('type')}
+        />
       )}
     </components.WidgetGroup>
   )
