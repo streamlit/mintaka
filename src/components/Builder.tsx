@@ -1,42 +1,57 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import merge from 'lodash/merge'
 
-import { EncodingPicker } from './EncodingPicker.tsx'
+import { EncodingPicker, useEncodingState } from './EncodingPicker.tsx'
 
 const MARKS = [
   //'arc',
-  'area',
-  'bar',
+  'area', // Properties: point, line, interpolate
+  'bar', // Properties: orient, binSpacing
+  //'boxplot',
+  //'errorband',
+  //'errorbar',
   //'image',
-  'line',
-  'point',
+  'line', // Properties: point, interpolate
+  'point', // Properties: none needed. Use encoding + value instead.
   //'rect',
   //'rule',
-  //'text',
+  //'text', // Need to show "text" encoding. Properties: dx, dy, fontSize, limit, align, baseline
   //'tick',
   //'trail',
-  'circle',
-  'square',
+  'circle', // Properties: none needed. Use encoding + value instead.
+  'square', // Properties: none needed. Use encoding + value instead.
   //'geoshape',
 ]
 
-const FIELD_TYPES = [
-  'auto',  // We added this.
-  'nominal',
-  'ordinal',
-  'quantitative',
-  'temporal',
-  //'geojson',
-]
+const FIELD_TYPES = {
+  'Auto': 'auto',  // We added this.
+  'Nominal': 'nominal',
+  'Ordinal': 'ordinal',
+  'Quantitative': 'quantitative',
+  'Temporal': 'temporal',
+}
 
 const DEFAULTS = {
-  markType: 'circle',
-  xFieldIndex: 0,
-  yFieldIndex: 1,
-  xType: 'quantitative',
-  yType: 'quantitative',
-  colorType: 'nominal',
-  sizeType: 'quantitative',
+  mark: {
+    type: 'circle',
+  },
+  x: {
+    fieldIndex: 0,
+    type: 'quantitative',
+  },
+  y: {
+    fieldIndex: 1,
+    type: 'quantitative',
+  },
+  color: {
+    type: 'nominal',
+  },
+  size: {
+    type: 'quantitative',
+  },
+  opacity: {
+    type: 'quantitative',
+  },
 }
 
 interface ColSpec {
@@ -49,6 +64,7 @@ interface BuilderPaneProps {
   components: {
     Label: React.Node,
     SelectBox: React.Node,
+    TextBox: React.Node,
     BuilderWrapper: React.Node,
     WidgetGroup: React.Node,
     WidgetWraper: React.Node,
@@ -63,21 +79,74 @@ interface BuilderPaneProps {
 export function BuilderPane(props: BuilderPaneProps) {
   const encoding = props.origSpec?.encoding
 
-  const [markType, setMarkType] = useState(props.origSpec?.mark?.type ?? DEFAULTS.markType)
+  const [markType, setMarkType] = useState(props.origSpec?.mark?.type ?? DEFAULTS.mark.type)
 
-  const [xField, setXField] = useState(
-    encoding?.x?.field ?? props.colSpecs?.[DEFAULTS.xFieldIndex + 1]?.field)
-  const [xType, setXType] = useState(encoding?.x?.type ?? 'auto')
+  const xEncodingState = useEncodingState({
+    field: encoding?.x?.field ?? props.colSpecs?.[DEFAULTS.x.fieldIndex + 1]?.field,
+    type: encoding?.x?.type ?? 'auto',
+    value: null,
+    // title
+    // value (maybe skip?)
+    // timeUnit (if temporal)
+    // axis
+    // aggregate
+  })
 
-  const [yField, setYField] = useState(
-    encoding?.y?.field ?? props.colSpecs?.[DEFAULTS.yFieldIndex + 1]?.field)
-  const [yType, setYType] = useState(encoding?.y?.type ?? 'auto')
+  const yEncodingState = useEncodingState({
+    field: encoding?.y?.field ?? props.colSpecs?.[DEFAULTS.y.fieldIndex + 1]?.field,
+    type: encoding?.y?.type ?? 'auto',
+    value: null,
+    // title
+    // value (maybe skip?)
+    // timeUnit (if temporal)
+    // axis
+    // aggregate
+  })
 
-  const [colorField, setColorField] = useState(encoding?.color?.field)
-  const [colorType, setColorType] = useState(encoding?.color?.type ?? 'auto')
+  const colorEncodingState = useEncodingState({
+    field: encoding?.color?.field,
+    type: encoding?.color?.type ?? 'auto',
+    value: null,
+    // title
+    // value
+    // timeUnit (if temporal)
+    // axis
+    // aggregate
+  })
 
-  const [sizeField, setSizeField] = useState(encoding?.size?.field)
-  const [sizeType, setSizeType] = useState(encoding?.size?.type ?? 'auto')
+  const sizeEncodingState = useEncodingState({
+    field: encoding?.size?.field,
+    type: encoding?.size?.type ?? 'auto',
+    value: null,
+    // title
+    // value
+    // timeUnit (if temporal)
+    // axis
+    // aggregate
+  })
+
+  const opacityEncodingState = useEncodingState({
+    field: encoding?.opacity?.field,
+    type: encoding?.opacity?.type ?? 'auto',
+    value: null,
+    // title
+    // value
+    // timeUnit (if temporal)
+    // axis
+    // aggregate
+  })
+
+  const encodings = [
+    ["X", xEncodingState],
+    ["Y", yEncodingState],
+    ["Color", colorEncodingState],
+    ["Size", sizeEncodingState],
+    ["Opacity", opacityEncodingState],
+  ]
+
+  // tooltip
+  // facet, row, column
+  // x2, y2, text, angle, xOffset(+random), yOffset(+random), strokeWidth, strokeDash, shape
 
   const fields = {'None': null}
   props.colSpecs.forEach(s => fields[s.label] = s.field)
@@ -89,10 +158,11 @@ export function BuilderPane(props: BuilderPaneProps) {
         tooltip: true,
       },
       encoding: {
-        x: buildEncoding(xField, xType, DEFAULTS.xType, props.colSpecs),
-        y: buildEncoding(yField, yType, DEFAULTS.yType, props.colSpecs),
-        color: buildEncoding(colorField, colorType, DEFAULTS.colorType, props.colSpecs),
-        size: buildEncoding(sizeField, sizeType, DEFAULTS.sizeType, props.colSpecs),
+        ...buildEncoding('x', xEncodingState.state, props.colSpecs),
+        ...buildEncoding('y', yEncodingState.state, props.colSpecs),
+        ...buildEncoding('color', colorEncodingState.state, props.colSpecs),
+        ...buildEncoding('size', sizeEncodingState.state, props.colSpecs),
+        ...buildEncoding('opacity', opacityEncodingState.state, props.colSpecs),
       },
       params: [{
         name: 'grid',
@@ -104,15 +174,8 @@ export function BuilderPane(props: BuilderPaneProps) {
     props.state.setSpec(newSpec)
   }, [
       markType,
-      xField,
-      xType,
-      yField,
-      yType,
-      colorField,
-      colorType,
-      sizeField,
-      sizeType,
       props.origSpec,
+      ...encodings.map(x => x[1].state)
   ])
 
   return (
@@ -128,49 +191,17 @@ export function BuilderPane(props: BuilderPaneProps) {
         </props.components.WidgetWrapper>
       </props.components.WidgetGroup>
 
-      <EncodingPicker
-        components={props.components}
-        title={"X"}
-        field={xField}
-        fields={fields}
-        setField={setXField}
-        type={xType}
-        types={FIELD_TYPES}
-        setType={setXType}
-      />
-
-      <EncodingPicker
-        components={props.components}
-        title={"Y"}
-        field={yField}
-        fields={fields}
-        setField={setYField}
-        type={yType}
-        types={FIELD_TYPES}
-        setType={setYType}
-      />
-
-      <EncodingPicker
-        components={props.components}
-        title={"Color"}
-        field={colorField}
-        fields={fields}
-        setField={setColorField}
-        type={colorType}
-        types={FIELD_TYPES}
-        setType={setColorType}
-      />
-
-      <EncodingPicker
-        components={props.components}
-        title={"Size"}
-        field={sizeField}
-        fields={fields}
-        setField={setSizeField}
-        type={sizeType}
-        types={FIELD_TYPES}
-        setType={setSizeType}
-      />
+      {encodings.map(([title, encodingState]) => (
+        <EncodingPicker
+          components={props.components}
+          title={title}
+          state={encodingState.state}
+          setComponent={encodingState.setComponent}
+          fields={fields}
+          types={FIELD_TYPES}
+          key={title}
+        />
+      ))}
 
     </props.components.BuilderWrapper>
   )
@@ -178,22 +209,34 @@ export function BuilderPane(props: BuilderPaneProps) {
 
 export function useBuilderState(origSpec) {
   const [spec, setSpec] = useState(origSpec)
-  return {
+
+  return useCallback({
     spec,
     setSpec,
-  }
+  }, [spec, setSpec])
 }
 
-function buildEncoding(field, type, defaultType, colSpecs) {
-  return field == null ? null : {
-    field,
-    type: getColType(
-      type,
-      field,
-      defaultType,
+function buildEncoding(key, state, colSpecs) {
+  const enc = {}
+  const encWrapper = {[key]: enc}
+
+  if (state.field == null) {
+    if (state.value) {
+      enc.value = state.value
+    } else {
+      return {}
+    }
+  } else {
+    enc.field = state.field
+    enc.type = getColType(
+      state.type,
+      state.field,
+      DEFAULTS[key].type,
       colSpecs,
     )
   }
+
+  return encWrapper
 }
 
 function getColType(colType, colName, defaultType, colSpecs) {

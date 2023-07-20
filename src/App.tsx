@@ -43,39 +43,26 @@ function App() {
   // arrowjs.type :: DataType.isDate, isTime, isTimestamp, isBool, isInt, isFloat
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-8">
       <div className="flex flex-row gap-4">
         <BuilderPane
+          state={builderState}
           colSpecs={colSpecs}
           origSpec={spec}
           components={{
-            BuilderWrapper: ({children}) => (
-              <div className="flex flex-col gap-2 w-56">
-                {children}
-              </div>
-            ),
-
-            WidgetGroup: ({title, children}) => (
-              <div className="grid grid-cols-3 gap-1 items-center">
-                <div className="text-xs font-bold text-slate-500 pt-4 col-start-1 col-span-3">{title}</div>
-                {children}
-              </div>
-            ),
-
-            WidgetWrapper: ({children}) => (
-              children
-            ),
-
+            BuilderWrapper,
+            WidgetGroup,
+            WidgetWrapper,
             Label,
             SelectBox,
+            TextBox,
           }}
-          state={builderState}
         />
         <PreviewPane
+          spec={builderState.spec}
           data={{
             main: dataset,
           }}
-          state={builderState}
         />
       </div>
 
@@ -88,6 +75,29 @@ function App() {
         </pre>
       </div>
     </div>
+  )
+}
+
+function BuilderWrapper({children}) {
+  return (
+    <div className="flex flex-col gap-2 w-56">
+      {children}
+    </div>
+  )
+}
+
+function WidgetGroup({title, children}) {
+  return (
+    <div className="grid grid-cols-3 gap-1 items-center">
+      <div className="text-xs font-bold text-slate-500 pt-4 col-start-1 col-span-3">{title}</div>
+      {children}
+    </div>
+  )
+}
+
+function WidgetWrapper({children}) {
+  return (
+    children
   )
 }
 
@@ -113,14 +123,14 @@ function SelectBox({items, value, setValue}) {
 
   const setValueCallback = useCallback((ev) => {
     const label = ev.currentTarget.value
-    const value = values[labels.indexOf(label)]
+    const newValue = values[labels.indexOf(label)]
 
-    setValue(value)
-  }, [labels, values])
+    setValue(newValue)
+  }, [labels, values, setValue])
 
   return (
     <select
-      className="col-start-2 col-span-2 text-md border border-slate-200 rounded-md text-sm py-0.5 px-1"
+      className="col-start-2 col-span-2 border border-slate-200 rounded-md text-sm py-0.5 px-1"
       defaultValue={labels[values.indexOf(value)]}
       onChange={setValueCallback}
     >
@@ -130,6 +140,23 @@ function SelectBox({items, value, setValue}) {
         </option>
       ))}
     </select>
+  )
+}
+
+function TextBox({value, setValue}) {
+  const setValueCallback = useCallback((ev) => {
+    const newValue = ev.currentTarget.value
+    setValue(newValue == "" ? null : newValue)
+  }, [setValue])
+
+  return (
+    <input
+      className="col-start-2 col-span-2 border border-slate-200 rounded-md text-sm py-0.5 px-1"
+      type="text"
+      value={value ?? ""}
+      placeholder={"Default"}
+      onChange={setValueCallback}
+    />
   )
 }
 

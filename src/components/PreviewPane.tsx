@@ -4,14 +4,12 @@ import { VegaLite } from 'react-vega'
 
 interface PreviewProps {
   data: any,
-  state: {
-    spec: any,
-  },
+  spec: any,
 }
 
 export function PreviewPane(props: PreviewProps): React.Node {
   return (
-    <VegaLite spec={props.state.spec} data={props.data} />
+    <VegaLite spec={props.spec} data={props.data} />
   )
 }
 
