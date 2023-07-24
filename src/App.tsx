@@ -1,22 +1,22 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback } from "react"
 
-import { formats } from 'vega'
-import arrow from 'vega-loader-arrow'
+import { formats } from "vega"
+import arrow from "vega-loader-arrow"
 
-import { BuilderPane, useBuilderState } from './components/Builder.tsx'
-import { PreviewPane } from './components/PreviewPane.tsx'
-import irisDataset from './data/iris.ts'
+import { BuilderPane, useBuilderState } from "./components/Builder.tsx"
+import { PreviewPane } from "./components/PreviewPane.tsx"
+import irisDataset from "./data/iris.ts"
 
-import './App.css'
+import "./App.css"
 
-// Register arrow reader under type 'arrow'
-formats('arrow', arrow);
+// Register arrow reader under type "arrow"
+formats("arrow", arrow);
 
 const spec = {
   mark: "circle", // Anything. So Vega doesn't throw a warning.
-  width: 600,
-  height: 600,
-  data: { name: 'main' }, // note: Vega-Lite data attribute is a plain Object instead of an array
+  width: 500, // BUG: "container" doesn't work with facet/rows/columns
+  height: 500, // BUG: "container" doesn't work with facet/rows/columns
+  data: { name: "main" }, // note: Vega-Lite data attribute is a plain Object instead of an array
 }
 
 function App() {
@@ -30,11 +30,11 @@ function App() {
     label: name,
     field: name,
     detectedType:
-      typeof exampleRow[name] == 'number' ? 'quantitative' :
-      typeof exampleRow[name] == 'boolean' ? 'nominal' :
-      typeof exampleRow[name] == 'string' ? 'nominal' :
-      exampleRow[name] instanceof Date ? 'temporal' :
-      'nominal'
+      typeof exampleRow[name] == "number" ? "quantitative" :
+      typeof exampleRow[name] == "boolean" ? "nominal" :
+      typeof exampleRow[name] == "string" ? "nominal" :
+      exampleRow[name] instanceof Date ? "temporal" :
+      "nominal"
   }))
   colSpecs.unshift({ label: "None", field: null, detectedType: null })
 
@@ -49,7 +49,7 @@ function App() {
         <BuilderPane
           state={builderState}
           colSpecs={colSpecs}
-          origSpec={spec}
+          baseSpec={spec}
           channels={{
             "X": "x",
             "Y": "y",
@@ -57,19 +57,23 @@ function App() {
             "Size": "size",
             "Opacity": "opacity",
             "Facet": "facet",
-            "Rows": "rows",
-            "Columns": "columns",
+            "Row": "row",
+            "Column": "column",
             "X2": "x2",
             "Y2": "y2",
           }}
           components={{
-            BuilderWrapper,
+            LayerContainer,
+            BuilderContainer,
+            ToolbarContainer,
             WidgetGroup,
             SelectBox,
             TextBox,
+            Button,
           }}
         />
         <PreviewPane
+          className="flex-auto align-self-stretch"
           spec={builderState.spec}
           data={{
             main: dataset,
@@ -89,11 +93,44 @@ function App() {
   )
 }
 
-function BuilderWrapper({children}) {
+function BuilderContainer({children}) {
   return (
-    <div className="flex flex-row flex-wrap content-start w-56">
+    <div className="flex flex-col gap-8 w-56">
       {children}
     </div>
+  )
+}
+
+function LayerContainer({children}) {
+  return (
+    <div className="flex flex-row flex-wrap content-start">
+      {children}
+    </div>
+  )
+}
+
+function ToolbarContainer({children}) {
+  return (
+    <div className="flex-auto flex flex-row flex-wrap items-end">
+      {children}
+    </div>
+  )
+}
+
+function Button({onClick, children}) {
+  return (
+    <button
+      className={[
+        "px-2 py-0.5",
+        "text-sm text-slate-500",
+        "border border-slate-200 rounded-md",
+        "hover:border-pink-400 hover:text-pink-400",
+        "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
+      ].join(" ")}
+      onClick={onClick}
+    >
+      {children}
+    </button>
   )
 }
 
@@ -109,7 +146,7 @@ function WidgetGroup({title, children, visibilityState}) {
 
   const expandedWrapperStyles = [
     "flex flex-row flex-wrap gap-1 items-stretch",
-    "w-full",
+    "w-full pb-2",
     "order-1",
   ].join(" ")
 
@@ -186,6 +223,7 @@ function SelectBox({label, items, value, setValue, visibilityState}) {
   const styles=[
     "text-xs py-0.5 flex-auto",
     "border bg-slate-100 border-transparent hover:border-pink-400 rounded-md",
+    "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
     "text-slate-500 hover:text-pink-400",
   ].join(" ")
 
@@ -219,6 +257,7 @@ function TextBox({label, value, placeholder, setValue, visibilityState}) {
   const styles=[
     "text-xs py-0.5 px-1 flex-auto",
     "border bg-slate-100 border-transparent hover:border-pink-400 rounded-md",
+    "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
     "text-slate-500 hover:text-pink-400",
   ].join(" ")
 

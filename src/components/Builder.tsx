@@ -64,49 +64,69 @@ interface BuilderPaneProps {
   components: {
     SelectBox: React.Node,
     TextBox: React.Node,
-    BuilderWrapper: React.Node,
+    BuilderContainer: React.Node,
     WidgetGroup: React.Node,
     WidgetWraper: React.Node,
   },
   colSpecs: ColSpec[],
   state: {
+    spec: any,
     setSpec: (any) => void,
   },
-  origSpec: any,
+  baseSpec: any,
 }
 
 export function BuilderPane(props: BuilderPaneProps) {
-  const [markType, setMarkType] = useState(props.origSpec?.mark?.type ?? DEFAULTS.mark.type)
+  const [key, setKey] = useState(0)
 
-  const origEncSpec = props.origSpec?.encoding
+  const reset = useCallback(() => setKey(key + 1))
+
+  return (
+    <props.components.BuilderContainer>
+      <LayerBuilder key={key} {...props} />
+
+      <props.components.ToolbarContainer>
+        <props.components.Button
+          onClick={reset}
+        >
+          Reset
+        </props.components.Button>
+      </props.components.ToolbarContainer>
+    </props.components.BuilderContainer>
+  )
+}
+
+export function LayerBuilder(props: BuilderPaneProps) {
+  const [markType, setMarkType] = useState(props?.baseSpec?.mark?.type ?? DEFAULTS.mark.type)
+
   const encodingInfos =
     Object.entries(props.channels).map(([title, channel]) => ({
       channel,
       title,
       encodingState: useEncodingState(
-        origEncSpec?.[channel],
+        props?.baseSpec?.encoding?.[channel],
         { field: props.colSpecs?.[DEFAULTS[channel]?.fieldIndex + 1]?.field },
       ),
     }))
 
   // tooltip
-  // facet, row, column
-  // x2, y2, text, angle, xOffset(+random), yOffset(+random), strokeWidth, strokeDash, shape
+  // text, angle, xOffset(+random), yOffset(+random),
+  // strokeWidth, strokeDash, shape
 
   const fields = {"None": null}
   props.colSpecs.forEach(s => fields[s.label] = s.field)
 
   useEffect(() => {
-    const newSpec = updateVegaSpec(markType, encodingInfos, props.origSpec, props.colSpecs)
+    const newSpec = updateVegaSpec(markType, encodingInfos, props?.baseSpec, props.colSpecs)
     props.state.setSpec(newSpec)
   }, [
       markType,
-      props.origSpec,
+      props?.baseSpec,
       ...encodingInfos.map(x => x.encodingState.state)
   ])
 
   return (
-    <props.components.BuilderWrapper>
+    <props.components.LayerContainer>
       <props.components.WidgetGroup visibilityState={"always"}>
           <props.components.SelectBox
             label="Mark"
@@ -127,13 +147,12 @@ export function BuilderPane(props: BuilderPaneProps) {
           visibilityState={DEFAULTS[encInfo.channel]?.visibilityState}
         />
       ))}
-
-    </props.components.BuilderWrapper>
+    </props.components.LayerContainer>
   )
 }
 
-export function useBuilderState(origSpec) {
-  const [spec, setSpec] = useState(origSpec)
+export function useBuilderState(baseSpec) {
+  const [spec, setSpec] = useState(baseSpec)
 
   return {
     spec,
@@ -141,8 +160,8 @@ export function useBuilderState(origSpec) {
   }
 }
 
-function updateVegaSpec(markType, encodingInfos, origSpec, colSpecs) {
-  return merge({}, origSpec, {
+function updateVegaSpec(markType, encodingInfos, baseSpec, colSpecs) {
+  return merge({}, baseSpec, {
     mark: {
       type: markType,
       tooltip: true,
@@ -172,11 +191,13 @@ function buildChannelSpec(encodingInfo, colSpecs) {
 
   const channelSpec = {}
 
+  if (state.title != null) channelSpec.title = state.title
+  if (state.legend != null) channelSpec.legend = state.legend
+  if (state.type == "temporal") channelSpec.timeUnit = state.timeUnit
+
   if (state.field == null) {
     if (state.value) {
       channelSpec.value = state.value
-    } else {
-      return null
     }
   } else {
     if (state.field != null) {
@@ -188,12 +209,13 @@ function buildChannelSpec(encodingInfo, colSpecs) {
         colSpecs,
       )
     }
+
     if (state.aggregate != null) channelSpec.aggregate = state.aggregate
     if (state.binStep != null) channelSpec.bin = { step: state.binStep }
     if (state.stack != null) channelSpec.stack = state.stack
   }
 
-  return channelSpec
+  return Object.keys(channelSpec).length > 0 ? channelSpec : null
 }
 
 function getColType(colType, colName, defaultType, colSpecs) {

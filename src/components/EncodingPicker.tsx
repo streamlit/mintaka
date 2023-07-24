@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback } from "react"
 
 const AGGREGATE_OPS = {
   "None": null,
@@ -15,6 +15,24 @@ const AGGREGATE_OPS = {
   "3rd quartile": "q3",
   "Missing": "missing",
   "Valid": "valid",
+}
+
+const TIME_UNITS = {
+  "Auto": null,
+  "Milliseconds": "milliseconds",
+  "Seconds": "seconds",
+  "Minutes": "minutes",
+  "Hours": "hours",
+  "Day of the month": "date",
+  "Day of year": "dayofyear",
+  "Day of week": "day",
+  "Week": "week",
+  "Month": "month",
+  "Quarter": "quarter",
+  "Year": "year",
+  "Year and quarter": "yearquarter",
+  "Year and month": "yearmonth",
+  "Year, month, date": "yearmonthdate",
 }
 
 export function useEncodingState(origSpecEncoding: Object, fallbackState: Object) {
@@ -99,7 +117,7 @@ export function EncodingPicker({
             />
           ) : null}
 
-          {(encodingInfo.channel == "x" || encodingInfo.channel == "y") ? (
+          {(["x", "y"].indexOf(encodingInfo.channel) > -1) ? (
             <components.SelectBox
               label="Stack"
               items={{
@@ -113,8 +131,39 @@ export function EncodingPicker({
             />
           ) : null}
         </>
-
       )}
+
+      {(["color", "size", "opacity"].indexOf(encodingInfo.channel) > -1) ? (
+        <components.SelectBox
+          label="Legend"
+          items={{
+            "Visible": null,
+            "Hidden": false,
+          }}
+          value={state.legend}
+          setValue={makeSetter("legend")}
+          visibilityState={"collapsed"}
+        />
+      ) : null}
+
+      {state.type == "temporal" ? (
+        <components.SelectBox
+          label="Time unit"
+          items={TIME_UNITS}
+          value={state.timeUnit}
+          setValue={makeSetter("timeUnit")}
+          visibilityState={"collapsed"}
+        />
+      ) : null}
+
+      <components.TextBox
+        label="Title"
+        placeholder="Default"
+        value={state.title}
+        setValue={makeSetter("title")}
+        visibilityState={"collapsed"}
+      />
+
     </components.WidgetGroup>
   )
 }
