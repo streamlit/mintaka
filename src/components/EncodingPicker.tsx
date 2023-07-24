@@ -1,23 +1,25 @@
 import React, { useState, useCallback } from 'react'
 
 const AGGREGATE_OPS = {
-  'None': null,
-  'Count': 'count',
-  'Distinct': 'distinct',
-  'Sum': 'sum',
-  'Mean': 'mean',
-  'Standard devation': 'stdev',
-  'Variance': 'variance',
-  'Min': 'min',
-  'Max': 'max',
-  '1st quartile': 'q1',
-  'Median (2nd quartile)': 'median',
-  '3rd quartile': 'q3',
-  'Missing': 'missing',
-  'Valid': 'valid',
+  "None": null,
+  "Count": "count",
+  "Distinct": "distinct",
+  "Sum": "sum",
+  "Mean": "mean",
+  "Standard devation": "stdev",
+  "Variance": "variance",
+  "Min": "min",
+  "Max": "max",
+  "1st quartile": "q1",
+  "Median (2nd quartile)": "median",
+  "3rd quartile": "q3",
+  "Missing": "missing",
+  "Valid": "valid",
 }
 
-export function useEncodingState(initialState: Object) {
+export function useEncodingState(origSpecEncoding: Object, fallbackState: Object) {
+  const initialState = {...fallbackState, ...origSpecEncoding}
+
   const [internalState, setInternalState] = useState(initialState)
 
   return {
@@ -37,6 +39,7 @@ export function EncodingPicker({
   encodingState,
   fields,
   types,
+  visibilityState
 }): React.Node {
   const {state, setComponent} = encodingState
 
@@ -45,12 +48,16 @@ export function EncodingPicker({
   ), [setComponent])
 
   return (
-    <components.WidgetGroup title={title}>
+    <components.WidgetGroup
+      title={title}
+      visibilityState={visibilityState}
+    >
       <components.SelectBox
         label="Field"
         items={fields}
         value={state.field}
-        setValue={makeSetter('field')}
+        setValue={makeSetter("field")}
+        visibilityState={"expanded"}
       />
 
       {state.field == null ? (
@@ -58,7 +65,8 @@ export function EncodingPicker({
           label="Value"
           placeholder="Default"
           value={state.value}
-          setValue={makeSetter('value')}
+          setValue={makeSetter("value")}
+          visibilityState={"collapsed"}
         />
 
       ) : (
@@ -68,7 +76,8 @@ export function EncodingPicker({
             label="Type"
             items={types}
             value={state.type}
-            setValue={makeSetter('type')}
+            setValue={makeSetter("type")}
+            visibilityState={"collapsed"}
           />
 
           {state.binStep == null ? (
@@ -76,7 +85,8 @@ export function EncodingPicker({
               label="Aggregate"
               items={AGGREGATE_OPS}
               value={state.aggregate}
-              setValue={makeSetter('aggregate')}
+              setValue={makeSetter("aggregate")}
+              visibilityState={"collapsed"}
             />
           ) : null}
 
@@ -85,7 +95,8 @@ export function EncodingPicker({
               label="Bin size"
               placeholder="No binning"
               value={state.binStep}
-              setValue={makeSetter('binStep')}
+              setValue={makeSetter("binStep")}
+              visibilityState={"collapsed"}
             />
           ) : null}
         </>

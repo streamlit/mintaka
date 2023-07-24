@@ -1,58 +1,49 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import merge from 'lodash/merge'
+import React, { useState, useEffect, useCallback } from "react"
+import merge from "lodash/merge"
 
-import { EncodingPicker, useEncodingState } from './EncodingPicker.tsx'
+import { EncodingPicker, useEncodingState } from "./EncodingPicker.tsx"
 
 const DEFAULTS = {
   mark: {
-    type: 'circle',
+    type: "circle",
   },
   x: {
     fieldIndex: 0,
-    type: 'quantitative',
+    visibilityState: "expanded",
   },
   y: {
     fieldIndex: 1,
-    type: 'quantitative',
-  },
-  color: {
-    type: 'nominal',
-  },
-  size: {
-    type: 'quantitative',
-  },
-  opacity: {
-    type: 'quantitative',
+    visibilityState: "expanded",
   },
 }
 
 const MARKS = [
-  //'arc',
-  'area', // Properties: point, line, interpolate
-  'bar', // Properties: orient, binSpacing
-  'boxplot',
-  //'errorband',
-  //'errorbar',
-  //'image',
-  'line', // Properties: point, interpolate
-  'point', // Properties: none needed. Use encoding + value instead.
-  //'rect',
-  //'rule',
-  //'text', // Need to show 'text' encoding. Properties: dx, dy, fontSize, limit, align, baseline
-  //'tick',
-  //'trail',
-  'circle', // Properties: none needed. Use encoding + value instead.
-  'square', // Properties: none needed. Use encoding + value instead.
-  //'geoshape',
+  //"arc",
+  "area", // Properties: point, line, interpolate
+  "bar", // Properties: orient, binSpacing
+  "boxplot",
+  //"errorband",
+  //"errorbar",
+  //"image",
+  "line", // Properties: point, interpolate
+  "point", // Properties: none needed. Use encoding + value instead.
+  //"rect",
+  //"rule",
+  //"text", // Need to show "text" encoding. Properties: dx, dy, fontSize, limit, align, baseline
+  //"tick",
+  //"trail",
+  "circle", // Properties: none needed. Use encoding + value instead.
+  "square", // Properties: none needed. Use encoding + value instead.
+  //"geoshape",
 ]
 
 const FIELD_TYPES = {
-  'Auto': null,  // We added this.
-  'Nominal': 'nominal',
-  'Ordinal': 'ordinal',
-  'Quantitative': 'quantitative',
-  'Temporal': 'temporal',
-  //'GeoJSON': 'geojson',
+  "Auto": null,  // We added this.
+  "Nominal": "nominal",
+  "Ordinal": "ordinal",
+  "Quantitative": "quantitative",
+  "Temporal": "temporal",
+  //"GeoJSON": "geojson",
 }
 
 interface ColSpec {
@@ -77,119 +68,72 @@ interface BuilderPaneProps {
 }
 
 export function BuilderPane(props: BuilderPaneProps) {
-  const encoding = props.origSpec?.encoding
-
   const [markType, setMarkType] = useState(props.origSpec?.mark?.type ?? DEFAULTS.mark.type)
 
-  const xEncodingState = useEncodingState({
-    field: encoding?.x?.field ?? props.colSpecs?.[DEFAULTS.x.fieldIndex + 1]?.field,
-    type: encoding?.x?.type,
-    value: null,
-    aggregate: null,
-    binStep: null,
-    // title
-    // timeUnit (if temporal)
-    // axis
-  })
-
-  const yEncodingState = useEncodingState({
-    field: encoding?.y?.field ?? props.colSpecs?.[DEFAULTS.y.fieldIndex + 1]?.field,
-    type: encoding?.y?.type,
-    value: null,
-    aggregate: null,
-    binStep: null,
-    // title
-    // timeUnit (if temporal)
-    // axis
-  })
-
-  const colorEncodingState = useEncodingState({
-    field: encoding?.color?.field,
-    type: encoding?.color?.type,
-    value: null,
-    aggregate: null,
-    binStep: null,
-    // title
-    // timeUnit (if temporal)
-    // axis
-  })
-
-  const sizeEncodingState = useEncodingState({
-    field: encoding?.size?.field,
-    type: encoding?.size?.type,
-    value: null,
-    aggregate: null,
-    binStep: null,
-    // title
-    // timeUnit (if temporal)
-    // axis
-  })
-
-  const opacityEncodingState = useEncodingState({
-    field: encoding?.opacity?.field,
-    type: encoding?.opacity?.type,
-    value: null,
-    aggregate: null,
-    binStep: null,
-    // title
-    // timeUnit (if temporal)
-    // axis
-  })
-
-  const encodings = [
-    ['X', xEncodingState],
-    ['Y', yEncodingState],
-    ['Color', colorEncodingState],
-    ['Size', sizeEncodingState],
-    ['Opacity', opacityEncodingState],
+  const origEncSpec = props.origSpec?.encoding
+  const encodingInfos = [
+    {
+      channel: "x",
+      title: "X",
+      encodingState: useEncodingState(
+        origEncSpec?.x,
+        { field: props.colSpecs?.[DEFAULTS.x.fieldIndex + 1]?.field },
+      )
+    },
+    {
+      channel: "y",
+      title: "Y",
+      encodingState: useEncodingState(
+        origEncSpec?.y,
+        { field: props.colSpecs?.[DEFAULTS.y.fieldIndex + 1]?.field },
+      ),
+    },
+    {
+      channel: "color",
+      title: "Color",
+      encodingState: useEncodingState(origEncSpec?.color),
+    },
+    {
+      channel: "size",
+      title: "Size",
+      encodingState: useEncodingState(origEncSpec?.size),
+    },
+    {
+      channel: "opacity",
+      title: "Opacity",
+      encodingState: useEncodingState(origEncSpec?.opacity),
+    },
   ]
 
   // tooltip
   // facet, row, column
   // x2, y2, text, angle, xOffset(+random), yOffset(+random), strokeWidth, strokeDash, shape
 
-  const fields = {'None': null}
+  const fields = {"None": null}
   props.colSpecs.forEach(s => fields[s.label] = s.field)
 
   useEffect(() => {
-    const newSpec = merge({}, props.origSpec, {
-      mark: {
-        type: markType,
-        tooltip: true,
-      },
-      encoding: {
-        ...buildEncoding('x', xEncodingState.state, props.colSpecs),
-        ...buildEncoding('y', yEncodingState.state, props.colSpecs),
-        ...buildEncoding('color', colorEncodingState.state, props.colSpecs),
-        ...buildEncoding('size', sizeEncodingState.state, props.colSpecs),
-        ...buildEncoding('opacity', opacityEncodingState.state, props.colSpecs),
-      },
-      params: [{
-        name: 'grid',
-        select: 'interval',
-        bind: 'scales'
-      }]
-    })
-
+    const newSpec = updateVegaSpec(markType, encodingInfos, props.origSpec, props.colSpecs)
     props.state.setSpec(newSpec)
   }, [
       markType,
       props.origSpec,
-      ...encodings.map(x => x[1].state)
+      ...encodingInfos.map(x => x.encodingState.state)
   ])
 
   return (
     <props.components.BuilderWrapper>
-      <props.components.WidgetGroup>
+      <props.components.WidgetGroup visibilityState={"always"}>
           <props.components.SelectBox
-            label='Mark'
+            label="Mark"
             items={MARKS}
             value={markType}
             setValue={setMarkType}
+            visibilityState={"always"}
           />
       </props.components.WidgetGroup>
 
-      {encodings.map(([title, encodingState]) => (
+      {encodingInfos.map(({channel, title, encodingState}) => (
         <EncodingPicker
           components={props.components}
           title={title}
@@ -197,6 +141,7 @@ export function BuilderPane(props: BuilderPaneProps) {
           fields={fields}
           types={FIELD_TYPES}
           key={title}
+          visibilityState={DEFAULTS[channel]?.visibilityState}
         />
       ))}
 
@@ -213,30 +158,59 @@ export function useBuilderState(origSpec) {
   }
 }
 
-function buildEncoding(key, state, colSpecs) {
-  const enc = {}
-  const encWrapper = {[key]: enc}
+function updateVegaSpec(markType, encodingInfos, origSpec, colSpecs) {
+  return merge({}, origSpec, {
+    mark: {
+      type: markType,
+      tooltip: true,
+    },
+
+    encoding: encodingInfos.reduce(
+      (encodingSpec, encInfo) => {
+        const channelSpec = buildChannelSpec(encInfo, colSpecs)
+        if (channelSpec) {
+          encodingSpec[encInfo.channel] = channelSpec
+        }
+        return encodingSpec
+      },
+      {}
+    ),
+
+    params: [{
+      name: "grid",
+      select: "interval",
+      bind: "scales"
+    }]
+  })
+}
+
+
+function buildChannelSpec(encodingInfo, colSpecs) {
+  const state = encodingInfo.encodingState.state
+
+  const channelSpec = {}
 
   if (state.field == null) {
     if (state.value) {
-      enc.value = state.value
+      channelSpec.value = state.value
     } else {
-      return {}
+      return null
     }
   } else {
-    enc.field = state.field
-    enc.type = getColType(
-      state.type,
-      state.field,
-      DEFAULTS[key].type,
-      colSpecs,
-    )
-
-    if (state.aggregate) enc.aggregate = state.aggregate
-    if (state.binStep) enc.bin = { step: state.binStep }
+    if (state.field) {
+      channelSpec.field = state.field
+      channelSpec.type = getColType(
+        state.type,
+        state.field,
+        DEFAULTS[encodingInfo.channel]?.type,
+        colSpecs,
+      )
+    }
+    if (state.aggregate) channelSpec.aggregate = state.aggregate
+    if (state.binStep) channelSpec.bin = { step: state.binStep }
   }
 
-  return encWrapper
+  return channelSpec
 }
 
 function getColType(colType, colName, defaultType, colSpecs) {

@@ -79,31 +79,78 @@ function App() {
 
 function BuilderWrapper({children}) {
   return (
-    <div className="flex flex-col gap-2 w-56">
+    <div className="flex flex-row flex-wrap content-start w-56">
       {children}
     </div>
   )
 }
 
-function WidgetGroup({title, children}) {
+function WidgetGroup({title, children, visibilityState}) {
+  const [expanded, setExpanded] = useState(
+    visibilityState == "expanded" || visibilityState == "always")
+
+  const toggleExpanded = useCallback(
+    () => setExpanded(!expanded),
+    [expanded, setExpanded])
+
+  const isExpandable = visibilityState != "always"
+
+  const expandedWrapperStyles = [
+    "flex flex-row flex-wrap gap-1 items-stretch",
+    "w-full",
+    "order-1",
+  ].join(" ")
+
+  const collapsedWrapperStyles = [
+    "inline-flex pr-2 last:pr-0",
+    "order-2",
+  ].join(" ")
+
+  const wrapperStyles = [
+    expanded ? expandedWrapperStyles : collapsedWrapperStyles,
+  ].join(" ")
+
+  const labelWrapperStyles = [
+    "flex items-center",
+    "w-full h-8 pt-4",
+  ].join(" ")
+
+  const labelStyles = [
+    "text-xs font-bold",
+    "text-slate-500",
+    "border-b-2 border-pink-200",
+    isExpandable
+      ? "hover:border-pink-400 hover:text-pink-400 cursor-pointer select-none"
+      : "",
+  ].join(" ")
+
   return (
-    <div className="grid grid-cols-3 gap-1 items-center">
-      <div className="text-xs font-bold text-slate-500 pt-4 col-start-1 col-span-3">{title}</div>
-      {children}
+    <div className={wrapperStyles}>
+      {title ? (
+        <div className={labelWrapperStyles}>
+          <Label
+            className={labelStyles}
+            onClick={isExpandable ? toggleExpanded : null}
+          >
+            {title}
+          </Label>
+        </div>
+      ) : null}
+      {(expanded || !title) ? children : null}
     </div>
   )
 }
 
-function Label({children}) {
+function Label({children, ...args}) {
   return (
-    <label className="block text-xs text-slate-500 col-start-1 col-span-1">
+    <label {...args}>
       {children}
     </label>
   )
 }
 
 // items can be list or object of label->value.
-function SelectBox({label, items, value, setValue}) {
+function SelectBox({label, items, value, setValue, visibilityState}) {
   let labels, values
 
   if (Array.isArray(items)) {
@@ -121,13 +168,20 @@ function SelectBox({label, items, value, setValue}) {
     setValue(newValue)
   }, [labels, values, setValue])
 
-  return (
-    <>
-      <Label>{label}</Label>
+  const currIndex = values.indexOf(value)
+  const currLabel = labels[currIndex]
 
+  const styles=[
+    "text-xs py-0.5 flex-auto",
+    "border bg-slate-100 border-transparent hover:border-pink-400 rounded-md",
+    "text-slate-500 hover:text-pink-400",
+  ].join(" ")
+
+  return (
+    <CollapsibleWidget label={label} visibilityState={visibilityState}>
       <select
-        className="col-start-2 col-span-2 border border-slate-200 rounded-md text-sm py-0.5 px-1"
-        defaultValue={labels[values.indexOf(value)]}
+        className={styles}
+        defaultValue={currLabel}
         onChange={setValueCallback}
       >
         {labels.map(label => (
@@ -136,28 +190,76 @@ function SelectBox({label, items, value, setValue}) {
           </option>
         ))}
       </select>
-    </>
+    </CollapsibleWidget>
   )
 }
 
-function TextBox({label, value, placeholder, setValue}) {
+function TextBox({label, value, placeholder, setValue, visibilityState}) {
   const setValueCallback = useCallback((ev) => {
     const newValue = ev.currentTarget.value
     setValue(newValue == "" ? null : newValue)
   }, [setValue])
 
-  return (
-    <>
-      <Label>{label}</Label>
+  const styles=[
+    "text-xs py-0.5 px-1 flex-auto",
+    "border bg-slate-100 border-transparent hover:border-pink-400 rounded-md",
+    "text-slate-500 hover:text-pink-400",
+  ].join(" ")
 
+  return (
+    <CollapsibleWidget label={label} visibilityState={visibilityState}>
       <input
-        className="col-start-2 col-span-2 border border-slate-200 rounded-md text-sm py-0.5 px-1"
+        className={styles}
         type="text"
         value={value ?? ""}
         placeholder={placeholder}
         onChange={setValueCallback}
       />
-    </>
+    </CollapsibleWidget>
+  )
+}
+
+function CollapsibleWidget({label, visibilityState, children}) {
+  const [expanded, setExpanded] = useState(
+    visibilityState == "expanded" || visibilityState == "always")
+
+  const toggleExpanded = useCallback(
+    () => setExpanded(!expanded),
+    [expanded, setExpanded])
+
+  const isExpandable = visibilityState != "always"
+
+  const wrapperStyles = [
+    "flex flex-row items-stretch gap-2",
+    "h-6",
+    expanded ? "w-full order-1" : "order-2",
+  ].join(" ")
+
+  const labelWrapperStyles = [
+    "flex items-center",
+    expanded ? "" : "pr-1"
+  ].join(" ")
+
+  const labelStyles = [
+    "text-xs",
+    "text-slate-500",
+    isExpandable
+      ? "cursor-pointer select-none hover:text-pink-400"
+      : "",
+  ].join(" ")
+
+  return (
+    <div className={wrapperStyles}>
+      <div className={labelWrapperStyles}>
+        <Label
+          className={labelStyles}
+          onClick={isExpandable ? toggleExpanded : null}
+        >
+          {label}
+        </Label>
+      </div>
+      {expanded ? children : null}
+    </div>
   )
 }
 
