@@ -34,14 +34,13 @@ export function useEncodingState(origSpecEncoding: Object, fallbackState: Object
 }
 
 export function EncodingPicker({
+  encodingInfo,
   components,
-  title,
-  encodingState,
   fields,
   types,
   visibilityState
 }): React.Node {
-  const {state, setComponent} = encodingState
+  const {state, setComponent} = encodingInfo.encodingState
 
   const makeSetter = useCallback((key: str) => (
     (newValue: any) => setComponent(key, newValue)
@@ -49,7 +48,7 @@ export function EncodingPicker({
 
   return (
     <components.WidgetGroup
-      title={title}
+      title={encodingInfo.title}
       visibilityState={visibilityState}
     >
       <components.SelectBox
@@ -96,6 +95,20 @@ export function EncodingPicker({
               placeholder="No binning"
               value={state.binStep}
               setValue={makeSetter("binStep")}
+              visibilityState={"collapsed"}
+            />
+          ) : null}
+
+          {(encodingInfo.channel == "x" || encodingInfo.channel == "y") ? (
+            <components.SelectBox
+              label="Stack"
+              items={{
+                "True": null,
+                "Normalize": "normalize",
+                "False": false,
+              }}
+              value={state.stack}
+              setValue={makeSetter("stack")}
               visibilityState={"collapsed"}
             />
           ) : null}

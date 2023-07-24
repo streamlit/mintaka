@@ -15,25 +15,28 @@ const DEFAULTS = {
     fieldIndex: 1,
     visibilityState: "expanded",
   },
+  color: {
+    visibilityState: "expanded",
+  },
 }
 
 const MARKS = [
-  //"arc",
+  // Basic
   "area", // Properties: point, line, interpolate
   "bar", // Properties: orient, binSpacing
-  "boxplot",
-  //"errorband",
-  //"errorbar",
-  //"image",
+  "circle",
   "line", // Properties: point, interpolate
-  "point", // Properties: none needed. Use encoding + value instead.
-  //"rect",
+  "point",
+  "square",
+
+  // Advanced
+  "boxplot",
+  "rect",
+  "tick",
+  //"image",
+  //"arc",
   //"rule",
   //"text", // Need to show "text" encoding. Properties: dx, dy, fontSize, limit, align, baseline
-  //"tick",
-  //"trail",
-  "circle", // Properties: none needed. Use encoding + value instead.
-  "square", // Properties: none needed. Use encoding + value instead.
   //"geoshape",
 ]
 
@@ -52,7 +55,12 @@ interface ColSpec {
   detectedType: str | null,
 }
 
+interface Dict<T> {
+  [key: str]: T,
+}
+
 interface BuilderPaneProps {
+  channels: Dict[str],  // Title -> Channel dict
   components: {
     SelectBox: React.Node,
     TextBox: React.Node,
@@ -71,39 +79,15 @@ export function BuilderPane(props: BuilderPaneProps) {
   const [markType, setMarkType] = useState(props.origSpec?.mark?.type ?? DEFAULTS.mark.type)
 
   const origEncSpec = props.origSpec?.encoding
-  const encodingInfos = [
-    {
-      channel: "x",
-      title: "X",
+  const encodingInfos =
+    Object.entries(props.channels).map(([title, channel]) => ({
+      channel,
+      title,
       encodingState: useEncodingState(
-        origEncSpec?.x,
-        { field: props.colSpecs?.[DEFAULTS.x.fieldIndex + 1]?.field },
-      )
-    },
-    {
-      channel: "y",
-      title: "Y",
-      encodingState: useEncodingState(
-        origEncSpec?.y,
-        { field: props.colSpecs?.[DEFAULTS.y.fieldIndex + 1]?.field },
+        origEncSpec?.[channel],
+        { field: props.colSpecs?.[DEFAULTS[channel]?.fieldIndex + 1]?.field },
       ),
-    },
-    {
-      channel: "color",
-      title: "Color",
-      encodingState: useEncodingState(origEncSpec?.color),
-    },
-    {
-      channel: "size",
-      title: "Size",
-      encodingState: useEncodingState(origEncSpec?.size),
-    },
-    {
-      channel: "opacity",
-      title: "Opacity",
-      encodingState: useEncodingState(origEncSpec?.opacity),
-    },
-  ]
+    }))
 
   // tooltip
   // facet, row, column
@@ -133,15 +117,14 @@ export function BuilderPane(props: BuilderPaneProps) {
           />
       </props.components.WidgetGroup>
 
-      {encodingInfos.map(({channel, title, encodingState}) => (
+      {encodingInfos.map((encInfo) => (
         <EncodingPicker
+          encodingInfo={encInfo}
           components={props.components}
-          title={title}
-          encodingState={encodingState}
           fields={fields}
           types={FIELD_TYPES}
-          key={title}
-          visibilityState={DEFAULTS[channel]?.visibilityState}
+          key={encInfo.title}
+          visibilityState={DEFAULTS[encInfo.channel]?.visibilityState}
         />
       ))}
 
@@ -184,7 +167,6 @@ function updateVegaSpec(markType, encodingInfos, origSpec, colSpecs) {
   })
 }
 
-
 function buildChannelSpec(encodingInfo, colSpecs) {
   const state = encodingInfo.encodingState.state
 
@@ -197,7 +179,7 @@ function buildChannelSpec(encodingInfo, colSpecs) {
       return null
     }
   } else {
-    if (state.field) {
+    if (state.field != null) {
       channelSpec.field = state.field
       channelSpec.type = getColType(
         state.type,
@@ -206,8 +188,9 @@ function buildChannelSpec(encodingInfo, colSpecs) {
         colSpecs,
       )
     }
-    if (state.aggregate) channelSpec.aggregate = state.aggregate
-    if (state.binStep) channelSpec.bin = { step: state.binStep }
+    if (state.aggregate != null) channelSpec.aggregate = state.aggregate
+    if (state.binStep != null) channelSpec.bin = { step: state.binStep }
+    if (state.stack != null) channelSpec.stack = state.stack
   }
 
   return channelSpec

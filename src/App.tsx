@@ -50,6 +50,18 @@ function App() {
           state={builderState}
           colSpecs={colSpecs}
           origSpec={spec}
+          channels={{
+            "X": "x",
+            "Y": "y",
+            "Color": "color",
+            "Size": "size",
+            "Opacity": "opacity",
+            "Facet": "facet",
+            "Rows": "rows",
+            "Columns": "columns",
+            "X2": "x2",
+            "Y2": "y2",
+          }}
           components={{
             BuilderWrapper,
             WidgetGroup,
@@ -118,7 +130,7 @@ function WidgetGroup({title, children, visibilityState}) {
   const labelStyles = [
     "text-xs font-bold",
     "text-slate-500",
-    "border-b-2 border-pink-200",
+    "border-b-2 border-slate-200",
     isExpandable
       ? "hover:border-pink-400 hover:text-pink-400 cursor-pointer select-none"
       : "",
@@ -132,7 +144,7 @@ function WidgetGroup({title, children, visibilityState}) {
             className={labelStyles}
             onClick={isExpandable ? toggleExpanded : null}
           >
-            {title}
+            {title.toUpperCase()}
           </Label>
         </div>
       ) : null}
@@ -178,7 +190,11 @@ function SelectBox({label, items, value, setValue, visibilityState}) {
   ].join(" ")
 
   return (
-    <CollapsibleWidget label={label} visibilityState={visibilityState}>
+    <CollapsibleWidget
+      label={label}
+      isSetToDefault={value == null}
+      visibilityState={visibilityState}
+    >
       <select
         className={styles}
         defaultValue={currLabel}
@@ -207,7 +223,11 @@ function TextBox({label, value, placeholder, setValue, visibilityState}) {
   ].join(" ")
 
   return (
-    <CollapsibleWidget label={label} visibilityState={visibilityState}>
+    <CollapsibleWidget
+      label={label}
+      isSetToDefault={value == "" || value == null}
+      visibilityState={visibilityState}
+    >
       <input
         className={styles}
         type="text"
@@ -219,7 +239,7 @@ function TextBox({label, value, placeholder, setValue, visibilityState}) {
   )
 }
 
-function CollapsibleWidget({label, visibilityState, children}) {
+function CollapsibleWidget({label, isSetToDefault, visibilityState, children}) {
   const [expanded, setExpanded] = useState(
     visibilityState == "expanded" || visibilityState == "always")
 
@@ -246,6 +266,7 @@ function CollapsibleWidget({label, visibilityState, children}) {
     isExpandable
       ? "cursor-pointer select-none hover:text-pink-400"
       : "",
+    (!expanded && !isSetToDefault) ? "font-bold" : "",
   ].join(" ")
 
   return (
