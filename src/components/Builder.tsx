@@ -20,17 +20,28 @@ const UI_DEFAULTS = {
     fieldIndex: 0,
     importance: "high",
   },
+  url: {
+    importance: "high",
+  },
+  text: {
+    importance: "high",
+  },
+  geojson: {
+    importance: "high",
+  },
   color: {
     importance: "high",
   },
 }
 
+const RANDOM_FIELD_NAME = "random--p5bJXXpQgvPz6yvQMFiy"
+
 const UI_EXTRAS = {
   xOffset: {
-    extraFields: {"Random jitter": "random--p5bJXXpQgvPz6yvQMFiy"},
+    extraFields: {"Random jitter": RANDOM_FIELD_NAME},
   },
   yOffset: {
-    extraFields: {"Random jitter": "random--p5bJXXpQgvPz6yvQMFiy"},
+    extraFields: {"Random jitter": RANDOM_FIELD_NAME},
   },
 }
 
@@ -49,14 +60,15 @@ const MARKS = {
   "rect": "Rect",
   "tick": "Tick",
   "rule": "Rule",
-  "text": "Text", // Need to show "text" channel. Properties: dx, dy, fontSize, limit, align, baseline
-  "image": "Image", // width, height, align, baseline
-  //"geoshape": "Geographic shape",
+  "text": "Text", // Properties: dx, dy, fontSize, limit, align, baseline
+  "image": "Image", // Properties: width, height, align, baseline
+  "geoshape": "Geographic shape",
 }
 
 const ENCODING_CHANNELS = {
   "text": "Text",
   "url": "URL",
+  "geojson": "GeoJSON",
   "x": "X",
   "x2": "X2",
   "y": "Y",
@@ -73,6 +85,10 @@ const ENCODING_CHANNELS = {
   "column": "Column",
   "xOffset": "X Offset",
   "yOffset": "Y Offset",
+  // angle
+  // strokeWidth, strokeDash
+  // shape
+  // tooltip
 }
 
 const CHANNEL_FIELDS = {
@@ -160,9 +176,6 @@ export function LayerBuilder(props: BuilderPaneProps) {
         { field: props.colSpecs?.[UI_DEFAULTS[channel]?.fieldIndex + 1]?.field },
       ),
     }))
-
-  // text, angle, xOffset(+random), yOffset(+random),
-  // strokeWidth, strokeDash, shape, tooltip
 
   const fields = {"None": null}
   props.colSpecs.forEach(s => fields[s.label] = s.field)
@@ -299,13 +312,13 @@ function buildChannelSpec(channelState, colSpecs) {
 
 function buildTransforms(channelState) {
   const hasRandomField = channelState.some(
-    enc => enc.stateObj?.state?.field == "random--p5bJXXpQgvPz6yvQMFiy")
+    enc => enc.stateObj?.state?.field == RANDOM_FIELD_NAME)
 
   const transforms = []
 
   if (hasRandomField) {
     transforms.push(
-      {"calculate": "random()", "as": "random--p5bJXXpQgvPz6yvQMFiy"},
+      {"calculate": "random()", "as": RANDOM_FIELD_NAME},
     )
   }
 
@@ -314,7 +327,7 @@ function buildTransforms(channelState) {
 
 function getColType(channel, colType, colName, colSpecs) {
   if (colType != null) return colType
-  if (colName == "random--p5bJXXpQgvPz6yvQMFiy") return "quantitative"
+  if (colName == RANDOM_FIELD_NAME) return "quantitative"
 
   const colSpec = colSpecs.find(s => s.field == colName)
   return colSpec?.detectedType
@@ -345,7 +358,10 @@ function shouldIncludeChannel(channel, markType) {
       return markType == "image"
 
     case "size":
-      return markType != "image"
+      return !isElementOf(markType, ["image", "arc"])
+
+    case "geojson":
+      return markType == "geoshape"
 
     default:
       return true
