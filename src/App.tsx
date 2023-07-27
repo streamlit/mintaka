@@ -65,8 +65,7 @@ function App() {
             BuilderContainer,
             ToolbarContainer,
             WidgetGroup,
-            GenericWidget,
-            SelectBox,
+            GenericPickerWidget,
             Button,
           }}
         />
@@ -216,7 +215,7 @@ function ClickableLabel({className, onClick, children}) {
   )
 }
 
-function GenericWidget({label, widgetHint, value, setValue, importance, items, placeholder}) {
+function GenericPickerWidget({name, widgetHint, label, value, setValue, importance, items, placeholder}) {
   switch (widgetHint) {
     case "select":
       return (

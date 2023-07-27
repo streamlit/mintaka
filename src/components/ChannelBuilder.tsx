@@ -101,9 +101,10 @@ export function ChannelBuilder({
         .filter(
           f => shouldIncludeField(f.name, state, channelState.channel, channelFields)
         ).map(f => (
-        <components.GenericWidget
-          label={channelFields[f.name]}
+        <components.GenericPickerWidget
+          name={`field-${f.name}`}
           widgetHint={f.widgetHint}
+          label={channelFields[f.name]}
           value={state[f.name]}
           setValue={makeSetter(f.name)}
           importance={f.importance ?? "low"}

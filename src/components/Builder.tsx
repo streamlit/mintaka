@@ -179,8 +179,9 @@ export function LayerBuilder(props: BuilderPaneProps) {
   return (
     <props.components.LayerContainer>
       <props.components.WidgetGroup importance="highest">
-          {/* TODO: GenericWidget */}
-          <props.components.SelectBox
+          <props.components.GenericPickerWidget
+            name="mark"
+            widgetHint="select"
             label="Mark"
             items={Object.fromEntries(Object.entries(marks).map(entry => entry.reverse()))}
             value={markType}
