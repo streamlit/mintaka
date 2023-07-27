@@ -1,11 +1,17 @@
-import { useState, useCallback } from "react"
+import { useState, useEffect, useCallback } from "react"
 
 import { formats } from "vega"
 import arrow from "vega-loader-arrow"
+import BackspaceIcon from "@material-ui/icons/BackspaceOutlined"
 
 import { BuilderPane, useBuilderState } from "./components/Builder.tsx"
 import { PreviewPane } from "./components/PreviewPane.tsx"
-import irisDataset from "./data/iris.ts"
+
+import irisDataset from "./data/iris.json"
+import carsDataset from "./data/cars.json"
+import drivingDataset from "./data/driving.json"
+import moviesDataset from "./data/movies.json"
+import populationDataset from "./data/population.json"
 
 import "./App.css"
 
@@ -14,14 +20,17 @@ formats("arrow", arrow);
 
 const spec = {
   mark: "circle", // Anything. So Vega doesn't throw a warning.
-  width: 500, // BUG: "container" doesn't work with facet/rows/columns
-  height: 500, // BUG: "container" doesn't work with facet/rows/columns
-  data: { name: "main" }, // note: Vega-Lite data attribute is a plain Object instead of an array
+  width: "container",
+  height: "container",
 }
 
 function App() {
+  const [dataset, setDataset] = useState(irisDataset)
+  const [key, setKey] = useState(0)
   const builderState = useBuilderState(spec)
-  const dataset = irisDataset
+
+  // Handle dataset changes gracefully.
+  useEffect(() => setKey(key + 1), [dataset])
 
   const exampleRow = dataset[0]
 
@@ -44,51 +53,59 @@ function App() {
   // arrowjs.type :: DataType.isDate, isTime, isTimestamp, isBool, isInt, isFloat
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-32">
       <div className="flex flex-row gap-4">
         <BuilderPane
+          key={key}
           state={builderState}
           colSpecs={colSpecs}
           baseSpec={spec}
-          channels={{
-            "X": "x",
-            "Y": "y",
-            "Color": "color",
-            "Size": "size",
-            "Opacity": "opacity",
-            "Facet": "facet",
-            "Row": "row",
-            "Column": "column",
-            "X2": "x2",
-            "Y2": "y2",
-          }}
           components={{
             LayerContainer,
             BuilderContainer,
             ToolbarContainer,
             WidgetGroup,
+            GenericWidget,
             SelectBox,
-            TextBox,
             Button,
           }}
         />
         <PreviewPane
           className="flex-auto align-self-stretch"
           spec={builderState.spec}
-          data={{
-            main: dataset,
-          }}
+          data={dataset}
         />
       </div>
 
-      <div>
-        <h2>JSON</h2>
-        <pre>
-          <code>
-            { JSON.stringify(builderState.spec, undefined, 4) }
-          </code>
-        </pre>
-      </div>
+      <details>
+        <summary className="text-slate-500 border-t border-slate-300 pt-2 hover:text-pink-400 cursor-pointer text-sm">Demo input / output</summary>
+
+        <div className="flex flex-col gap-4 pt-4">
+
+          <div className="self-start w-64">
+            <h3 className="text-slate-500 font-bold text-xs uppercase">Input</h3>
+            <SelectBox
+                label="Dataset"
+                items={{
+                  iris: irisDataset,
+                  cars: carsDataset,
+                  driving: drivingDataset,
+                  movies: moviesDataset,
+                  population: populationDataset,
+                }}
+                value={irisDataset}
+                setValue={setDataset}
+            />
+          </div>
+
+          <h3 className="text-slate-500 font-bold text-xs uppercase">Output</h3>
+          <pre className="text-slate-800 bg-slate-100 text-sm p-4 rounded-lg">
+            <code>
+              { JSON.stringify(builderState.spec, undefined, 4) }
+            </code>
+          </pre>
+        </div>
+      </details>
     </div>
   )
 }
@@ -126,6 +143,7 @@ function Button({onClick, children}) {
         "border border-slate-200 rounded-md",
         "hover:border-pink-400 hover:text-pink-400",
         "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
+        "select-none",
       ].join(" ")}
       onClick={onClick}
     >
@@ -134,19 +152,19 @@ function Button({onClick, children}) {
   )
 }
 
-function WidgetGroup({title, children, visibilityState}) {
+function WidgetGroup({title, children, importance}) {
   const [expanded, setExpanded] = useState(
-    visibilityState == "expanded" || visibilityState == "always")
+    importance == "high" || importance == "highest")
 
   const toggleExpanded = useCallback(
     () => setExpanded(!expanded),
     [expanded, setExpanded])
 
-  const isExpandable = visibilityState != "always"
+  const isExpandable = importance != "highest"
 
   const expandedWrapperStyles = [
     "flex flex-row flex-wrap gap-1 items-stretch",
-    "w-full pb-2",
+    "w-full pb-4",
     "order-1",
   ].join(" ")
 
@@ -161,28 +179,28 @@ function WidgetGroup({title, children, visibilityState}) {
 
   const labelWrapperStyles = [
     "flex items-center",
-    "w-full h-8 pt-4",
+    "w-full h-8",
   ].join(" ")
 
   const labelStyles = [
     "text-xs font-bold",
     "text-slate-500",
-    "border-b-2 border-slate-200",
     isExpandable
-      ? "hover:border-pink-400 hover:text-pink-400 cursor-pointer select-none"
+      ? "hover:border-pink-400 hover:text-pink-400 cursor-pointer"
       : "",
+    expanded ? "pt-2" : "",
   ].join(" ")
 
   return (
     <div className={wrapperStyles}>
       {title ? (
         <div className={labelWrapperStyles}>
-          <Label
+          <ClickableLabel
             className={labelStyles}
             onClick={isExpandable ? toggleExpanded : null}
           >
             {title.toUpperCase()}
-          </Label>
+          </ClickableLabel>
         </div>
       ) : null}
       {(expanded || !title) ? children : null}
@@ -190,16 +208,56 @@ function WidgetGroup({title, children, visibilityState}) {
   )
 }
 
-function Label({children, ...args}) {
+function ClickableLabel({className, onClick, children}) {
   return (
-    <label {...args}>
+    <a onClick={onClick} className={`${className} ${"select-none"} whitespace-nowrap`} role="label">
       {children}
-    </label>
+    </a>
   )
 }
 
+function GenericWidget({label, widgetHint, value, setValue, importance, items, placeholder}) {
+  switch (widgetHint) {
+    case "select":
+      return (
+        <SelectBox
+          label={label}
+          items={items}
+          value={value}
+          setValue={setValue}
+          importance={importance ?? "low"}
+        />
+      )
+
+    case "toggle":
+      return (
+        <Toggle
+          label={label}
+          items={items}
+          value={value}
+          setValue={setValue}
+          importance={importance ?? "low"}
+        />
+      )
+
+    case "text":
+    case "number":
+    case "json":
+    default:
+      return (
+        <TextBox
+          label={label}
+          placeholder={placeholder ?? "Default"}
+          value={value}
+          setValue={setValue}
+          importance={importance ?? "low"}
+        />
+      )
+  }
+}
+
 // items can be list or object of label->value.
-function SelectBox({label, items, value, setValue, visibilityState}) {
+function SelectBox({label, items, value, setValue, importance}) {
   let labels, values
 
   if (Array.isArray(items)) {
@@ -210,7 +268,7 @@ function SelectBox({label, items, value, setValue, visibilityState}) {
     values = Object.values(items)
   }
 
-  const setValueCallback = useCallback((ev) => {
+  const setValueWithTypes = useCallback((ev) => {
     const label = ev.currentTarget.value
     const newValue = values[labels.indexOf(label)]
 
@@ -218,25 +276,26 @@ function SelectBox({label, items, value, setValue, visibilityState}) {
   }, [labels, values, setValue])
 
   const currIndex = values.indexOf(value)
-  const currLabel = labels[currIndex]
+  const currClickableLabel = labels[currIndex]
 
   const styles=[
-    "text-xs py-0.5 flex-auto",
-    "border bg-slate-100 border-transparent hover:border-pink-400 rounded-md",
+    "text-sm py-0.5 flex-auto",
+    "border bg-slate-100 hover:bg-slate-200 border-transparent rounded-md",
     "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
-    "text-slate-500 hover:text-pink-400",
+    "text-slate-500",
+    "cursor-pointer",
   ].join(" ")
 
   return (
     <CollapsibleWidget
       label={label}
       isSetToDefault={value == null}
-      visibilityState={visibilityState}
+      importance={importance ?? "highest"}
     >
       <select
         className={styles}
-        defaultValue={currLabel}
-        onChange={setValueCallback}
+        defaultValue={currClickableLabel}
+        onChange={setValueWithTypes}
       >
         {labels.map(label => (
           <option value={label} key={label}>
@@ -248,50 +307,130 @@ function SelectBox({label, items, value, setValue, visibilityState}) {
   )
 }
 
-function TextBox({label, value, placeholder, setValue, visibilityState}) {
-  const setValueCallback = useCallback((ev) => {
+function TextBox({label, value, placeholder, setValue, importance}) {
+  const setValueWithTypes = useCallback((ev) => {
     const newValue = ev.currentTarget.value
     setValue(newValue == "" ? null : newValue)
   }, [setValue])
 
+  const clearValue = useCallback(
+    () => setValue(null),
+  [setValue])
+
   const styles=[
-    "text-xs py-0.5 px-1 flex-auto",
-    "border bg-slate-100 border-transparent hover:border-pink-400 rounded-md",
+    "text-sm py-0.5 pl-1 flex-auto",
+    "border bg-slate-100 hover:bg-slate-200 border-transparent rounded-md",
     "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
-    "text-slate-500 hover:text-pink-400",
+    "text-slate-500",
+  ].join(" ")
+
+  const hasContent = value != null && value != ""
+
+  const buttonStyles=[
+    "absolute flex items-center top-0 bottom-0 right-0 pr-2 w-6 opacity-50 hover:opacity-100",
   ].join(" ")
 
   return (
     <CollapsibleWidget
       label={label}
       isSetToDefault={value == "" || value == null}
-      visibilityState={visibilityState}
+      importance={importance}
+      className="relative"
     >
       <input
         className={styles}
         type="text"
         value={value ?? ""}
         placeholder={placeholder}
-        onChange={setValueCallback}
+        onChange={setValueWithTypes}
       />
+      {hasContent ? (
+        <button
+          className={buttonStyles}
+          onClick={clearValue}
+          disabled={!hasContent}
+        >
+          <Icon type={BackspaceIcon} />
+        </button>
+      ) : null}
     </CollapsibleWidget>
   )
 }
 
-function CollapsibleWidget({label, isSetToDefault, visibilityState, children}) {
+
+function Toggle({label, items, value, setValue, importance}) {
+  let labels, values
+
+  if (Array.isArray(items)) {
+    labels = items
+    values = items
+  } else {
+    labels = Object.keys(items)
+    values = Object.values(items)
+  }
+
+  const toggle = useCallback((ev) => {
+    setValue(ev.currentTarget.checked ? values[1] : values[0])
+  }, [setValue, values])
+
+  const troughClasses = [
+    "w-7 h-4",
+    "peer",
+    "border border-transparent",
+    "peer-focus:outline-none peer-focus:ring peer-focus:ring-pink-200 peer-focus:border-pink-400",
+    "peer-checked:bg-pink-500",
+    "bg-slate-200",
+    "rounded-full"
+  ].join(" ")
+
+  const thumbClasses = [
+    "peer-checked:after:translate-x-full peer-checked:after:border-white",
+    "after:content-[''] after:absolute after:top-1.5 after:left-0.5",
+    "after:bg-white after:border-slate-300 after:border after:rounded-full",
+    "after:h-3 after:w-3",
+    "after:transition-all",
+  ].join(" ")
+
+  const toggleClasses = [troughClasses, thumbClasses].join(" ")
+
+  return (
+    <CollapsibleWidget
+      label={label}
+      isSetToDefault={!value}
+      importance={importance}
+    >
+      <HtmlLabel className="relative inline-flex items-center cursor-pointer">
+        <input
+          type="checkbox"
+          defaultChecked={value == values[1]}
+          className="sr-only peer"
+          onClick={toggle}
+        />
+        <div className={toggleClasses}></div>
+      </HtmlLabel>
+    </CollapsibleWidget>
+  )
+}
+
+function HtmlLabel(props) {
+  return <label {...props} />
+}
+
+function CollapsibleWidget({label, isSetToDefault, importance, className, children}) {
   const [expanded, setExpanded] = useState(
-    visibilityState == "expanded" || visibilityState == "always")
+    importance == "high" || importance == "highest")
 
   const toggleExpanded = useCallback(
     () => setExpanded(!expanded),
     [expanded, setExpanded])
 
-  const isExpandable = visibilityState != "always"
+  const isExpandable = importance != "highest" && isSetToDefault
 
   const wrapperStyles = [
     "flex flex-row items-stretch gap-2",
-    "h-6",
+    "h-6 relative",
     expanded ? "w-full order-1" : "order-2",
+    className,
   ].join(" ")
 
   const labelWrapperStyles = [
@@ -300,26 +439,33 @@ function CollapsibleWidget({label, isSetToDefault, visibilityState, children}) {
   ].join(" ")
 
   const labelStyles = [
-    "text-xs",
+    "text-sm",
     "text-slate-500",
     isExpandable
-      ? "cursor-pointer select-none hover:text-pink-400"
+      ? "cursor-pointer hover:text-pink-400"
       : "",
-    (!expanded && !isSetToDefault) ? "font-bold" : "",
   ].join(" ")
 
   return (
     <div className={wrapperStyles}>
       <div className={labelWrapperStyles}>
-        <Label
+        <ClickableLabel
           className={labelStyles}
           onClick={isExpandable ? toggleExpanded : null}
         >
           {label}
-        </Label>
+        </ClickableLabel>
       </div>
       {expanded ? children : null}
     </div>
+  )
+}
+
+function Icon({type}) {
+  const IconComponent = type
+
+  return (
+    <IconComponent style={{width: "100%", height: "100%"}} preserveAspectRatio="xMinYMid meet" />
   )
 }
 

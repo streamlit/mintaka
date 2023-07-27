@@ -1,44 +1,91 @@
 import React, { useState, useEffect, useCallback } from "react"
 import merge from "lodash/merge"
 
-import { EncodingPicker, useEncodingState } from "./EncodingPicker.tsx"
+import { ChannelBuilder, useChannelState } from "./ChannelBuilder.tsx"
+import { isElementOf, haveAnyElementsInCommon } from "../array.ts"
 
-const DEFAULTS = {
+const UI_DEFAULTS = {
   mark: {
     type: "circle",
   },
   x: {
     fieldIndex: 0,
-    visibilityState: "expanded",
+    importance: "high",
   },
   y: {
     fieldIndex: 1,
-    visibilityState: "expanded",
+    importance: "high",
+  },
+  theta: {
+    fieldIndex: 0,
+    importance: "high",
   },
   color: {
-    visibilityState: "expanded",
+    importance: "high",
   },
 }
 
-const MARKS = [
+const UI_EXTRAS = {
+  xOffset: {
+    extraFields: {"Random jitter": "random--p5bJXXpQgvPz6yvQMFiy"},
+  },
+  yOffset: {
+    extraFields: {"Random jitter": "random--p5bJXXpQgvPz6yvQMFiy"},
+  },
+}
+
+const MARKS = {
   // Basic
-  "area", // Properties: point, line, interpolate
-  "bar", // Properties: orient, binSpacing
-  "circle",
-  "line", // Properties: point, interpolate
-  "point",
-  "square",
+  "point": "Point",
+  "circle": "Circle",
+  "square": "Square",
+  "line": "Line", // Properties: point, interpolate
+  "area": "Area", // Properties: point, line, interpolate
+  "bar": "Bar", // Properties: orient, binSpacing
+  "arc": "Arc",
 
   // Advanced
-  "boxplot",
-  "rect",
-  "tick",
-  //"image",
-  //"arc",
-  //"rule",
-  //"text", // Need to show "text" encoding. Properties: dx, dy, fontSize, limit, align, baseline
-  //"geoshape",
-]
+  "boxplot": "Box plot",
+  "rect": "Rect",
+  "tick": "Tick",
+  "rule": "Rule",
+  "text": "Text", // Need to show "text" channel. Properties: dx, dy, fontSize, limit, align, baseline
+  "image": "Image", // width, height, align, baseline
+  //"geoshape": "Geographic shape",
+}
+
+const ENCODING_CHANNELS = {
+  "text": "Text",
+  "url": "URL",
+  "x": "X",
+  "x2": "X2",
+  "y": "Y",
+  "y2": "Y2",
+  "theta": "Theta",
+  "theta2": "Theta2",
+  "radius": "Radius",
+  "radius2": "Radius2",
+  "color": "Color",
+  "size": "Size",
+  "opacity": "Opacity",
+  "facet": "Facet",
+  "row": "Row",
+  "column": "Column",
+  "xOffset": "X Offset",
+  "yOffset": "Y Offset",
+}
+
+const CHANNEL_FIELDS = {
+  "field": "Field",
+  "value": "Value",
+  "type": "Type",
+  "aggregate": "Aggregate",
+  "binStep": "Bin size",
+  "stack": "Stack",
+  "legend": "Legend",
+  "timeUnit": "Time unit",
+  "title": "Title",
+}
 
 const FIELD_TYPES = {
   "Auto": null,  // We added this.
@@ -60,7 +107,9 @@ interface Dict<T> {
 }
 
 interface BuilderPaneProps {
-  channels: Dict[str],  // Title -> Channel dict
+  marks: Dict[str],  // Title -> Channel dict
+  encodingChannels: Dict[str],  // name -> title
+  channelFields: Dict[str],  // name -> title
   components: {
     SelectBox: React.Node,
     TextBox: React.Node,
@@ -97,56 +146,64 @@ export function BuilderPane(props: BuilderPaneProps) {
 }
 
 export function LayerBuilder(props: BuilderPaneProps) {
-  const [markType, setMarkType] = useState(props?.baseSpec?.mark?.type ?? DEFAULTS.mark.type)
+  const [markType, setMarkType] = useState(props?.baseSpec?.mark?.type ?? UI_DEFAULTS.mark.type)
 
-  const encodingInfos =
-    Object.entries(props.channels).map(([title, channel]) => ({
+  const marks = props.marks ?? MARKS
+  const encodingChannels = props.encodingChannels ?? ENCODING_CHANNELS
+  const channelFields = props.channelFields ?? CHANNEL_FIELDS
+
+  const channelStates =
+    Object.entries(encodingChannels).map(([channel, title]) => ({
       channel,
-      title,
-      encodingState: useEncodingState(
+      stateObj: useChannelState(
         props?.baseSpec?.encoding?.[channel],
-        { field: props.colSpecs?.[DEFAULTS[channel]?.fieldIndex + 1]?.field },
+        { field: props.colSpecs?.[UI_DEFAULTS[channel]?.fieldIndex + 1]?.field },
       ),
     }))
 
-  // tooltip
   // text, angle, xOffset(+random), yOffset(+random),
-  // strokeWidth, strokeDash, shape
+  // strokeWidth, strokeDash, shape, tooltip
 
   const fields = {"None": null}
   props.colSpecs.forEach(s => fields[s.label] = s.field)
 
   useEffect(() => {
-    const newSpec = updateVegaSpec(markType, encodingInfos, props?.baseSpec, props.colSpecs)
+    const newSpec = updateVegaSpec(markType, channelStates, props?.baseSpec, props.colSpecs)
     props.state.setSpec(newSpec)
   }, [
       markType,
       props?.baseSpec,
-      ...encodingInfos.map(x => x.encodingState.state)
+      ...channelStates.map(x => x.stateObj.state)
   ])
 
   return (
     <props.components.LayerContainer>
-      <props.components.WidgetGroup visibilityState={"always"}>
+      <props.components.WidgetGroup importance="highest">
+          {/* TODO: GenericWidget */}
           <props.components.SelectBox
             label="Mark"
-            items={MARKS}
+            items={Object.fromEntries(Object.entries(marks).map(entry => entry.reverse()))}
             value={markType}
             setValue={setMarkType}
-            visibilityState={"always"}
+            importance={"highest"}
           />
       </props.components.WidgetGroup>
 
-      {encodingInfos.map((encInfo) => (
-        <EncodingPicker
-          encodingInfo={encInfo}
-          components={props.components}
-          fields={fields}
-          types={FIELD_TYPES}
-          key={encInfo.title}
-          visibilityState={DEFAULTS[encInfo.channel]?.visibilityState}
-        />
-      ))}
+      {channelStates
+        .filter(channelState => shouldIncludeChannel(channelState.channel, markType))
+        .map(channelState => (
+          <ChannelBuilder
+            channelState={channelState}
+            channelFields={channelFields}
+            encodingChannels={encodingChannels}
+            components={props.components}
+            fields={{...fields, ...UI_EXTRAS[channelState.channel]?.extraFields}}
+            types={FIELD_TYPES}
+            key={channelState.channel}
+            importance={UI_DEFAULTS[channelState.channel]?.importance}
+          />
+        ))
+      }
     </props.components.LayerContainer>
   )
 }
@@ -160,34 +217,55 @@ export function useBuilderState(baseSpec) {
   }
 }
 
-function updateVegaSpec(markType, encodingInfos, baseSpec, colSpecs) {
-  return merge({}, baseSpec, {
+function updateVegaSpec(markType, channelStates, baseSpec, colSpecs) {
+  const encoding = Object.fromEntries(channelStates
+    .filter(channelState => shouldIncludeChannel(channelState.channel, markType))
+    .map(channelState => {
+      const channelSpec = buildChannelSpec(channelState, colSpecs)
+      if (channelSpec) return [channelState.channel, channelSpec]
+      return []
+    })
+  )
+
+  const builderSpec = {
     mark: {
       type: markType,
       tooltip: true,
     },
 
-    encoding: encodingInfos.reduce(
-      (encodingSpec, encInfo) => {
-        const channelSpec = buildChannelSpec(encInfo, colSpecs)
-        if (channelSpec) {
-          encodingSpec[encInfo.channel] = channelSpec
-        }
-        return encodingSpec
-      },
-      {}
-    ),
-
     params: [{
       name: "grid",
       select: "interval",
       bind: "scales"
-    }]
-  })
+    }],
+
+    encoding,
+  }
+
+  const transforms = buildTransforms(channelStates)
+
+  if (transforms) {
+    builderSpec.data = {
+      transform: transforms,
+    }
+  }
+
+  const outSpec = merge({}, baseSpec, builderSpec)
+
+  // The row, column, and facet encodings use the chart-wide size,
+  // which is usually not what users want. Besides, they don't work when
+  // width/height are set to "container". So we just delete the chart
+  // width/height and let Vega pick the best dimensions instead.
+  if (haveAnyElementsInCommon(Object.keys(encoding), ["row", "column", "facet"])) {
+    delete outSpec.width
+    delete outSpec.height
+  }
+
+  return outSpec
 }
 
-function buildChannelSpec(encodingInfo, colSpecs) {
-  const state = encodingInfo.encodingState.state
+function buildChannelSpec(channelState, colSpecs) {
+  const state = channelState.stateObj.state
 
   const channelSpec = {}
 
@@ -203,9 +281,9 @@ function buildChannelSpec(encodingInfo, colSpecs) {
     if (state.field != null) {
       channelSpec.field = state.field
       channelSpec.type = getColType(
+        channelState.channel,
         state.type,
         state.field,
-        DEFAULTS[encodingInfo.channel]?.type,
         colSpecs,
       )
     }
@@ -218,9 +296,57 @@ function buildChannelSpec(encodingInfo, colSpecs) {
   return Object.keys(channelSpec).length > 0 ? channelSpec : null
 }
 
-function getColType(colType, colName, defaultType, colSpecs) {
+function buildTransforms(channelState) {
+  const hasRandomField = channelState.some(
+    enc => enc.stateObj?.state?.field == "random--p5bJXXpQgvPz6yvQMFiy")
+
+  const transforms = []
+
+  if (hasRandomField) {
+    transforms.push(
+      {"calculate": "random()", "as": "random--p5bJXXpQgvPz6yvQMFiy"},
+    )
+  }
+
+  return transforms.length > 0 ? transforms : null
+}
+
+function getColType(channel, colType, colName, colSpecs) {
   if (colType != null) return colType
+  if (colName == "random--p5bJXXpQgvPz6yvQMFiy") return "quantitative"
 
   const colSpec = colSpecs.find(s => s.field == colName)
-  return colSpec?.detectedType ?? defaultType
+  return colSpec?.detectedType
+}
+
+function shouldIncludeChannel(channel, markType) {
+  switch (channel) {
+    case "x":
+    case "y":
+    case "xOffset":
+    case "yOffset":
+      return !isElementOf(markType, ["arc", "geoshape"])
+
+    case "x2":
+    case "y2":
+      return isElementOf(markType, ["area", "bar", "rect", "rule"])
+
+    case "theta":
+    case "theta2":
+    case "radius":
+    case "radius2":
+      return markType == "arc" // OR there's an Arc layer in the chart
+
+    case "text":
+      return markType == "text"
+
+    case "url":
+      return markType == "image"
+
+    case "size":
+      return markType != "image"
+
+    default:
+      return true
+  }
 }
