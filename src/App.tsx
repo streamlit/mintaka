@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react"
 
 import { formats } from "vega"
 import arrow from "vega-loader-arrow"
-import BackspaceIcon from "@material-ui/icons/BackspaceOutlined"
+
+import backspaceIconSvg from "./assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 
 import { BuilderPane, useBuilderState } from "./components/Builder.tsx"
 import { PreviewPane } from "./components/PreviewPane.tsx"
@@ -162,7 +163,7 @@ function WidgetGroup({title, children, importance}) {
   const isExpandable = importance != "highest"
 
   const expandedWrapperStyles = [
-    "flex flex-row flex-wrap gap-1 items-stretch",
+    "flex flex-col",
     "w-full pb-4",
     "order-1",
   ].join(" ")
@@ -190,6 +191,11 @@ function WidgetGroup({title, children, importance}) {
     expanded ? "pt-2" : "",
   ].join(" ")
 
+  const childrenWrapperStyles = [
+    "flex flex-row flex-wrap gap-1 items-stretch w-full",
+    title ? "pl-2.5 border-l-2 border-slate-200" : null,
+  ].join(" ")
+
   return (
     <div className={wrapperStyles}>
       {title ? (
@@ -202,7 +208,12 @@ function WidgetGroup({title, children, importance}) {
           </ClickableLabel>
         </div>
       ) : null}
-      {(expanded || !title) ? children : null}
+
+      {(expanded || !title) ? (
+        <div className={childrenWrapperStyles}>
+          {children}
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -349,7 +360,7 @@ function TextBox({label, value, placeholder, setValue, importance}) {
           onClick={clearValue}
           disabled={!hasContent}
         >
-          <Icon type={BackspaceIcon} />
+          <img src={backspaceIconSvg} alt="Delete" />
         </button>
       ) : null}
     </CollapsibleWidget>
@@ -457,14 +468,6 @@ function CollapsibleWidget({label, isSetToDefault, importance, className, childr
       </div>
       {expanded ? children : null}
     </div>
-  )
-}
-
-function Icon({type}) {
-  const IconComponent = type
-
-  return (
-    <IconComponent style={{width: "100%", height: "100%"}} preserveAspectRatio="xMinYMid meet" />
   )
 }
 
