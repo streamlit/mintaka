@@ -1,7 +1,5 @@
 import React from "react"
-import { VegaLite } from "react-vega"
-import merge from "lodash/merge"
-
+import { Vega } from "react-vega"
 
 interface PreviewProps {
   data: any,
@@ -10,17 +8,11 @@ interface PreviewProps {
 }
 
 export function PreviewPane(props: PreviewProps): React.Node {
-  const spec = merge({}, props.spec, {
-    data: {
-      values: props.data,
-    }
-  })
-
   return (
-      <VegaLite
-        className={props.className}
-        spec={spec}
+    <Vega
+      className={props.className}
+      spec={props.spec}
+      data={{ dataset1: props.data }}
       />
   )
 }
-

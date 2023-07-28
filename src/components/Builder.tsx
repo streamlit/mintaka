@@ -253,6 +253,10 @@ function updateVegaSpec(markType, channelStates, baseSpec, colSpecs) {
       bind: "scales"
     }],
 
+    data: {
+      name: "dataset1",
+    },
+
     encoding,
   }
 
@@ -260,6 +264,7 @@ function updateVegaSpec(markType, channelStates, baseSpec, colSpecs) {
 
   if (transforms) {
     builderSpec.data = {
+      ...builderSpec.data,
       transform: transforms,
     }
   }
