@@ -66,88 +66,134 @@ export function useChannelState(origChannelSpec: Object, fallbackState: Object) 
 
 export function ChannelBuilder({
   channelState,
-  channelFields,
-  encodingChannels,
+  fields,
+  channels,
   components,
-  fields,  // Rename to columns
+  smartHideFields,
+  columns,
   types,
-  importance
 }): React.Node {
-  const {state, setComponent} = channelState.stateObj
+  const { state, setComponent } = channelState.stateObj
+  const [advancedShown, showAdvanced] = useState(false)
 
   const makeSetter = useCallback((key: str) => (
     (newValue: any) => setComponent(key, newValue)
   ), [setComponent])
 
   // The order of these items determines the order in the UI.
-  const allSupportedFields = [
-    { name: "field", importance: "high", widgetHint: "select", validValues: fields },
+  const fieldUIMetadata = [
+    { name: "field", widgetHint: "select", validValues: columns },
     { name: "value", widgetHint: "json" },
-    { name: "type", widgetHint: "select", validValues: types },
+    { name: "type", widgetHint: "select", validValues: prepareTypes(types, channelState.channel) },
     { name: "aggregate", widgetHint: "select", validValues: AGGREGATE_OPS },
     { name: "binStep", widgetHint: "number", placeholder: "No binning" },
     { name: "stack", widgetHint: "select", validValues: VALID_STACK_VALUES },
     { name: "legend", widgetHint: "toggle", validValues: VALID_LEGEND_VALUES },
     { name: "timeUnit", widgetHint: "select", validValues: TIME_UNITS },
     { name: "title", widgetHint: "text" },
-  ]
+  ].filter(
+    f => shouldIncludeField(f.name, state, channelState.channel, fields, smartHideFields)
+  )
 
   return (
-    <components.WidgetGroup
-      title={encodingChannels[channelState.channel]}
-      importance={importance}
+    <components.ChannelContainer
+      vlName={channelState.channel}
+      title={channels[channelState.channel].label}
+      expandedByDefault={!channels[channelState.channel].advanced}
+      showAdvanced={showAdvanced}
     >
-      {allSupportedFields
-        .filter(
-          f => shouldIncludeField(f.name, state, channelState.channel, channelFields)
-        ).map(f => (
-        <components.GenericPickerWidget
-          name={`field-${f.name}`}
-          widgetHint={f.widgetHint}
-          label={channelFields[f.name]}
-          value={state[f.name]}
-          setValue={makeSetter(f.name)}
-          importance={f.importance ?? "low"}
-          key={f.name}
-          items={f.validValues}
-          placeholder={f.placeholder ?? "Default"}
-        />
-      ))}
-    </components.WidgetGroup>
+      <components.BasicFieldsContainer>
+        {fieldUIMetadata
+          .filter(f => !fields[f.name]?.advanced)
+          .map(f => (
+            <components.GenericPickerWidget
+              vlPropType="field"
+              vlPropName={f.name}
+              widgetHint={f.widgetHint}
+              label={fields[f.name].label}
+              value={state[f.name]}
+              setValue={makeSetter(f.name)}
+              key={f.name}
+              items={f.validValues}
+              placeholder={f.placeholder ?? "Default"}
+              advanced={false}
+            />
+          ))
+        }
+      </components.BasicFieldsContainer>
+
+      { advancedShown && (
+        <components.AdvancedFieldsContainer>
+          {fieldUIMetadata
+            .filter(f => !!fields[f.name]?.advanced)
+            .map(f => (
+              <components.GenericPickerWidget
+                vlPropType="field"
+                vlPropName={f.name}
+                widgetHint={f.widgetHint}
+                label={fields[f.name].label}
+                value={state[f.name]}
+                setValue={makeSetter(f.name)}
+                key={f.name}
+                items={f.validValues}
+                placeholder={f.placeholder ?? "Default"}
+                advanced={true}
+              />
+            ))
+          }
+        </components.AdvancedFieldsContainer>
+      )}
+
+    </components.ChannelContainer>
   )
 }
 
 
-function shouldIncludeField(fieldName, state, channelName, channelFields): boolean {
-  if (channelFields[fieldName] == null) return false
+function prepareTypes(types, channel) {
+  const flippedTypes =
+    Object.fromEntries(Object.entries(types).map(e => e.reverse()))
 
-  const fieldIsSet = !state.field
+  if (channel != "geoshape") {
+    return Object.fromEntries(
+      Object.entries(flippedTypes).filter((_, v) => v != "geojson")
+    )
+  }
+
+  return flippedTypes
+}
+
+
+function shouldIncludeField(fieldName, state, channelName, fields, smartHideFields): boolean {
+  if (fields[fieldName] == null) return false
+  if (!smartHideFields) return true
+
+  const fieldIsSet = !!state.field
 
   switch (fieldName) {
     case "field":
       return true
 
     case "value":
-      return fieldIsSet
+      return !fieldIsSet
 
     case "type":
     case "title":
-      return !fieldIsSet
+      return fieldIsSet
 
     case "aggregate":
-      return !fieldIsSet && state.binStep == null
+      return fieldIsSet && state.binStep == null
 
     case "binStep":
-      return !fieldIsSet && state.aggregate == null
+      return fieldIsSet && state.aggregate == null
 
     case "stack":
-      return !fieldIsSet && isElementOf(channelName, ["x", "y"])
+      return fieldIsSet && isElementOf(channelName, ["x", "y"])
 
     case "legend":
-      return !fieldIsSet && isElementOf(channelName, ["color", "size", "opacity"])
+      return fieldIsSet && isElementOf(channelName, ["color", "size", "opacity"])
 
     case "timeUnit":
-      return !fieldIsSet && state.type == "temporal"
+      return fieldIsSet && state.type == "temporal"
 
     default:
       return true

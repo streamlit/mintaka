@@ -4,112 +4,87 @@ import merge from "lodash/merge"
 import { ChannelBuilder, useChannelState } from "./ChannelBuilder.tsx"
 import { isElementOf, haveAnyElementsInCommon } from "../array.ts"
 
-const UI_DEFAULTS = {
-  mark: {
-    type: "circle",
-  },
-  x: {
-    fieldIndex: 0,
-    importance: "high",
-  },
-  y: {
-    fieldIndex: 1,
-    importance: "high",
-  },
-  theta: {
-    fieldIndex: 0,
-    importance: "high",
-  },
-  url: {
-    importance: "high",
-  },
-  text: {
-    importance: "high",
-  },
-  geojson: {
-    importance: "high",
-  },
-  color: {
-    importance: "high",
-  },
-}
-
 const RANDOM_FIELD_NAME = "random--p5bJXXpQgvPz6yvQMFiy"
 
 const UI_EXTRAS = {
   xOffset: {
-    extraFields: {"Random jitter": RANDOM_FIELD_NAME},
+    extraCols: {"Random jitter": RANDOM_FIELD_NAME},
   },
   yOffset: {
-    extraFields: {"Random jitter": RANDOM_FIELD_NAME},
+    extraCols: {"Random jitter": RANDOM_FIELD_NAME},
   },
 }
 
 const MARKS = {
   // Basic
-  "point": "Point",
-  "circle": "Circle",
-  "square": "Square",
-  "line": "Line", // Properties: point, interpolate
-  "area": "Area", // Properties: point, line, interpolate
-  "bar": "Bar", // Properties: orient, binSpacing
-  "arc": "Arc",
+  point: { label: "Point", advanced: false, isDefault: true },
+  line: { label: "Line", advanced: false }, // Properties: point, interpolate
+  area: { label: "Area", advanced: false }, // Properties: point, line, interpolate
+  bar: { label: "Bar", advanced: false }, // Properties: orient, binSpacing
+  arc: { label: "Arc", advanced: false },
+  boxplot: { label: "Box plot", advanced: false },
 
   // Advanced
-  "boxplot": "Box plot",
-  "rect": "Rect",
-  "tick": "Tick",
-  "rule": "Rule",
-  "text": "Text", // Properties: dx, dy, fontSize, limit, align, baseline
-  "image": "Image", // Properties: width, height, align, baseline
-  "geoshape": "Geographic shape",
+  circle: { label: "Circle", advanced: true },
+  geoshape: { label: "Geo shape", advanced: true },
+  image: { label: "Image", advanced: true }, // Properties: width, height, align, baseline
+  rect: { label: "Rect", advanced: true },
+  rule: { label: "Rule", advanced: true },
+  square: { label: "Square", advanced: true },
+  text: { label: "Text", advanced: true }, // Properties: dx, dy, fontSize, limit, align, baseline
+  tick: { label: "Tick", advanced: true },
 }
 
-const ENCODING_CHANNELS = {
-  "text": "Text",
-  "url": "URL",
-  "geojson": "GeoJSON",
-  "x": "X",
-  "x2": "X2",
-  "y": "Y",
-  "y2": "Y2",
-  "theta": "Theta",
-  "theta2": "Theta2",
-  "radius": "Radius",
-  "radius2": "Radius2",
-  "color": "Color",
-  "size": "Size",
-  "opacity": "Opacity",
-  "facet": "Facet",
-  "row": "Row",
-  "column": "Column",
-  "xOffset": "X Offset",
-  "yOffset": "Y Offset",
+const CHANNELS = {
+  text: { label: "Text", advanced: false },
+  url: { label: "URL", advanced: false },
+  x: { label: "X", advanced: false, defaultFieldIndex: 0 },
+  x2: { label: "X2", advanced: true },
+  y: { label: "Y", advanced: false, defaultFieldIndex: 1 },
+  y2: { label: "Y2", advanced: true },
+  theta: { label: "Theta", advanced: false, defaultFieldIndex: 0 },
+  theta2: { label: "Theta2", advanced: true },
+  radius: { label: "Radius", advanced: true },
+  radius2: { label: "Radius2", advanced: true },
+  latitude: { label: "Latitude", advanced: false },
+  latitude2: { label: "Latitude2", advanced: true },
+  longitude: { label: "Longitude", advanced: false },
+  longitude2: { label: "Longitude2", advanced: true },
+  color: { label: "Color", advanced: false },
+  size: { label: "Size", advanced: true },
+  opacity: { label: "Opacity", advanced: true },
+  facet: { label: "Facet", advanced: true },
+  row: { label: "Row", advanced: true },
+  column: { label: "Column", advanced: true },
+  xOffset: { label: "X offset", advanced: true },
+  yOffset: { label: "Y offset", advanced: true },
   // angle
   // strokeWidth, strokeDash
   // shape
   // tooltip
 }
 
-const CHANNEL_FIELDS = {
-  "field": "Field",
-  "value": "Value",
-  "type": "Type",
-  "aggregate": "Aggregate",
-  "binStep": "Bin size",
-  "stack": "Stack",
-  "legend": "Legend",
-  "timeUnit": "Time unit",
-  "title": "Title",
+const FIELDS = {
+  field: { label: "Field", advanced: false },
+  value: { label: "Value", advanced: true },
+  type: { label: "Type", advanced: true },
+  aggregate: { label: "Aggregate", advanced: true },
+  binStep: { label: "Bin size", advanced: true },
+  stack: { label: "Stack", advanced: true },
+  legend: { label: "Legend", advanced: true },
+  timeUnit: { label: "Time unit", advanced: true },
+  title: { label: "Title", advanced: true },
 }
 
+const AUTO_FIELD = "__null__"
+
 const FIELD_TYPES = {
-  "Auto": null,  // We added this.
-  "Nominal": "nominal",
-  "Ordinal": "ordinal",
-  "Quantitative": "quantitative",
-  "Temporal": "temporal",
-  //"GeoJSON": "geojson",
+  [AUTO_FIELD]: "Auto",  // We added this.
+  nominal: "Nominal",
+  ordinal: "Ordinal",
+  quantitative: "Quantitative",
+  temporal: "Temporal",
+  geojson: "GeoJSON",
 }
 
 interface ColSpec {
@@ -123,17 +98,14 @@ interface Dict<T> {
 }
 
 interface BuilderPaneProps {
-  marks: Dict[str],  // Title -> Channel dict
-  encodingChannels: Dict[str],  // name -> title
-  channelFields: Dict[str],  // name -> title
+  marks: any,  // name -> {label, advanced, isDefault}
+  channels: any,  // name -> {label, advanced, defaultFieldIndex}
+  fields: any,  // name -> {label, advanced}
+  smartHideFields: boolean,
   components: {
-    SelectBox: React.Node,
-    TextBox: React.Node,
-    BuilderContainer: React.Node,
-    WidgetGroup: React.Node,
-    WidgetWraper: React.Node,
+    // TODO
   },
-  colSpecs: ColSpec[],
+  columns: ColSpec[],
   state: {
     spec: any,
     setSpec: (any) => void,
@@ -148,12 +120,10 @@ export function BuilderPane(props: BuilderPaneProps) {
 
   return (
     <props.components.BuilderContainer>
-      <LayerBuilder key={key} {...props} />
+      <LayerBuilder key={`builder-${key}`} {...props} />
 
       <props.components.ToolbarContainer>
-        <props.components.Button
-          onClick={reset}
-        >
+        <props.components.Button onClick={reset}>
           Reset
         </props.components.Button>
       </props.components.ToolbarContainer>
@@ -162,26 +132,40 @@ export function BuilderPane(props: BuilderPaneProps) {
 }
 
 export function LayerBuilder(props: BuilderPaneProps) {
-  const [markType, setMarkType] = useState(props?.baseSpec?.mark?.type ?? UI_DEFAULTS.mark.type)
-
   const marks = props.marks ?? MARKS
-  const encodingChannels = props.encodingChannels ?? ENCODING_CHANNELS
-  const channelFields = props.channelFields ?? CHANNEL_FIELDS
+  const channels = props.channels ?? CHANNELS
+  const fields = props.fields ?? FIELDS
 
-  const channelStates =
-    Object.entries(encodingChannels).map(([channel, title]) => ({
-      channel,
-      stateObj: useChannelState(
-        props?.baseSpec?.encoding?.[channel],
-        { field: props.colSpecs?.[UI_DEFAULTS[channel]?.fieldIndex + 1]?.field },
-      ),
-    }))
+  const [markType, setMarkType] = useState(
+    props?.baseSpec?.mark?.type ??
+    Object.entries(marks).find(([k, mspec]) => mspec.default)?.[0] ??
+    Object.keys(marks)[0])
 
-  const fields = {"None": null}
-  props.colSpecs.forEach(s => fields[s.label] = s.field)
+  const channelStates = Object.keys(channels)
+    .map((channel) => {
+
+      const defaultFieldIndex = channels[channel]?.defaultFieldIndex
+
+      const fallbackState = defaultFieldIndex == null
+        ? null
+        : {
+          field: props.columns?.[defaultFieldIndex + 1]?.colName
+        }
+
+      return {
+        channel,
+        stateObj: useChannelState(
+          props?.baseSpec?.encoding?.[channel],
+          fallbackState,
+        ),
+      }
+    })
+
+  const columns = {"None": null}
+  props.columns.forEach(s => columns[s.colName] = s.colName)
 
   useEffect(() => {
-    const newSpec = updateVegaSpec(markType, channelStates, props?.baseSpec, props.colSpecs)
+    const newSpec = updateVegaSpec(markType, channelStates, props?.baseSpec, props.columns)
     props.state.setSpec(newSpec)
   }, [
       markType,
@@ -191,30 +175,32 @@ export function LayerBuilder(props: BuilderPaneProps) {
 
   return (
     <props.components.LayerContainer>
-      <props.components.WidgetGroup importance="highest">
-          <props.components.GenericPickerWidget
-            name="mark"
-            widgetHint="select"
-            label="Mark"
-            items={Object.fromEntries(Object.entries(marks).map(entry => entry.reverse()))}
-            value={markType}
-            setValue={setMarkType}
-            importance={"highest"}
-          />
-      </props.components.WidgetGroup>
+      <props.components.MarkContainer>
+        <props.components.GenericPickerWidget
+          vlPropType="mark"
+          vlPropName="mark"
+          widgetHint="select"
+          label="Mark"
+          items={Object.fromEntries(
+            Object.entries(marks).map(([k, v]) => [v.label, k])
+          )}
+          value={markType}
+          setValue={setMarkType}
+        />
+      </props.components.MarkContainer>
 
       {channelStates
         .filter(channelState => shouldIncludeChannel(channelState.channel, markType))
         .map(channelState => (
           <ChannelBuilder
             channelState={channelState}
-            channelFields={channelFields}
-            encodingChannels={encodingChannels}
+            fields={fields}
+            channels={channels}
             components={props.components}
-            fields={{...fields, ...UI_EXTRAS[channelState.channel]?.extraFields}}
+            smartHideFields={props.smartHideFields ?? true}
+            columns={{...columns, ...UI_EXTRAS[channelState.channel]?.extraCols}}
             types={FIELD_TYPES}
             key={channelState.channel}
-            importance={UI_DEFAULTS[channelState.channel]?.importance}
           />
         ))
       }
@@ -231,11 +217,11 @@ export function useBuilderState(baseSpec) {
   }
 }
 
-function updateVegaSpec(markType, channelStates, baseSpec, colSpecs) {
+function updateVegaSpec(markType, channelStates, baseSpec, columns) {
   const encoding = Object.fromEntries(channelStates
     .filter(channelState => shouldIncludeChannel(channelState.channel, markType))
     .map(channelState => {
-      const channelSpec = buildChannelSpec(channelState, colSpecs)
+      const channelSpec = buildChannelSpec(channelState, columns)
       if (channelSpec) return [channelState.channel, channelSpec]
       return []
     })
@@ -283,7 +269,7 @@ function updateVegaSpec(markType, channelStates, baseSpec, colSpecs) {
   return outSpec
 }
 
-function buildChannelSpec(channelState, colSpecs) {
+function buildChannelSpec(channelState, columns) {
   const state = channelState.stateObj.state
 
   const channelSpec = {}
@@ -303,7 +289,7 @@ function buildChannelSpec(channelState, colSpecs) {
         channelState.channel,
         state.type,
         state.field,
-        colSpecs,
+        columns,
       )
     }
 
@@ -330,11 +316,11 @@ function buildTransforms(channelState) {
   return transforms.length > 0 ? transforms : null
 }
 
-function getColType(channel, colType, colName, colSpecs) {
-  if (colType != null) return colType
+function getColType(channel, colType, colName, columns) {
+  if (colType != null && colType != AUTO_FIELD) return colType
   if (colName == RANDOM_FIELD_NAME) return "quantitative"
 
-  const colSpec = colSpecs.find(s => s.field == colName)
+  const colSpec = columns.find(s => s.colName == colName)
   return colSpec?.detectedType
 }
 
@@ -349,6 +335,12 @@ function shouldIncludeChannel(channel, markType) {
     case "x2":
     case "y2":
       return isElementOf(markType, ["area", "bar", "rect", "rule"])
+
+    case "latitude":
+    case "latitude2":
+    case "longitude":
+    case "longitude2":
+      return markType == "geoshape"
 
     case "theta":
     case "theta2":
@@ -370,5 +362,33 @@ function shouldIncludeChannel(channel, markType) {
 
     default:
       return true
+  }
+}
+
+function getTypeAsStr(obj) {
+  const simple_type = typeof obj
+  if (simple_type != "object") return simple_type
+
+  if (obj instanceof Date) return "date"
+  if (obj instanceof Object) return "object"
+
+  return "unknown"
+}
+
+// TODO: Use Arrow fields to guess columnTypes:
+// arrowdata.schema.fields[0].name
+// arrowdata.schema.fields[0].type
+// arrowjs.type :: DataType.isDate, isTime, isTimestamp, isBool, isInt, isFloat
+
+export function simpleColumnTypeDetector(exampleCell) {
+  switch (getTypeAsStr(exampleCell)) {
+    case "number":
+      return "quantitative"
+
+    case Date:
+      return "temporal"
+
+    default:
+      return "nominal"
   }
 }

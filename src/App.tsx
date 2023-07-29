@@ -4,8 +4,10 @@ import { formats } from "vega"
 import arrow from "vega-loader-arrow"
 
 import backspaceIconSvg from "./assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
+import tuneIconSvg from "./assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
+import settingsIconSvg from "./assets/settings_FILL0_wght300_GRAD0_opsz48.svg"
 
-import { BuilderPane, useBuilderState } from "./components/Builder.tsx"
+import { BuilderPane, useBuilderState, simpleColumnTypeDetector } from "./components/Builder.tsx"
 import { PreviewPane } from "./components/PreviewPane.tsx"
 
 import irisDataset from "./data/iris.json"
@@ -31,45 +33,38 @@ function App() {
   const builderState = useBuilderState(spec)
 
   // Handle dataset changes gracefully.
-  useEffect(() => setKey(key + 1), [dataset])
+  //useEffect(() => setKey(key + 1), [dataset])
 
   const exampleRow = dataset[0]
 
   // colSpec must have field:null as the 0th item.
-  const colSpecs = Object.keys(exampleRow).map(name => ({
-    label: name,
-    field: name,
-    detectedType:
-      typeof exampleRow[name] == "number" ? "quantitative" :
-      typeof exampleRow[name] == "boolean" ? "nominal" :
-      typeof exampleRow[name] == "string" ? "nominal" :
-      exampleRow[name] instanceof Date ? "temporal" :
-      "nominal"
+  // TODO REMOVE
+  const columns = Object.keys(exampleRow).map(name => ({
+    colName: name,
+    detectedType: simpleColumnTypeDetector(exampleRow[name]),
   }))
-  colSpecs.unshift({ label: "None", field: null, detectedType: null })
-
-  // TODO: Use Arrow fields to guess columnTypes:
-  // arrowdata.schema.fields[0].name
-  // arrowdata.schema.fields[0].type
-  // arrowjs.type :: DataType.isDate, isTime, isTimestamp, isBool, isInt, isFloat
 
   return (
     <div className="flex flex-col gap-32">
-      <div className="flex flex-row gap-4">
+      <div className="flex h-[800px] flex-row border border-slate-200 rounded">
         <BuilderPane
           key={key}
           state={builderState}
-          colSpecs={colSpecs}
+          columns={columns}
           baseSpec={spec}
           components={{
             LayerContainer,
             BuilderContainer,
             ToolbarContainer,
-            WidgetGroup,
+            MarkContainer,
+            ChannelContainer,
+            AdvancedFieldsContainer,
+            BasicFieldsContainer,
             GenericPickerWidget,
             Button,
           }}
         />
+
         <PreviewPane
           className="flex-auto align-self-stretch"
           spec={builderState.spec}
@@ -112,7 +107,7 @@ function App() {
 
 function BuilderContainer({children}) {
   return (
-    <div className="flex flex-col gap-8 w-56">
+    <div className="flex flex-col gap-8 p-4 w-64 overflow-y-auto">
       {children}
     </div>
   )
@@ -152,15 +147,33 @@ function Button({onClick, children}) {
   )
 }
 
-function WidgetGroup({title, children, importance}) {
-  const [expanded, setExpanded] = useState(
-    importance == "high" || importance == "highest")
+function MarkContainer({children}) {
+  const styles = [
+    "flex flex-row gap-1",
+    "order-1",
+    "pb-4",
+    "w-full",
+  ].join(" ")
 
-  const toggleExpanded = useCallback(
-    () => setExpanded(!expanded),
-    [expanded, setExpanded])
+  return (
+    <div className={styles}>
+      {children}
+    </div>
+  )
+}
 
-  const isExpandable = importance != "highest"
+function ChannelContainer({title, children, expandedByDefault, showAdvanced}) {
+  const [expanded, setExpanded] = useState(expandedByDefault)
+  const [advShown, setAdvShown] = useState(false)
+
+  const toggleAdvanced = useCallback(() => {
+    setAdvShown(!advShown)
+    showAdvanced(!advShown)
+  }, [advShown, setAdvShown, showAdvanced])
+
+  const toggleExpanded = useCallback(() => {
+    setExpanded(!expanded)
+  }, [expanded, setExpanded])
 
   const expandedWrapperStyles = [
     "flex flex-col",
@@ -178,55 +191,67 @@ function WidgetGroup({title, children, importance}) {
   ].join(" ")
 
   const labelWrapperStyles = [
-    "flex items-center",
+    "flex flex-row items-center",
     "w-full h-8",
   ].join(" ")
 
   const labelStyles = [
     "text-xs font-bold",
     "text-slate-500",
-    isExpandable
-      ? "hover:border-pink-400 hover:text-pink-400 cursor-pointer"
-      : "",
-    expanded ? "pt-2" : "",
+    "hover:border-pink-400 hover:text-pink-400 cursor-pointer"
   ].join(" ")
 
   const childrenWrapperStyles = [
-    "flex flex-row flex-wrap gap-1 items-stretch w-full",
-    title ? "pl-2.5 border-l-2 border-slate-200" : null,
+    "flex flex-col gap-1",
   ].join(" ")
+
+  const advButtonStyles = "flex items-center w-4 opacity-50 hover:opacity-100"
+  const toolbarStyles = "flex items-center justify-end flex-[1_0]"
 
   return (
     <div className={wrapperStyles}>
-      {title ? (
+      {title && (
         <div className={labelWrapperStyles}>
-          <ClickableLabel
-            className={labelStyles}
-            onClick={isExpandable ? toggleExpanded : null}
-          >
+          <label className={labelStyles} onClick={toggleExpanded}>
             {title.toUpperCase()}
-          </ClickableLabel>
-        </div>
-      ) : null}
+          </label>
 
-      {(expanded || !title) ? (
+          {expanded && (
+            <div className={toolbarStyles}>
+              <button className={advButtonStyles} onClick={toggleAdvanced}>
+                <img src={tuneIconSvg} alt="Advanced" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {(expanded || !title) && (
         <div className={childrenWrapperStyles}>
           {children}
         </div>
-      ) : null}
+      )}
     </div>
   )
 }
 
-function ClickableLabel({className, onClick, children}) {
+function BasicFieldsContainer({children}) {
   return (
-    <a onClick={onClick} className={`${className} ${"select-none"} whitespace-nowrap`} role="label">
+    <div className="grid grid-cols-3 gap-1">
       {children}
-    </a>
+    </div>
   )
 }
 
-function GenericPickerWidget({name, widgetHint, label, value, setValue, importance, items, placeholder}) {
+function AdvancedFieldsContainer({children}) {
+  return (
+    <div className="grid grid-cols-3 gap-1">
+      {children}
+    </div>
+  )
+}
+
+function GenericPickerWidget({widgetHint, label, value, setValue, advanced, items, placeholder}) {
   switch (widgetHint) {
     case "select":
       return (
@@ -235,7 +260,6 @@ function GenericPickerWidget({name, widgetHint, label, value, setValue, importan
           items={items}
           value={value}
           setValue={setValue}
-          importance={importance ?? "low"}
         />
       )
 
@@ -246,7 +270,6 @@ function GenericPickerWidget({name, widgetHint, label, value, setValue, importan
           items={items}
           value={value}
           setValue={setValue}
-          importance={importance ?? "low"}
         />
       )
 
@@ -255,19 +278,17 @@ function GenericPickerWidget({name, widgetHint, label, value, setValue, importan
     case "json":
     default:
       return (
-        <TextBox
+        <TextInput
           label={label}
           placeholder={placeholder ?? "Default"}
           value={value}
           setValue={setValue}
-          importance={importance ?? "low"}
         />
       )
   }
 }
 
-// items can be list or object of label->value.
-function SelectBox({label, items, value, setValue, importance}) {
+function SelectBox({label, items, value, setValue, small}) {
   let labels, values
 
   if (Array.isArray(items)) {
@@ -289,19 +310,17 @@ function SelectBox({label, items, value, setValue, importance}) {
   const currClickableLabel = labels[currIndex]
 
   const styles=[
-    "text-sm py-0.5 flex-auto",
-    "border bg-slate-100 hover:bg-slate-200 border-transparent rounded-md",
+    "py-0.5 flex-auto",
+    "border hover:bg-slate-200 border-transparent rounded-md",
     "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
     "text-slate-500",
     "cursor-pointer",
+    "bg-slate-100",
+    small ? "text-xs" : "text-sm",
   ].join(" ")
 
   return (
-    <CollapsibleWidget
-      label={label}
-      isSetToDefault={value == null}
-      importance={importance ?? "highest"}
-    >
+    <WidgetWrapper label={label} small={small}>
       <select
         className={styles}
         defaultValue={currClickableLabel}
@@ -313,11 +332,11 @@ function SelectBox({label, items, value, setValue, importance}) {
           </option>
         ))}
       </select>
-    </CollapsibleWidget>
+    </WidgetWrapper>
   )
 }
 
-function TextBox({label, value, placeholder, setValue, importance}) {
+function TextInput({label, value, placeholder, setValue, small}) {
   const setValueWithTypes = useCallback((ev) => {
     const newValue = ev.currentTarget.value
     setValue(newValue == "" ? null : newValue)
@@ -328,25 +347,23 @@ function TextBox({label, value, placeholder, setValue, importance}) {
   [setValue])
 
   const styles=[
-    "text-sm py-0.5 pl-1 flex-auto",
-    "border bg-slate-100 hover:bg-slate-200 border-transparent rounded-md",
+    "py-0.5 pl-1 flex-auto",
+    "border hover:bg-slate-200 border-transparent rounded-md",
     "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
     "text-slate-500",
+    "bg-slate-100",
+    small ? "text-xs" : "text-sm",
   ].join(" ")
 
   const hasContent = value != null && value != ""
 
   const buttonStyles=[
-    "absolute flex items-center top-0 bottom-0 right-0 pr-2 w-6 opacity-50 hover:opacity-100",
+    "absolute top-0 bottom-0 right-0 pr-2 w-6",
+    "flex items-center w-6 opacity-50 hover:opacity-100",
   ].join(" ")
 
   return (
-    <CollapsibleWidget
-      label={label}
-      isSetToDefault={value == "" || value == null}
-      importance={importance}
-      className="relative"
-    >
+    <WidgetWrapper label={label} className="relative" small={small}>
       <input
         className={styles}
         type="text"
@@ -363,12 +380,11 @@ function TextBox({label, value, placeholder, setValue, importance}) {
           <img src={backspaceIconSvg} alt="Delete" />
         </button>
       ) : null}
-    </CollapsibleWidget>
+    </WidgetWrapper>
   )
 }
 
-
-function Toggle({label, items, value, setValue, importance}) {
+function Toggle({label, items, value, setValue, small}) {
   let labels, values
 
   if (Array.isArray(items)) {
@@ -388,15 +404,17 @@ function Toggle({label, items, value, setValue, importance}) {
     "peer",
     "border border-transparent",
     "peer-focus:outline-none peer-focus:ring peer-focus:ring-pink-200 peer-focus:border-pink-400",
-    "peer-checked:bg-pink-500",
+    "peer-checked:bg-slate-400",
     "bg-slate-200",
+    "hover:bg-slate-300 hover:peer-checked:bg-pink-500",
     "rounded-full"
   ].join(" ")
 
   const thumbClasses = [
     "peer-checked:after:translate-x-full peer-checked:after:border-white",
-    "after:content-[''] after:absolute after:top-1.5 after:left-0.5",
-    "after:bg-white after:border-slate-300 after:border after:rounded-full",
+    "after:content-[''] after:absolute after:top-0.5 after:left-0.5",
+    "after:bg-white after:border-slate-300",
+    "after:border after:rounded-full",
     "after:h-3 after:w-3",
     "after:transition-all",
   ].join(" ")
@@ -404,11 +422,7 @@ function Toggle({label, items, value, setValue, importance}) {
   const toggleClasses = [troughClasses, thumbClasses].join(" ")
 
   return (
-    <CollapsibleWidget
-      label={label}
-      isSetToDefault={!value}
-      importance={importance}
-    >
+    <WidgetWrapper label={label} small={small}>
       <HtmlLabel className="relative inline-flex items-center cursor-pointer">
         <input
           type="checkbox"
@@ -418,7 +432,7 @@ function Toggle({label, items, value, setValue, importance}) {
         />
         <div className={toggleClasses}></div>
       </HtmlLabel>
-    </CollapsibleWidget>
+    </WidgetWrapper>
   )
 }
 
@@ -426,48 +440,33 @@ function HtmlLabel(props) {
   return <label {...props} />
 }
 
-function CollapsibleWidget({label, isSetToDefault, importance, className, children}) {
-  const [expanded, setExpanded] = useState(
-    importance == "high" || importance == "highest")
+function WidgetWrapper({label, small, className, children}) {
+  const labelStyles = [
+    "col-span-1",
+    "flex items-center",
+    "text-sm",
+    "text-slate-500",
+    small ? "text-xs" : "text-sm",
+  ].join(" ")
 
-  const toggleExpanded = useCallback(
-    () => setExpanded(!expanded),
-    [expanded, setExpanded])
-
-  const isExpandable = importance != "highest" && isSetToDefault
-
-  const wrapperStyles = [
-    "flex flex-row items-stretch gap-2",
-    "h-6 relative",
-    expanded ? "w-full order-1" : "order-2",
+  const childrenStyles = [
+    "col-span-2",
+    "flex-auto",
+    "flex flex-col justify-center items-stretch",
+    "h-6",
     className,
   ].join(" ")
 
-  const labelWrapperStyles = [
-    "flex items-center",
-    expanded ? "" : "pr-1"
-  ].join(" ")
-
-  const labelStyles = [
-    "text-sm",
-    "text-slate-500",
-    isExpandable
-      ? "cursor-pointer hover:text-pink-400"
-      : "",
-  ].join(" ")
-
   return (
-    <div className={wrapperStyles}>
-      <div className={labelWrapperStyles}>
-        <ClickableLabel
-          className={labelStyles}
-          onClick={isExpandable ? toggleExpanded : null}
-        >
-          {label}
-        </ClickableLabel>
+    <>
+      <HtmlLabel className={labelStyles}>
+        {label}
+      </HtmlLabel>
+
+      <div className={childrenStyles}>
+        {children}
       </div>
-      {expanded ? children : null}
-    </div>
+    </>
   )
 }
 
