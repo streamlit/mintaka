@@ -29,20 +29,20 @@ const spec = {
 
 function App() {
   const [dataset, setDataset] = useState(irisDataset)
+  const [columns, setColumns] = useState([])
   const [key, setKey] = useState(0)
   const builderState = useBuilderState(spec)
 
   // Handle dataset changes gracefully.
-  //useEffect(() => setKey(key + 1), [dataset])
+  useEffect(() => setKey(key + 1), [dataset])
 
-  const exampleRow = dataset[0]
-
-  // colSpec must have field:null as the 0th item.
-  // TODO REMOVE
-  const columns = Object.keys(exampleRow).map(name => ({
-    colName: name,
-    detectedType: simpleColumnTypeDetector(exampleRow[name]),
-  }))
+  useEffect(() => {
+    setColumns(
+      Object.entries(dataset[0]).map(([colName, value]) => ({
+        colName,
+        detectedType: simpleColumnTypeDetector(value),
+      })))
+  }, [dataset])
 
   return (
     <div className="flex flex-col gap-32">
@@ -52,17 +52,7 @@ function App() {
           state={builderState}
           columns={columns}
           baseSpec={spec}
-          components={{
-            LayerContainer,
-            BuilderContainer,
-            ToolbarContainer,
-            MarkContainer,
-            ChannelContainer,
-            AdvancedFieldsContainer,
-            BasicFieldsContainer,
-            GenericPickerWidget,
-            Button,
-          }}
+          components={COMPONENTS}
         />
 
         <PreviewPane
@@ -149,7 +139,7 @@ function Button({onClick, children}) {
 
 function MarkContainer({children}) {
   const styles = [
-    "flex flex-row gap-1",
+    "flex flex-row gap-2",
     "order-1",
     "pb-4",
     "w-full",
@@ -173,6 +163,9 @@ function ChannelContainer({title, children, expandedByDefault, showAdvanced}) {
 
   const toggleExpanded = useCallback(() => {
     setExpanded(!expanded)
+    if (!expanded == false) {
+      showAdvanced(false)
+    }
   }, [expanded, setExpanded])
 
   const expandedWrapperStyles = [
@@ -243,9 +236,14 @@ function BasicFieldsContainer({children}) {
   )
 }
 
-function AdvancedFieldsContainer({children}) {
+function AdvancedFieldsContainer({visible, children}) {
+  const styles = [
+    "grid grid-cols-3 gap-1",
+    visible ? "" : "hidden",
+  ].join(" ")
+
   return (
-    <div className="grid grid-cols-3 gap-1">
+    <div className={styles}>
       {children}
     </div>
   )
@@ -358,7 +356,7 @@ function TextInput({label, value, placeholder, setValue, small}) {
   const hasContent = value != null && value != ""
 
   const buttonStyles=[
-    "absolute top-0 bottom-0 right-0 pr-2 w-6",
+    "absolute top-0 bottom-0 right-0 w-6",
     "flex items-center w-6 opacity-50 hover:opacity-100",
   ].join(" ")
 
@@ -468,6 +466,18 @@ function WidgetWrapper({label, small, className, children}) {
       </div>
     </>
   )
+}
+
+const COMPONENTS = {
+  LayerContainer,
+  BuilderContainer,
+  ToolbarContainer,
+  MarkContainer,
+  ChannelContainer,
+  AdvancedFieldsContainer,
+  BasicFieldsContainer,
+  GenericPickerWidget,
+  Button,
 }
 
 export default App

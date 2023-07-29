@@ -122,27 +122,25 @@ export function ChannelBuilder({
         }
       </components.BasicFieldsContainer>
 
-      { advancedShown && (
-        <components.AdvancedFieldsContainer>
-          {fieldUIMetadata
-            .filter(f => !!fields[f.name]?.advanced)
-            .map(f => (
-              <components.GenericPickerWidget
-                vlPropType="field"
-                vlPropName={f.name}
-                widgetHint={f.widgetHint}
-                label={fields[f.name].label}
-                value={state[f.name]}
-                setValue={makeSetter(f.name)}
-                key={f.name}
-                items={f.validValues}
-                placeholder={f.placeholder ?? "Default"}
-                advanced={true}
-              />
-            ))
-          }
-        </components.AdvancedFieldsContainer>
-      )}
+      <components.AdvancedFieldsContainer visible={advancedShown}>
+        {fieldUIMetadata
+          .filter(f => !!fields[f.name]?.advanced)
+          .map(f => (
+            <components.GenericPickerWidget
+              vlPropType="field"
+              vlPropName={f.name}
+              widgetHint={f.widgetHint}
+              label={fields[f.name].label}
+              value={state[f.name]}
+              setValue={makeSetter(f.name)}
+              key={f.name}
+              items={f.validValues}
+              placeholder={f.placeholder ?? "Default"}
+              advanced={true}
+            />
+          ))
+        }
+      </components.AdvancedFieldsContainer>
 
     </components.ChannelContainer>
   )
@@ -155,7 +153,7 @@ function prepareTypes(types, channel) {
 
   if (channel != "geoshape") {
     return Object.fromEntries(
-      Object.entries(flippedTypes).filter((_, v) => v != "geojson")
+      Object.entries(flippedTypes).filter(([_, n]) => n != "geojson")
     )
   }
 
@@ -177,8 +175,10 @@ function shouldIncludeField(fieldName, state, channelName, fields, smartHideFiel
       return !fieldIsSet
 
     case "type":
-    case "title":
       return fieldIsSet
+
+    case "title":
+      return fieldIsSet && !isElementOf(channelName, ["theta", "theta2", "radius", "radius2"])
 
     case "aggregate":
       return fieldIsSet && state.binStep == null

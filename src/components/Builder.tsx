@@ -116,7 +116,9 @@ interface BuilderPaneProps {
 export function BuilderPane(props: BuilderPaneProps) {
   const [key, setKey] = useState(0)
 
-  const reset = useCallback(() => setKey(key + 1))
+  const reset = useCallback(() => {
+    setKey(key + 1)
+  }, [setKey])
 
   return (
     <props.components.BuilderContainer>
@@ -161,8 +163,12 @@ export function LayerBuilder(props: BuilderPaneProps) {
       }
     })
 
-  const columns = {"None": null}
-  props.columns.forEach(s => columns[s.colName] = s.colName)
+  const markLabelsToNames = Object.fromEntries(
+    Object.entries(marks).map(([k, v]) => [v.label, k])
+  )
+
+  const columnsLabelsToNames = { "None": null }
+  props.columns.forEach(s => columnsLabelsToNames[s.colName] = s.colName)
 
   useEffect(() => {
     const newSpec = updateVegaSpec(markType, channelStates, props?.baseSpec, props.columns)
@@ -181,9 +187,7 @@ export function LayerBuilder(props: BuilderPaneProps) {
           vlPropName="mark"
           widgetHint="select"
           label="Mark"
-          items={Object.fromEntries(
-            Object.entries(marks).map(([k, v]) => [v.label, k])
-          )}
+          items={markLabelsToNames}
           value={markType}
           setValue={setMarkType}
         />
@@ -198,7 +202,7 @@ export function LayerBuilder(props: BuilderPaneProps) {
             channels={channels}
             components={props.components}
             smartHideFields={props.smartHideFields ?? true}
-            columns={{...columns, ...UI_EXTRAS[channelState.channel]?.extraCols}}
+            columns={{...columnsLabelsToNames, ...UI_EXTRAS[channelState.channel]?.extraCols}}
             types={FIELD_TYPES}
             key={channelState.channel}
           />
