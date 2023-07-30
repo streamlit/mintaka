@@ -9,13 +9,10 @@ import { LayerBuilder } from "./LayerBuilder.tsx"
 
 
 export function BuilderPane(props: BuilderPaneProps) {
-  // TODO: Rename these
-  const mark = props.mark ?? specConfig.MARK_PROPERTIES
-  const channels = props.channels ?? specConfig.CHANNELS
-  const fields = props.fields ?? specConfig.FIELDS
+  const widgets = props.widgets ?? specConfig.WIDGETS
 
   const [key, setKey] = useState(0)
-  const builderState = useBuilderState(props.columns, mark, channels, fields)
+  const builderState = useBuilderState(props.columns, widgets)
 
   const reset = useCallback(() => {
     setKey(key + 1)
@@ -39,10 +36,8 @@ export function BuilderPane(props: BuilderPaneProps) {
         layerState={builderState}
         columns={props.columns}
         ui={props.ui}
-        mark={mark}
-        channels={channels}
-        fields={fields}
-        smartHideFields={props.smartHideFields}
+        widgets={widgets}
+        smartHideProperties={props.smartHideProperties}
         />
 
       <props.ui.ToolbarContainer>
@@ -59,7 +54,7 @@ export function useSpecState(baseSpec) {
   return { spec, setSpec }
 }
 
-function useBuilderState(columns, mark, channels, fields) {
+function useBuilderState(columns, widgets) {
   // TODO: If we want to use the baseSpec here for defaults, then we need
   // to be able to convert it to a format we use for the state. That's complex
   // because specs have several shorthands. For example, mark can be "circle"
@@ -68,16 +63,16 @@ function useBuilderState(columns, mark, channels, fields) {
   const markValues = specConfig.MARK_VALUES
   const [markState, setMarkState] = useState(
     Object.fromEntries(
-      Object.entries(mark).map(([property, markSpec]) => [
+      Object.entries(widgets.mark).map(([property, markSpec]) => [
         property,
-        mark[property]?.default
+        widgets.mark[property]?.default
       ])))
 
   const [channelStates, setEncodingState] = useState(
     Object.fromEntries(
-      Object.entries(channels).map(([channel, channelSpec]) => {
+      Object.entries(widgets.channels).map(([channel, channelSpec]) => {
         const defaultColIndex = channelSpec.defaultColIndex
-        const defaultColName = columns?.[defaultColIndex + 1]?.colName
+        const defaultColName = columns?.[defaultColIndex]?.colName
 
         const fallbackState = defaultColIndex == null
           ? {}
@@ -104,12 +99,12 @@ function useBuilderState(columns, mark, channels, fields) {
 
     encoding: {
       states: channelStates,
-      setField: (channel: str) => (field: str, newValue: any) => {
+      setProperty: (channel: str) => (property: str, newValue: any) => {
         setEncodingState({
           ...channelStates,
           [channel]: {
             ...channelStates[channel],
-            [field]: newValue,
+            [property]: newValue,
           }
         })
       },
@@ -150,12 +145,12 @@ function updateVegaSpec(builderState, columns, baseSpec) {
     Object.entries(builderState.mark.state)
       .filter(([k, v]) => v != null)
       .filter(([k, v]) =>
-        specConfig.shouldIncludeProperty(k, builderState.mark.state.type)))
+        specConfig.keepMarkProperty(k, builderState.mark.state.type)))
 
   const encoding = Object.fromEntries(
     Object.entries(builderState.encoding.states)
       .filter(([channel]) =>
-        specConfig.shouldIncludeChannel(
+        specConfig.keepChannel(
           channel, builderState.mark.state.type))
       .map(([channel, channelState]) => {
         const channelSpec = buildChannelSpec(channel, channelState, columns)

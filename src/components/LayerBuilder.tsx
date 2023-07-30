@@ -16,26 +16,26 @@ export function LayerBuilder(props: BuilderPaneProps) {
   return (
     <props.ui.LayerContainer>
       <MarkBuilder
-        mark={props.mark}
+        widgets={props.widgets}
         markState={props.layerState.mark}
         ui={props.ui}
+        smartHideProperties={props.smartHideProperties}
       />
 
-      {Object.keys(props.channels)
+      {Object.keys(props.widgets.channels)
         .filter(channel => (
-          specConfig.shouldIncludeChannel(
-            channel, props.layerState.markType
+          specConfig.keepChannel(
+            channel, props.layerState.markType, props.smartHideProperties
           )
         ))
         .map(channel => (
           <ChannelBuilder
             channel={channel}
             channelState={props.layerState.encoding.states[channel]}
-            setChannelField={props.layerState.encoding.setField(channel)}
-            fields={props.fields}
-            channels={props.channels}
+            setChannelProperty={props.layerState.encoding.setProperty(channel)}
+            widgets={props.widgets}
             ui={props.ui}
-            smartHideFields={props.smartHideFields ?? true}
+            smartHideProperties={props.smartHideProperties}
             columns={{
               ...columnsLabelsToNames,
               ...specConfig.UI_EXTRAS[channel]?.extraCols

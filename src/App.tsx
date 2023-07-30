@@ -226,7 +226,7 @@ function ChannelContainer({title, children, expandedByDefault, showAdvanced}) {
   )
 }
 
-function BasicFieldsContainer({children}) {
+function BasicChannelPropertiesContainer({children}) {
   return (
     <div className="grid grid-cols-3 gap-1">
       {children}
@@ -234,7 +234,7 @@ function BasicFieldsContainer({children}) {
   )
 }
 
-function AdvancedFieldsContainer({visible, children}) {
+function AdvancedChannelPropertiesContainer({visible, children}) {
   const styles = [
     "grid grid-cols-3 gap-1",
     visible ? "" : "hidden",
@@ -291,8 +291,8 @@ function SelectBox({label, items, value, setValue, small}) {
     labels = items
     values = items
   } else {
-    labels = Object.keys(items)
-    values = Object.values(items)
+    labels = Object.keys(items ?? {})
+    values = Object.values(items ?? {})
   }
 
   const setValueWithTypes = useCallback((ev) => {
@@ -409,7 +409,7 @@ function Toggle({label, items, value, setValue, small}) {
   const thumbClasses = [
     "peer-checked:after:translate-x-full peer-checked:after:border-white",
     "after:content-[''] after:absolute after:top-0.5 after:left-0.5",
-    "after:bg-white after:border-slate-300",
+    "after:bg-white after:border-slate-400",
     "after:border after:rounded-full",
     "after:h-3 after:w-3",
     "after:transition-all",
@@ -472,8 +472,10 @@ const UI_COMPONENTS = {
   ToolbarContainer,
   MarkContainer,
   ChannelContainer,
-  AdvancedFieldsContainer,
-  BasicFieldsContainer,
+  AdvancedMarkPropertiesContainer: AdvancedChannelPropertiesContainer,
+  BasicMarkPropertiesContainer: BasicChannelPropertiesContainer,
+  AdvancedChannelPropertiesContainer,
+  BasicChannelPropertiesContainer,
   GenericPickerWidget,
   Button,
 }

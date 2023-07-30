@@ -2,18 +2,19 @@ import React, { useState, useCallback } from "react"
 
 import * as specConfig from "../specConfig.ts"
 
-export function MarkBuilder({ mark, ui, markState }) {
+export function MarkBuilder({ widgets, ui, markState, smartHideProperties }) {
   const [advancedShown, showAdvanced] = useState(false)
 
   const { state, setProperty } = markState
-  const validValues = specConfig.MARK_VALUES
+  const validValues = specConfig.MARK_PROPERTY_VALUES
 
   const makeSetter = (key: str) => {
     return (newValue: any) => setProperty(key, newValue)
   }
 
-  const propertyUIParams = {
+  const uiParams = {
     type: { widgetHint: "select" },
+    line: { widgetHint: "toggle" },
     point: { widgetHint: "toggle" },
     interpolate: { widgetHint: "select" },
     orient: { widgetHint: "select" },
@@ -28,53 +29,53 @@ export function MarkBuilder({ mark, ui, markState }) {
     // strokeDash: { label: "strokeDash" },
   }
 
-  const markProperties = Object.entries(mark)
+  const markProperties = Object.entries(widgets.mark)
     .filter(([name, propSpec]) =>
-      specConfig.shouldIncludeProperty(name, state.type))
+      specConfig.keepMarkProperty(name, state.type, smartHideProperties))
 
   // TODO: Only show "show advanced" button if there *are* advanced options!
 
   return (
     <ui.MarkContainer title={"Mark"} showAdvanced={showAdvanced}>
-      <ui.BasicFieldsContainer>
+      <ui.BasicMarkPropertiesContainer>
         {markProperties
           .filter(([name, propSpec]) => !propSpec.advanced)
           .map(([name, propSpec]) => (
             <ui.GenericPickerWidget
-              vlPropType="mark"
+              vlPropType="mark-property"
               vlPropName={name}
-              widgetHint={propertyUIParams[name]?.widgetHint ?? "json"}
+              widgetHint={uiParams[name]?.widgetHint ?? "json"}
               label={propSpec.label}
               value={state[name]}
               setValue={makeSetter(name)}
-              items={validValues[name]}
-              placeholder={propertyUIParams[name]?.placeholder ?? "Default"}
+              items={uiParams[name]?.validValues ?? validValues[name]}
+              placeholder={uiParams[name]?.placeholder ?? "Default"}
               advanced={false}
               key={name}
             />
           )
         )}
-      </ui.BasicFieldsContainer>
+      </ui.BasicMarkPropertiesContainer>
 
-      <ui.AdvancedFieldsContainer visible={advancedShown}>
+      <ui.AdvancedMarkPropertiesContainer visible={advancedShown}>
         {markProperties
           .filter(([name, propSpec]) => propSpec.advanced)
           .map(([name, propSpec]) => (
             <ui.GenericPickerWidget
-              vlPropType="mark"
+              vlPropType="mark-property"
               vlPropName={name}
-              widgetHint={propertyUIParams[name]?.widgetHint ?? "json"}
+              widgetHint={uiParams[name]?.widgetHint ?? "json"}
               label={propSpec.label}
               value={state[name]}
               setValue={makeSetter(name)}
-              items={validValues[name]}
-              placeholder={propertyUIParams[name]?.placeholder ?? "Default"}
+              items={uiParams[name]?.validValues ?? validValues[name]}
+              placeholder={uiParams[name]?.placeholder ?? "Default"}
               advanced={false}
               key={name}
             />
           )
         )}
-      </ui.AdvancedFieldsContainer>
+      </ui.AdvancedMarkPropertiesContainer>
 
     </ui.MarkContainer>
   )
