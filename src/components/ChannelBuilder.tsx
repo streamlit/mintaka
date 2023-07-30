@@ -76,27 +76,28 @@ export function ChannelBuilder({
   columns,
   types,
 }): React.Node {
+  const state = channelState
   const [advancedShown, showAdvanced] = useState(false)
 
   const makeSetter = (key: str) => {
     return (newValue: any) => setChannelField(key, newValue)
   }
 
-  // The order of these items determines the order in the UI.
-  // TODO: Replace with channels!
-  const fieldUIParams = [
-    { name: "field", widgetHint: "select", validValues: columns },
-    { name: "value", widgetHint: "json" },
-    { name: "type", widgetHint: "select", validValues: prepareTypes(types, channel) },
-    { name: "aggregate", widgetHint: "select", validValues: AGGREGATE_OPS },
-    { name: "binStep", widgetHint: "number", placeholder: "No binning" },
-    { name: "stack", widgetHint: "select", validValues: VALID_STACK_VALUES },
-    { name: "legend", widgetHint: "toggle", validValues: VALID_LEGEND_VALUES },
-    { name: "timeUnit", widgetHint: "select", validValues: TIME_UNITS },
-    { name: "title", widgetHint: "text" },
-  ].filter(
-    f => specConfig.shouldIncludeField(f.name, channelState, channel, fields, smartHideFields)
-  )
+  const fieldUIParams = {
+    field: { widgetHint: "select", validValues: columns },
+    value: { widgetHint: "json" },
+    type: { widgetHint: "select", validValues: prepareTypes(types, channel) },
+    aggregate: { widgetHint: "select", validValues: AGGREGATE_OPS },
+    binStep: { widgetHint: "number", placeholder: "No binning" },
+    stack: { widgetHint: "select", validValues: VALID_STACK_VALUES },
+    legend: { widgetHint: "toggle", validValues: VALID_LEGEND_VALUES },
+    timeUnit: { widgetHint: "select", validValues: TIME_UNITS },
+    title: { widgetHint: "text" },
+  }
+
+  const desiredFields = Object.entries(fields) // rename channels to encoding
+    .filter(([name, fieldSpec]) =>
+      specConfig.shouldIncludeField(name, channel, state, fields, smartHideFields))
 
   return (
     <ui.ChannelContainer
@@ -106,40 +107,40 @@ export function ChannelBuilder({
       showAdvanced={showAdvanced}
     >
       <ui.BasicFieldsContainer>
-        {fieldUIParams
-          .filter(f => !fields[f.name]?.advanced)
-          .map(f => (
+        {desiredFields
+          .filter(([name, fieldSpec]) => !fieldSpec.advanced)
+          .map(([name, fieldSpec]) => (
             <ui.GenericPickerWidget
               vlPropType="field"
-              vlPropName={f.name}
-              widgetHint={f.widgetHint}
-              label={fields[f.name].label}
-              value={channelState[f.name]}
-              setValue={makeSetter(f.name)}
-              items={f.validValues}
-              placeholder={f.placeholder ?? "Default"}
+              vlPropName={name}
+              widgetHint={fieldUIParams[name]?.widgetHint ?? "json"}
+              label={fieldSpec.label}
+              value={state[name]}
+              setValue={makeSetter(name)}
+              items={fieldUIParams[name]?.validValues}
+              placeholder={fieldUIParams[name]?.placeholder ?? "Default"}
               advanced={false}
-              key={f.name}
+              key={name}
             />
           ))
         }
       </ui.BasicFieldsContainer>
 
       <ui.AdvancedFieldsContainer visible={advancedShown}>
-        {fieldUIParams
-          .filter(f => !!fields[f.name]?.advanced)
-          .map(f => (
+        {desiredFields
+          .filter(([name, fieldSpec]) => fieldSpec.advanced)
+          .map(([name, fieldSpec]) => (
             <ui.GenericPickerWidget
               vlPropType="field"
-              vlPropName={f.name}
-              widgetHint={f.widgetHint}
-              label={fields[f.name].label}
-              value={channelState[f.name]}
-              setValue={makeSetter(f.name)}
-              items={f.validValues}
-              placeholder={f.placeholder ?? "Default"}
+              vlPropName={name}
+              widgetHint={fieldUIParams[name]?.widgetHint ?? "json"}
+              label={fieldSpec.label}
+              value={state[name]}
+              setValue={makeSetter(name)}
+              items={fieldUIParams[name]?.validValues}
+              placeholder={fieldUIParams[name]?.placeholder ?? "Default"}
               advanced={true}
-              key={f.name}
+              key={name}
             />
           ))
         }

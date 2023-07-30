@@ -206,7 +206,7 @@ export function shouldIncludeChannel(channel, markType) {
   }
 }
 
-export function shouldIncludeField(fieldName, state, channelName, fields, smartHideFields): boolean {
+export function shouldIncludeField(fieldName, channelName, state, fields, smartHideFields): boolean {
   if (fields[fieldName] == null) return false
   if (!smartHideFields) return true
 
