@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react"
 
+import * as specConfig from "../specConfig.ts"
 import { isElementOf } from "../array.ts"
 
 const AGGREGATE_OPS = {
@@ -65,26 +66,28 @@ export function useChannelState(origChannelSpec: Object, fallbackState: Object) 
 }
 
 export function ChannelBuilder({
+  channel,
   channelState,
+  setChannelField,
   fields,
   channels,
-  components,
+  ui,
   smartHideFields,
   columns,
   types,
 }): React.Node {
-  const { state, setComponent } = channelState.stateObj
   const [advancedShown, showAdvanced] = useState(false)
 
-  const makeSetter = useCallback((key: str) => (
-    (newValue: any) => setComponent(key, newValue)
-  ), [setComponent])
+  const makeSetter = (key: str) => {
+    return (newValue: any) => setChannelField(key, newValue)
+  }
 
   // The order of these items determines the order in the UI.
-  const fieldUIMetadata = [
+  // TODO: Replace with channels!
+  const fieldUIParams = [
     { name: "field", widgetHint: "select", validValues: columns },
     { name: "value", widgetHint: "json" },
-    { name: "type", widgetHint: "select", validValues: prepareTypes(types, channelState.channel) },
+    { name: "type", widgetHint: "select", validValues: prepareTypes(types, channel) },
     { name: "aggregate", widgetHint: "select", validValues: AGGREGATE_OPS },
     { name: "binStep", widgetHint: "number", placeholder: "No binning" },
     { name: "stack", widgetHint: "select", validValues: VALID_STACK_VALUES },
@@ -92,57 +95,57 @@ export function ChannelBuilder({
     { name: "timeUnit", widgetHint: "select", validValues: TIME_UNITS },
     { name: "title", widgetHint: "text" },
   ].filter(
-    f => shouldIncludeField(f.name, state, channelState.channel, fields, smartHideFields)
+    f => specConfig.shouldIncludeField(f.name, channelState, channel, fields, smartHideFields)
   )
 
   return (
-    <components.ChannelContainer
-      vlName={channelState.channel}
-      title={channels[channelState.channel].label}
-      expandedByDefault={!channels[channelState.channel].advanced}
+    <ui.ChannelContainer
+      vlName={channel}
+      title={channels[channel].label}
+      expandedByDefault={!channels[channel].advanced}
       showAdvanced={showAdvanced}
     >
-      <components.BasicFieldsContainer>
-        {fieldUIMetadata
+      <ui.BasicFieldsContainer>
+        {fieldUIParams
           .filter(f => !fields[f.name]?.advanced)
           .map(f => (
-            <components.GenericPickerWidget
+            <ui.GenericPickerWidget
               vlPropType="field"
               vlPropName={f.name}
               widgetHint={f.widgetHint}
               label={fields[f.name].label}
-              value={state[f.name]}
+              value={channelState[f.name]}
               setValue={makeSetter(f.name)}
-              key={f.name}
               items={f.validValues}
               placeholder={f.placeholder ?? "Default"}
               advanced={false}
+              key={f.name}
             />
           ))
         }
-      </components.BasicFieldsContainer>
+      </ui.BasicFieldsContainer>
 
-      <components.AdvancedFieldsContainer visible={advancedShown}>
-        {fieldUIMetadata
+      <ui.AdvancedFieldsContainer visible={advancedShown}>
+        {fieldUIParams
           .filter(f => !!fields[f.name]?.advanced)
           .map(f => (
-            <components.GenericPickerWidget
+            <ui.GenericPickerWidget
               vlPropType="field"
               vlPropName={f.name}
               widgetHint={f.widgetHint}
               label={fields[f.name].label}
-              value={state[f.name]}
+              value={channelState[f.name]}
               setValue={makeSetter(f.name)}
-              key={f.name}
               items={f.validValues}
               placeholder={f.placeholder ?? "Default"}
               advanced={true}
+              key={f.name}
             />
           ))
         }
-      </components.AdvancedFieldsContainer>
+      </ui.AdvancedFieldsContainer>
 
-    </components.ChannelContainer>
+    </ui.ChannelContainer>
   )
 }
 
@@ -158,44 +161,4 @@ function prepareTypes(types, channel) {
   }
 
   return flippedTypes
-}
-
-
-function shouldIncludeField(fieldName, state, channelName, fields, smartHideFields): boolean {
-  if (fields[fieldName] == null) return false
-  if (!smartHideFields) return true
-
-  const fieldIsSet = !!state.field
-
-  switch (fieldName) {
-    case "field":
-      return true
-
-    case "value":
-      return !fieldIsSet
-
-    case "type":
-      return fieldIsSet
-
-    case "title":
-      return fieldIsSet && !isElementOf(channelName, ["theta", "theta2", "radius", "radius2"])
-
-    case "aggregate":
-      return fieldIsSet && state.binStep == null
-
-    case "binStep":
-      return fieldIsSet && state.aggregate == null
-
-    case "stack":
-      return fieldIsSet && isElementOf(channelName, ["x", "y"])
-
-    case "legend":
-      return fieldIsSet && isElementOf(channelName, ["color", "size", "opacity"])
-
-    case "timeUnit":
-      return fieldIsSet && state.type == "temporal"
-
-    default:
-      return true
-  }
 }

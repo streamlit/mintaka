@@ -7,7 +7,7 @@ import backspaceIconSvg from "./assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 import tuneIconSvg from "./assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 import settingsIconSvg from "./assets/settings_FILL0_wght300_GRAD0_opsz48.svg"
 
-import { BuilderPane, useBuilderState, simpleColumnTypeDetector } from "./components/Builder.tsx"
+import { BuilderPane, useSpecState, simpleColumnTypeDetector } from "./components/Builder.tsx"
 import { PreviewPane } from "./components/PreviewPane.tsx"
 
 import irisDataset from "./data/iris.json"
@@ -31,7 +31,7 @@ function App() {
   const [dataset, setDataset] = useState(irisDataset)
   const [columns, setColumns] = useState([])
   const [key, setKey] = useState(0)
-  const builderState = useBuilderState(spec)
+  const specState = useSpecState(spec)
 
   // Handle dataset changes gracefully.
   useEffect(() => setKey(key + 1), [dataset])
@@ -49,15 +49,15 @@ function App() {
       <div className="flex h-[800px] flex-row border border-slate-200 rounded">
         <BuilderPane
           key={key}
-          state={builderState}
+          state={specState}
           columns={columns}
           baseSpec={spec}
-          components={COMPONENTS}
+          ui={UI_COMPONENTS}
         />
 
         <PreviewPane
           className="flex-auto align-self-stretch"
-          spec={builderState.spec}
+          spec={specState.spec}
           data={dataset}
         />
       </div>
@@ -86,7 +86,7 @@ function App() {
           <h3 className="text-slate-500 font-bold text-xs uppercase">Output</h3>
           <pre className="text-slate-800 bg-slate-100 text-sm p-4 rounded-lg">
             <code>
-              { JSON.stringify(builderState.spec, undefined, 4) }
+              { JSON.stringify(specState.spec, undefined, 4) }
             </code>
           </pre>
         </div>
@@ -137,18 +137,15 @@ function Button({onClick, children}) {
   )
 }
 
-function MarkContainer({children}) {
-  const styles = [
-    "flex flex-row gap-2",
-    "order-1",
-    "pb-4",
-    "w-full",
-  ].join(" ")
-
+function MarkContainer({title, children, showAdvanced}) {
   return (
-    <div className={styles}>
+    <ChannelContainer
+      title={title}
+      showAdvanced={showAdvanced}
+      expandedByDefault={true}
+    >
       {children}
-    </div>
+    </ChannelContainer>
   )
 }
 
@@ -164,6 +161,7 @@ function ChannelContainer({title, children, expandedByDefault, showAdvanced}) {
   const toggleExpanded = useCallback(() => {
     setExpanded(!expanded)
     if (!expanded == false) {
+      setAdvShown(false)
       showAdvanced(false)
     }
   }, [expanded, setExpanded])
@@ -468,7 +466,7 @@ function WidgetWrapper({label, small, className, children}) {
   )
 }
 
-const COMPONENTS = {
+const UI_COMPONENTS = {
   LayerContainer,
   BuilderContainer,
   ToolbarContainer,
