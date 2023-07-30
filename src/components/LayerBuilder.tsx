@@ -13,6 +13,19 @@ export function LayerBuilder(props: BuilderPaneProps) {
   const columnsLabelsToNames = { "None": null }
   props.columns.forEach(s => columnsLabelsToNames[s.colName] = s.colName)
 
+  const selectedChannels = Object.entries(props.widgets.channels)
+    .filter(([channel]) => (
+      specConfig.keepChannel(
+        channel, props.layerState.markType, props.smartHideProperties
+      )
+    ))
+
+  const channelsToLabels = {
+    "": specConfig.AUTO_FIELD,
+    ...Object.fromEntries(selectedChannels
+      .map(([name, propSpec]) => [propSpec.label, name]))
+  }
+
   return (
     <props.ui.LayerContainer>
       <MarkBuilder
@@ -22,18 +35,14 @@ export function LayerBuilder(props: BuilderPaneProps) {
         smartHideProperties={props.smartHideProperties}
       />
 
-      {Object.keys(props.widgets.channels)
-        .filter(channel => (
-          specConfig.keepChannel(
-            channel, props.layerState.markType, props.smartHideProperties
-          )
-        ))
-        .map(channel => (
+      {selectedChannels
+        .map(([channel]) => (
           <ChannelBuilder
             channel={channel}
             channelState={props.layerState.encoding.states[channel]}
             setChannelProperty={props.layerState.encoding.setProperty(channel)}
             widgets={props.widgets}
+            channelsToLabels={channelsToLabels}
             ui={props.ui}
             smartHideProperties={props.smartHideProperties}
             columns={{

@@ -222,6 +222,16 @@ function buildChannelSpec(channel, state, columns) {
       )
     }
 
+    if (state.sortBy == null) {
+      if (state.sort != null) {
+        channelSpec.sort = state.sort
+      }
+    } else {
+      const sortSymbol = state.sort == "descending" ? "-" : ""
+      const sortEnc = state.sortBy ?? ""
+      channelSpec.sort = `${sortSymbol}${sortEnc}`
+    }
+
     if (state.aggregate != null) channelSpec.aggregate = state.aggregate
     if (state.binStep != null) channelSpec.bin = { step: state.binStep }
     if (state.stack != null) channelSpec.stack = state.stack

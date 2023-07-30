@@ -26,6 +26,7 @@ export function ChannelBuilder({
   widgets,
   ui,
   smartHideProperties,
+  channelsToLabels,
   columns,
   types,
 }): React.Node {
@@ -40,15 +41,17 @@ export function ChannelBuilder({
   const validValues = specConfig.CHANNEL_PROPERTY_VALUES
 
   const uiParams = {
-    field: { widgetHint: "select", validValues: columns },
-    value: { widgetHint: "json" },
-    type: { widgetHint: "select", validValues: prepareTypes(types, channel) },
     aggregate: { widgetHint: "select" },
     binStep: { widgetHint: "number", placeholder: "No binning" },
-    stack: { widgetHint: "select" },
+    field: { widgetHint: "select", validValues: columns },
     legend: { widgetHint: "toggle" },
+    sort: { widgetHint: "select" },
+    sortBy: { widgetHint: "select", validValues: channelsToLabels},
+    stack: { widgetHint: "select" },
     timeUnit: { widgetHint: "select" },
     title: { widgetHint: "text" },
+    type: { widgetHint: "select", validValues: prepareTypes(types, channel) },
+    value: { widgetHint: "json" },
   }
 
   const desiredProperties = Object.entries(channelProperties)

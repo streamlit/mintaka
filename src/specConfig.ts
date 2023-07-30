@@ -68,6 +68,8 @@ export const WIDGETS = {
     field: { label: "Field", advanced: false },
     value: { label: "Value", advanced: true },
     type: { label: "Type", advanced: true },
+    sort: { label: "Sort", advanced: true },
+    sortBy: { label: "Sort by", advanced: true },
     aggregate: { label: "Aggregate", advanced: true },
     binStep: { label: "Bin size", advanced: true },
     stack: { label: "Stack", advanced: true },
@@ -200,6 +202,12 @@ export const CHANNEL_PROPERTY_VALUES = {
     "Off": false,
     "On": null,
   },
+
+  sort: {
+    "None": null,
+    "Ascending": "ascending",
+    "Descending": "descending",
+  },
 }
 
 export function keepMarkProperty(property, markType, smartHideProperties = true) {
@@ -288,6 +296,7 @@ export function keepChannelProperty(
     case "value":
       return !fieldIsSet
 
+    case "sort":
     case "type":
       return fieldIsSet
 
@@ -308,6 +317,9 @@ export function keepChannelProperty(
 
     case "timeUnit":
       return fieldIsSet && state.type == "temporal"
+
+    case "sortBy":
+      return fieldIsSet && isElementOf(state.type, ["nominal", "ordinal"])
 
     default:
       return true

@@ -13,13 +13,13 @@ export function MarkBuilder({ widgets, ui, markState, smartHideProperties }) {
   }
 
   const uiParams = {
-    type: { widgetHint: "select" },
-    line: { widgetHint: "toggle" },
-    point: { widgetHint: "toggle" },
-    interpolate: { widgetHint: "select" },
-    orient: { widgetHint: "select" },
-    shape: { widgetHint: "select" },
     filled: { widgetHint: "toggle" },
+    interpolate: { widgetHint: "select" },
+    line: { widgetHint: "toggle" },
+    orient: { widgetHint: "select" },
+    point: { widgetHint: "toggle" },
+    shape: { widgetHint: "select" },
+    type: { widgetHint: "select" },
     // size: { label: "Size" },
     // width: { label: "Width" },
     // height: { label: "Height" },
