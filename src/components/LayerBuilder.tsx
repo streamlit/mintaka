@@ -10,13 +10,16 @@ import { ChannelBuilder, useChannelState } from "./ChannelBuilder.tsx"
 
 export function LayerBuilder(props: BuilderPaneProps) {
 
-  const columnsLabelsToNames = { "None": null }
-  props.columns.forEach(s => columnsLabelsToNames[s.colName] = s.colName)
+  const columnsLabelsToNames = {
+    "None": null,
+    ...Object.fromEntries(Object.keys(props.columnTypes)
+      .map(c => [c, c]))
+  }
 
   const selectedChannels = Object.entries(props.widgets.channels)
     .filter(([channel]) => (
       specConfig.keepChannel(
-        channel, props.layerState.markType, props.smartHideProperties
+        channel, props.layerState.mark.state.type, props.smartHideProperties
       )
     ))
 
