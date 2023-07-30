@@ -5,7 +5,6 @@ import arrow from "vega-loader-arrow"
 
 import backspaceIconSvg from "./assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 import tuneIconSvg from "./assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
-import settingsIconSvg from "./assets/settings_FILL0_wght300_GRAD0_opsz48.svg"
 
 import { BuilderPane, useSpecState, simpleColumnTypeDetector } from "./components/Builder.tsx"
 import { PreviewPane } from "./components/PreviewPane.tsx"
