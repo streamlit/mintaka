@@ -6,7 +6,8 @@ import arrow from "vega-loader-arrow"
 import backspaceIconSvg from "./assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 import tuneIconSvg from "./assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
-import { BuilderPane, useSpecState, simpleColumnTypeDetector } from "./components/Builder.tsx"
+import { BuilderPane, useSpecState } from "./components/Builder.tsx"
+import { simpleColumnTypeDetector } from "./simpleColumnTypeDetector.ts"
 import { PreviewPane } from "./components/PreviewPane.tsx"
 
 import irisDataset from "./data/iris.json"
@@ -28,7 +29,7 @@ const spec = {
 
 function App() {
   const [dataset, setDataset] = useState(irisDataset)
-  const [columns, setColumns] = useState([])
+  const [columnTypes, setcolumnTypes] = useState({})
   const [key, setKey] = useState(0)
   const specState = useSpecState(spec)
 
@@ -36,11 +37,11 @@ function App() {
   useEffect(() => setKey(key + 1), [dataset])
 
   useEffect(() => {
-    setColumns(
-      Object.entries(dataset[0]).map(([colName, value]) => ({
+    setcolumnTypes(Object.fromEntries(
+      Object.entries(dataset[0]).map(([colName, value]) => ([
         colName,
-        detectedType: simpleColumnTypeDetector(value),
-      })))
+        { type: simpleColumnTypeDetector(value), unique: null }
+      ]))))
   }, [dataset])
 
   return (
@@ -49,7 +50,7 @@ function App() {
         <BuilderPane
           key={key}
           state={specState}
-          columns={columns}
+          columnTypes={columnTypes}
           baseSpec={spec}
           ui={UI_COMPONENTS}
         />
@@ -104,7 +105,7 @@ function BuilderContainer({children}) {
 
 function LayerContainer({children}) {
   return (
-    <div className="flex flex-row flex-wrap content-start">
+    <div className="flex flex-row flex-wrap content-start order-1">
       {children}
     </div>
   )
@@ -112,7 +113,7 @@ function LayerContainer({children}) {
 
 function ToolbarContainer({children}) {
   return (
-    <div className="flex-auto flex flex-row flex-wrap items-end">
+    <div className="flex-auto flex flex-row flex-wrap items-end order-1">
       {children}
     </div>
   )
@@ -136,34 +137,60 @@ function Button({onClick, children}) {
   )
 }
 
+function PresetsContainer({title, children}) {
+  return (
+    <GenericContainer
+      title={title}
+      expandable={false}
+    >
+      {children}
+    </GenericContainer>
+  )
+}
+
 function MarkContainer({title, children, showAdvanced}) {
   return (
-    <ChannelContainer
+    <GenericContainer
       title={title}
       showAdvanced={showAdvanced}
       expandedByDefault={true}
+      expandable={true}
     >
       {children}
-    </ChannelContainer>
+    </GenericContainer>
   )
 }
 
 function ChannelContainer({title, children, expandedByDefault, showAdvanced}) {
-  const [expanded, setExpanded] = useState(expandedByDefault)
+  return (
+    <GenericContainer
+      title={title}
+      expandedByDefault={expandedByDefault}
+      showAdvanced={showAdvanced}
+      expandable={true}
+    >
+      {children}
+    </GenericContainer>
+  )
+}
+
+function GenericContainer({title, children, expandable, expandedByDefault, showAdvanced}) {
+  const [expanded, setExpanded] = useState(expandedByDefault || !expandable)
   const [advShown, setAdvShown] = useState(false)
 
   const toggleAdvanced = useCallback(() => {
     setAdvShown(!advShown)
-    showAdvanced(!advShown)
+    if (showAdvanced) showAdvanced(!advShown)
   }, [advShown, setAdvShown, showAdvanced])
 
   const toggleExpanded = useCallback(() => {
     setExpanded(!expanded)
+
     if (!expanded == false) {
       setAdvShown(false)
-      showAdvanced(false)
+      if (showAdvanced) showAdvanced(false)
     }
-  }, [expanded, setExpanded])
+  }, [expandable, expanded, setExpanded])
 
   const expandedWrapperStyles = [
     "flex flex-col",
@@ -188,7 +215,7 @@ function ChannelContainer({title, children, expandedByDefault, showAdvanced}) {
   const labelStyles = [
     "text-xs font-bold",
     "text-slate-500",
-    "hover:border-pink-400 hover:text-pink-400 cursor-pointer"
+    expandable ? "hover:border-pink-400 hover:text-pink-400 cursor-pointer" : null,
   ].join(" ")
 
   const childrenWrapperStyles = [
@@ -202,11 +229,11 @@ function ChannelContainer({title, children, expandedByDefault, showAdvanced}) {
     <div className={wrapperStyles}>
       {title && (
         <div className={labelWrapperStyles}>
-          <label className={labelStyles} onClick={toggleExpanded}>
+          <label className={labelStyles} onClick={expandable ? toggleExpanded : null}>
             {title.toUpperCase()}
           </label>
 
-          {expanded && (
+          {expanded && showAdvanced && (
             <div className={toolbarStyles}>
               <button className={advButtonStyles} onClick={toggleAdvanced}>
                 <img src={tuneIconSvg} alt="Advanced" />
@@ -246,7 +273,9 @@ function AdvancedChannelPropertiesContainer({visible, children}) {
   )
 }
 
-function GenericPickerWidget({widgetHint, label, value, setValue, advanced, items, placeholder}) {
+function GenericPickerWidget({propType, widgetHint, label, value, setValue, advanced, items, placeholder}) {
+  if (propType == "chartType") label = null
+
   switch (widgetHint) {
     case "select":
       return (
@@ -302,7 +331,7 @@ function SelectBox({label, items, value, setValue, small}) {
   }, [labels, values, setValue])
 
   const currIndex = values.indexOf(value)
-  const currClickableLabel = labels[currIndex]
+  const currItemLabel = labels[currIndex]
 
   const styles=[
     "py-0.5 flex-auto",
@@ -317,8 +346,9 @@ function SelectBox({label, items, value, setValue, small}) {
   return (
     <WidgetWrapper label={label} small={small}>
       <select
+        key={/* This is a hack so presets work */ currItemLabel}
         className={styles}
-        defaultValue={currClickableLabel}
+        defaultValue={currItemLabel}
         onChange={setValueWithTypes}
       >
         {labels.map(label => (
@@ -421,6 +451,7 @@ function Toggle({label, items, value, setValue, small}) {
       <HtmlLabel className="relative inline-flex items-center cursor-pointer">
         <input
           type="checkbox"
+          key={/* This is a hack so presets work */ value}
           defaultChecked={value == values[1]}
           className="sr-only peer"
           onClick={toggle}
@@ -466,9 +497,10 @@ function WidgetWrapper({label, small, className, children}) {
 }
 
 const UI_COMPONENTS = {
-  LayerContainer,
   BuilderContainer,
   ToolbarContainer,
+  PresetsContainer,
+  LayerContainer,
   MarkContainer,
   ChannelContainer,
   AdvancedMarkPropertiesContainer: AdvancedChannelPropertiesContainer,

@@ -9,7 +9,6 @@ import { ChannelBuilder, useChannelState } from "./ChannelBuilder.tsx"
 
 
 export function LayerBuilder(props: BuilderPaneProps) {
-
   const columnsLabelsToNames = {
     "None": null,
     ...Object.fromEntries(Object.keys(props.columnTypes)
@@ -33,7 +32,8 @@ export function LayerBuilder(props: BuilderPaneProps) {
     <props.ui.LayerContainer>
       <MarkBuilder
         widgets={props.widgets}
-        markState={props.layerState.mark}
+        state={props.layerState.mark.state}
+        setProperty={props.layerState.mark.setProperty}
         ui={props.ui}
         smartHideProperties={props.smartHideProperties}
       />

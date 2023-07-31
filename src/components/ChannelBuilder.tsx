@@ -30,7 +30,7 @@ export function ChannelBuilder({
   columns,
   types,
 }): React.Node {
-  const state = channelState
+  const state = channelState ?? {}
   const { channels, channelProperties } = widgets
   const [advancedShown, showAdvanced] = useState(false)
 
@@ -42,14 +42,14 @@ export function ChannelBuilder({
 
   const uiParams = {
     aggregate: { widgetHint: "select" },
-    binStep: { widgetHint: "number", placeholder: "No binning" },
+    bin: { widgetHint: "toggle" },
+    binStep: { widgetHint: "number" },
     field: { widgetHint: "select", validValues: columns },
     legend: { widgetHint: "toggle" },
     sort: { widgetHint: "select" },
     sortBy: { widgetHint: "select", validValues: channelsToLabels},
     stack: { widgetHint: "select" },
     timeUnit: { widgetHint: "select" },
-    title: { widgetHint: "text" },
     type: { widgetHint: "select", validValues: prepareTypes(types, channel) },
     value: { widgetHint: "json" },
   }
@@ -70,8 +70,8 @@ export function ChannelBuilder({
           .filter(([name, propSpec]) => !propSpec.advanced)
           .map(([name, propSpec]) => (
             <ui.GenericPickerWidget
-              vlPropType="channel-property"
-              vlPropName={name}
+              propType="channel-property"
+              propName={name}
               widgetHint={uiParams[name]?.widgetHint ?? "json"}
               label={propSpec.label}
               value={state[name]}
@@ -90,8 +90,8 @@ export function ChannelBuilder({
           .filter(([name, propSpec]) => propSpec.advanced)
           .map(([name, propSpec]) => (
             <ui.GenericPickerWidget
-              vlPropType="channel-property"
-              vlPropName={name}
+              propType="channel-property"
+              propName={name}
               widgetHint={uiParams[name]?.widgetHint ?? "json"}
               label={propSpec.label}
               value={state[name]}

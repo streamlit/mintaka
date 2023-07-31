@@ -2,10 +2,11 @@ import React, { useState, useCallback } from "react"
 
 import * as specConfig from "../specConfig.ts"
 
-export function MarkBuilder({ widgets, ui, markState, smartHideProperties }) {
+export function MarkBuilder({ widgets, ui, state, setProperty, smartHideProperties }) {
   const [advancedShown, showAdvanced] = useState(false)
 
-  const { state, setProperty } = markState
+  // TODO: Figure out better solution
+  //const { state, setProperty } = markState
   const validValues = specConfig.MARK_PROPERTY_VALUES
 
   const makeSetter = (key: str) => {
@@ -13,6 +14,8 @@ export function MarkBuilder({ widgets, ui, markState, smartHideProperties }) {
   }
 
   const uiParams = {
+    align: { widgetHint: "select" },
+    baseline: { widgetHint: "select" },
     filled: { widgetHint: "toggle" },
     interpolate: { widgetHint: "select" },
     line: { widgetHint: "toggle" },
@@ -20,11 +23,6 @@ export function MarkBuilder({ widgets, ui, markState, smartHideProperties }) {
     point: { widgetHint: "toggle" },
     shape: { widgetHint: "select" },
     type: { widgetHint: "select" },
-    // size: { label: "Size" },
-    // width: { label: "Width" },
-    // height: { label: "Height" },
-    // baseline: { label: "Baseline" },
-    // angle: { label: "Angle" },
     // strokeWidth: { label: "strokeWidth" },
     // strokeDash: { label: "strokeDash" },
   }
@@ -42,8 +40,8 @@ export function MarkBuilder({ widgets, ui, markState, smartHideProperties }) {
           .filter(([name, propSpec]) => !propSpec.advanced)
           .map(([name, propSpec]) => (
             <ui.GenericPickerWidget
-              vlPropType="mark-property"
-              vlPropName={name}
+              propType="mark-property"
+              propName={name}
               widgetHint={uiParams[name]?.widgetHint ?? "json"}
               label={propSpec.label}
               value={state[name]}
@@ -62,8 +60,8 @@ export function MarkBuilder({ widgets, ui, markState, smartHideProperties }) {
           .filter(([name, propSpec]) => propSpec.advanced)
           .map(([name, propSpec]) => (
             <ui.GenericPickerWidget
-              vlPropType="mark-property"
-              vlPropName={name}
+              propType="mark-property"
+              propName={name}
               widgetHint={uiParams[name]?.widgetHint ?? "json"}
               label={propSpec.label}
               value={state[name]}

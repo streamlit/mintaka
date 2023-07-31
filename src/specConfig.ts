@@ -14,6 +14,140 @@ export const UI_EXTRAS = {
 // For these constants, order matters! This is the order they'll appear in the UI.
 // (string keys in JS Objects are guaranteed to be ordered by insertion order)
 
+export const PRESETS = {
+  "Custom": null,
+
+  "Scatter plot": {
+    mark: {
+      type: "point",
+      filled: true,
+    },
+    findColumns: {
+      A: { type: ["quantitative", null] },
+      B: { type: ["quantitative", null] },
+      C1: { type: ["nominal", "ordinal"], maxUnique: 10 },
+      C2: { type: ["quantitative", null] },
+      D: { type: ["quantitative", null] },
+    },
+    encoding: {
+      x: { field: "A", scale: { zero: false } },
+      y: { field: "B", scale: { zero: false } },
+      size: { field: "D" },
+    },
+    ifColumn: {
+      C1: { encoding: { color: { field: "C1" } } },
+      C2: { encoding: { color: { field: "C2" } } },
+    }
+  },
+
+  "Line chart": {
+    mark: {
+      type: "line",
+    },
+    findColumns: {
+      A: { type: ["quantitative", "temporal", null] },
+      B1: { type: ["quantitative"] },
+      B2: { type: [null] },
+      C: { type: ["nominal", "ordinal"], maxUnique: 10 },
+    },
+    encoding: {
+      x: { field: "A" },
+    },
+    ifColumn: {
+      B1: { encoding: { y: { field: "B1", aggregate: "mean" } } },
+      B2: { encoding: { y: { field: "B2" } } },
+      C: { encoding: { color: { field: "C" } } },
+    },
+  },
+
+  "Area chart": {
+    mark: {
+      type: "area",
+    },
+    findColumns: {
+      A: { type: ["quantitative", null] },
+      B1: { type: ["quantitative"] },
+      B2: { type: [null] },
+      C: { type: ["nominal", "ordinal"], maxUnique: 10 },
+    },
+    encoding: {
+      x: { field: "A" },
+      opacity: { value: 0.7 },
+    },
+    ifColumn: {
+      B1: { encoding: { y: { field: "B1", aggregate: "mean", stack: false } } },
+      B2: { encoding: { y: { field: "B2", stack: false } } },
+      C: { encoding: { color: { field: "C" } } },
+    },
+  },
+
+  "Bar chart": {
+    mark: {
+      type: "bar",
+    },
+    findColumns: {
+      A1: { type: ["quantitative"] },
+      C1: { type: ["nominal", "ordinal"], maxUnique: 10 },
+      A2: {},
+      C2: {},
+    },
+    encoding: {
+    },
+    ifColumn: {
+      A1: {
+        encoding: {
+          x: { field: "A1", bin: true },
+          y: { field: "A1", aggregate: "count", stack: false },
+        },
+      },
+      A2: {
+        encoding: {
+          x: { field: "A2", type: "nominal", sort: "ascending" },
+          y: { field: "A2", aggregate: "count", stack: false },
+        },
+      },
+      C1: {
+        encoding: {
+          color: { field: "C1", bin: null },
+          xOffset: { field: "C1", bin: null },
+        },
+      },
+      C2: {
+        encoding: {
+          color: { field: "C2", bin: true },
+          xOffset: { field: "C2", bin: true }
+        },
+      },
+    }
+  },
+
+  "Pie chart": {
+    mark: {
+      type: "arc",
+    },
+    findColumns: {
+      A: { type: ["quantitative", null] },
+      B1: { type: ["nominal", "ordinal"], maxUnique: 20 },
+      B2: {},
+    },
+    encoding: {
+      theta: { field: "A", aggregate: "count" },
+    },
+    ifColumn: {
+      B1: {
+        encoding: {
+          color: { field: "B1", bin: null },
+        }
+      },
+      B2: {
+        encoding: {
+          color: { field: "B2", bin: true },
+        }
+      },
+    }
+  },
+}
+
 export const WIDGETS = {
   mark: {
     type: { label: "Type", advanced: false, default: "point" },
@@ -23,13 +157,10 @@ export const WIDGETS = {
     orient: { label: "Orient", advanced: true },
     shape: { label: "Shape", advanced: true },
     filled: { label: "Filled", advanced: true },
-    binSpacing: { label: "Bin spacing", advanced: true },
-    angle: { label: "Angle", advanced: true }
-    // size: { label: "Size", advanced: true },
+    angle: { label: "Angle", advanced: true },
+    size: { label: "Size", advanced: true },
     // width: { label: "Width", advanced: true },
     // height: { label: "Height", advanced: true },
-    // align: { label: "Align", advanced: true },
-    // baseline: { label: "Baseline", advanced: true },
     // strokeWidth: { label: "strokeWidth", advanced: true },
     // strokeDash: { label: "strokeDash", advanced: true },
     // href: { label: "Href", advanced: true},
@@ -71,6 +202,7 @@ export const WIDGETS = {
     sort: { label: "Sort", advanced: true },
     sortBy: { label: "Sort by", advanced: true },
     aggregate: { label: "Aggregate", advanced: true },
+    bin: { label: "Bin", advanced: true },
     binStep: { label: "Bin size", advanced: true },
     stack: { label: "Stack", advanced: true },
     legend: { label: "Legend", advanced: true },
@@ -82,7 +214,7 @@ export const WIDGETS = {
 export const AUTO_FIELD = "__null__"
 
 export const FIELD_TYPES = {
-  [AUTO_FIELD]: "Auto",  // We added this.
+  [AUTO_FIELD]: "Auto",
   nominal: "Nominal",
   ordinal: "Ordinal",
   quantitative: "Quantitative",
@@ -93,18 +225,18 @@ export const FIELD_TYPES = {
 export const MARK_PROPERTY_VALUES = {
   type: {
     "Point": "point",
-    "Line": "line", // Properties: point, interpolate
-    "Area": "area", // Properties: point, line, interpolate
-    "Bar": "bar", // Properties: orient, binSpacing
+    "Line": "line",
+    "Area": "area",
+    "Bar": "bar",
     "Arc": "arc",
     "Box plot": "boxplot",
     "Circle": "circle",
     "Geo shape": "geoshape",
-    "Image": "image", // Properties: width, height, align, baseline
+    "Image": "image",
     "Rect": "rect",
     "Rule": "rule",
     "Square": "square",
-    "Text": "text", // Properties: dx, dy, fontSize, limit, align, baseline
+    "Text": "text",
     "Tick": "tick",
   },
 
@@ -130,8 +262,8 @@ export const MARK_PROPERTY_VALUES = {
   },
 
   orient: {
+    "Vertical": null,
     "Horizontal": "horizontal",
-    "Vertical": "vertical",
   },
 
   shape: {
@@ -146,13 +278,13 @@ export const MARK_PROPERTY_VALUES = {
   },
 
   filled: {
-    "false": null,
-    "true": true,
+    "Outlined": null,
+    "Filled": true,
   },
 
   line: {
-    "false": null,
-    "true": true,
+    "Hidden": null,
+    "Visible": true,
   },
 }
 
@@ -208,6 +340,11 @@ export const CHANNEL_PROPERTY_VALUES = {
     "Ascending": "ascending",
     "Descending": "descending",
   },
+
+  bin: {
+    "Off": null,
+    "On": true,
+  },
 }
 
 export function keepMarkProperty(property, markType, smartHideProperties = true) {
@@ -223,13 +360,15 @@ export function keepMarkProperty(property, markType, smartHideProperties = true)
       return isElementOf(markType, ["line", "area"])
 
     case "angle":
+    case "size":
       return isElementOf(markType, ["point", "text", "image"])
+
+    case "width":
+    case "height":
+      return markType == "image"
 
     case "line":
       return markType == "area"
-
-    case "binSpacing":
-      return markType == "bar"
 
     case "orient":
       return isElementOf(markType, ["bar", "line", "area", "boxPlot"])
@@ -304,10 +443,13 @@ export function keepChannelProperty(
       return fieldIsSet && !isElementOf(channel, ["theta", "theta2", "radius", "radius2"])
 
     case "aggregate":
-      return fieldIsSet && state.binStep == null
+      return fieldIsSet && !state.bin
+
+    case "bin":
+      return fieldIsSet && state.aggregate == null
 
     case "binStep":
-      return fieldIsSet && state.aggregate == null
+      return state.bin
 
     case "stack":
       return fieldIsSet && isElementOf(channel, ["x", "y"])
