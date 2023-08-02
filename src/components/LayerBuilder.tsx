@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react"
-import merge from "lodash/merge"
+import React from "react"
 
 import * as specConfig from "../specConfig.ts"
 
 import { BuilderPaneProps } from "./commonTypes.ts"
 import { MarkBuilder } from "./MarkBuilder.tsx"
-import { ChannelBuilder, useChannelState } from "./ChannelBuilder.tsx"
+import { ChannelBuilder } from "./ChannelBuilder.tsx"
 
 
 export function LayerBuilder(props: BuilderPaneProps) {

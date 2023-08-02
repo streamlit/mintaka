@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react"
+import React, { useState } from "react"
 
 import * as specConfig from "../specConfig.ts"
 
@@ -28,7 +28,7 @@ export function MarkBuilder({ widgets, ui, state, setProperty, smartHideProperti
   }
 
   const markProperties = Object.entries(widgets.mark)
-    .filter(([name, propSpec]) =>
+    .filter(([name, _]) =>
       specConfig.keepMarkProperty(name, state.type, smartHideProperties))
 
   // TODO: Only show "show advanced" button if there *are* advanced options!
@@ -37,7 +37,7 @@ export function MarkBuilder({ widgets, ui, state, setProperty, smartHideProperti
     <ui.MarkContainer title={"Mark"} showAdvanced={showAdvanced}>
       <ui.BasicMarkPropertiesContainer>
         {markProperties
-          .filter(([name, propSpec]) => !propSpec.advanced)
+          .filter(([_, propSpec]) => !propSpec.advanced)
           .map(([name, propSpec]) => (
             <ui.GenericPickerWidget
               propType="mark-property"
@@ -57,7 +57,7 @@ export function MarkBuilder({ widgets, ui, state, setProperty, smartHideProperti
 
       <ui.AdvancedMarkPropertiesContainer visible={advancedShown}>
         {markProperties
-          .filter(([name, propSpec]) => propSpec.advanced)
+          .filter(([_, propSpec]) => propSpec.advanced)
           .map(([name, propSpec]) => (
             <ui.GenericPickerWidget
               propType="mark-property"

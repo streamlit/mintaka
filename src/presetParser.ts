@@ -29,8 +29,8 @@ function findColumns(findColsSpec, columnTypes) {
 
   const columns = {}
 
-  for (let [varName, filter] of Object.entries(findColsSpec)) {
-    let col = findColumn(
+  for (const [varName, filter] of Object.entries(findColsSpec)) {
+    const col = findColumn(
       filter, columnTypes, Object.values(columns))
 
     if (col) columns[varName] = col
@@ -43,7 +43,7 @@ function findColumn(filterSpec, columnTypes, columnsAlreadyFound) {
   if (!filterSpec) return
 
   let candidateColsAndTypes = Object.entries(columnTypes)
-      .filter(([name, info]) => {
+      .filter(([_, info]) => {
         let keep = true
 
         if (filterSpec.type) keep &= isElementOf(info.type, filterSpec.type)
@@ -64,7 +64,7 @@ function findColumn(filterSpec, columnTypes, columnsAlreadyFound) {
 function followIfConditions(spec, columns) {
   const matchingIfSpecs = Object.entries(spec.ifColumn ?? {})
     .filter(([col]) => columns[col] != null)
-    .map(([col, spec]) => spec)
+    .map(([_, spec]) => spec)
 
   if (matchingIfSpecs) merge(spec, ...matchingIfSpecs.reverse())
 }

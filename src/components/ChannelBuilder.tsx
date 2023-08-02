@@ -1,23 +1,6 @@
-import React, { useState, useCallback } from "react"
+import React, { useState } from "react"
 
 import * as specConfig from "../specConfig.ts"
-import { isElementOf } from "../array.ts"
-
-export function useChannelState(origChannelSpec: Object, fallbackState: Object) {
-  const initialState = {...fallbackState, ...origChannelSpec}
-
-  const [internalState, setInternalState] = useState(initialState)
-
-  return {
-    state: internalState,
-    setComponent: (key: str, newValue: any) => {
-      setInternalState({
-        ...internalState,
-        [key]: newValue,
-      })
-    },
-  }
-}
 
 export function ChannelBuilder({
   channel,
@@ -55,7 +38,7 @@ export function ChannelBuilder({
   }
 
   const desiredProperties = Object.entries(channelProperties)
-    .filter(([name, propSpec]) =>
+    .filter(([name, _]) =>
       specConfig.keepChannelProperty(name, channel, state, smartHideProperties))
 
   return (
@@ -67,7 +50,7 @@ export function ChannelBuilder({
     >
       <ui.BasicChannelPropertiesContainer>
         {desiredProperties
-          .filter(([name, propSpec]) => !propSpec.advanced)
+          .filter(([_, propSpec]) => !propSpec.advanced)
           .map(([name, propSpec]) => (
             <ui.GenericPickerWidget
               propType="channel-property"
@@ -87,7 +70,7 @@ export function ChannelBuilder({
 
       <ui.AdvancedChannelPropertiesContainer visible={advancedShown}>
         {desiredProperties
-          .filter(([name, propSpec]) => propSpec.advanced)
+          .filter(([_, propSpec]) => propSpec.advanced)
           .map(([name, propSpec]) => (
             <ui.GenericPickerWidget
               propType="channel-property"

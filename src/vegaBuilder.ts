@@ -1,13 +1,13 @@
 import merge from "lodash/merge"
 
-import { isElementOf, haveAnyElementsInCommon } from "./array.ts"
+import { haveAnyElementsInCommon } from "./array.ts"
 import * as specConfig from "./specConfig.ts"
 
 export function buildVegaSpec(builderState, columnTypes, baseSpec) {
   const mark = Object.fromEntries(
     Object.entries(builderState.mark.state)
-      .filter(([k, v]) => v != null)
-      .filter(([k, v]) =>
+      .filter(([_, v]) => v != null)
+      .filter(([k]) =>
         specConfig.keepMarkProperty(k, builderState.mark.state.type)))
 
   const encoding = Object.fromEntries(
@@ -129,4 +129,3 @@ function getColType(channel, colType, colName, columnTypes) {
 
   return columnTypes[colName].type
 }
-

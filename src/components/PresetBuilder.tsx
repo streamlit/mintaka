@@ -1,25 +1,16 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useCallback } from "react"
 
 import * as specConfig from "../specConfig.ts"
 import { setBuilderStateFromPreset } from "../presetParser.ts"
-
-import { BuilderPaneProps } from "./commonTypes.ts"
-import { BuilderPane } from "./Builder.tsx"
 
 
 export function PresetBuilder(props) {
   const presets = props.presets ?? specConfig.PRESETS
 
-  const [spec, setSpec] = useState(
-    setBuilderStateFromPreset(
-      props.builderState,
-      Object.values(presets)[0],
-      props.columnTypes))
-
   const setPreset = useCallback((preset) => {
     setBuilderStateFromPreset(
       props.builderState, preset, props.columnTypes)
-  })
+  }, [props.builderState, props.columnTypes])
 
   return (
     <props.ui.PresetsContainer title="Chart type">
@@ -30,7 +21,7 @@ export function PresetBuilder(props) {
         label={"Preset"}
         value={null}
         setValue={setPreset}
-        items={specConfig.PRESETS}
+        items={presets}
         advanced={false}
       />
     </props.ui.PresetsContainer>

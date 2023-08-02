@@ -6,7 +6,8 @@ import arrow from "vega-loader-arrow"
 import backspaceIconSvg from "./assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 import tuneIconSvg from "./assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
-import { BuilderPane, useSpecState } from "./components/Builder.tsx"
+import { useSpecState } from "./components/useSpecState.ts"
+import { BuilderPane } from "./components/Builder.tsx"
 import { simpleColumnTypeDetector } from "./simpleColumnTypeDetector.ts"
 import { PreviewPane } from "./components/PreviewPane.tsx"
 
@@ -34,7 +35,13 @@ function App() {
   const specState = useSpecState(spec)
 
   // Handle dataset changes gracefully.
-  useEffect(() => setKey(key + 1), [dataset])
+  useEffect(() => {
+    setKey(key + 1)
+  }, [
+    dataset,
+    // key,
+    // setKey,
+  ])
 
   useEffect(() => {
     setcolumnTypes(Object.fromEntries(
@@ -190,7 +197,7 @@ function GenericContainer({title, children, expandable, expandedByDefault, showA
       setAdvShown(false)
       if (showAdvanced) showAdvanced(false)
     }
-  }, [expandable, expanded, setExpanded])
+  }, [expandable, expanded, setExpanded, setAdvShown, showAdvanced])
 
   const expandedWrapperStyles = [
     "flex flex-col",
@@ -273,7 +280,7 @@ function AdvancedChannelPropertiesContainer({visible, children}) {
   )
 }
 
-function GenericPickerWidget({propType, widgetHint, label, value, setValue, advanced, items, placeholder}) {
+function GenericPickerWidget({propType, widgetHint, label, value, setValue, items, placeholder}) {
   if (propType == "chartType") label = null
 
   switch (widgetHint) {
@@ -410,13 +417,11 @@ function TextInput({label, value, placeholder, setValue, small}) {
 }
 
 function Toggle({label, items, value, setValue, small}) {
-  let labels, values
+  let values
 
   if (Array.isArray(items)) {
-    labels = items
     values = items
   } else {
-    labels = Object.keys(items)
     values = Object.values(items)
   }
 
