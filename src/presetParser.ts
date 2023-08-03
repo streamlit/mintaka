@@ -20,8 +20,8 @@ export function setBuilderStateFromPreset(
       {...channelSpec, field: columns[channelSpec.field]}
     ]))
 
-  builderState.mark.setState({ ...spec.mark })
-  builderState.encoding.setState({ ...encodingState })
+  builderState.setMark({ ...spec.mark })
+  builderState.setEncoding({ ...encodingState })
 }
 
 function findColumns(findColsSpec, columnTypes) {

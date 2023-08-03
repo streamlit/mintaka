@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react"
 
 import * as specConfig from "../specConfig.ts"
-import { buildVegaSpec } from "../vegaBuilder.ts"
+import { generateVegaSpec } from "../vegaBuilder.ts"
 
 import { useBuilderState } from "./useBuilderState.ts"
 import { BuilderPaneProps } from "./commonTypes.ts"
@@ -11,26 +11,23 @@ import { PresetBuilder } from "./PresetBuilder.tsx"
 
 export function BuilderPane(props: BuilderPaneProps) {
   const widgets = props.widgets ?? specConfig.WIDGETS
-
-  const [key, setKey] = useState(0)
-  const builderState = useBuilderState(props.columnTypes, widgets, props.baseSpec)
+  const builderState = useBuilderState(widgets, props.columnTypes, props.baseSpec)
 
   const reset = useCallback(() => {
-    setKey(key + 1)
-  }, [ setKey, key ])
+    builderState.reset()
+  }, [ builderState ])
 
   useEffect(() => {
-    props.state.setSpec(
-      buildVegaSpec(builderState, props.columnTypes, props.baseSpec)
+    props.setGeneratedSpec(
+      generateVegaSpec(builderState, props.columnTypes, props.baseSpec)
     )
   }, [
       props.baseSpec,
       props.columnTypes,
-      // props.state,
-      props.state.setSpec,
+      props.setGeneratedSpec,
       // builderState,
-      builderState.mark.state,
-      builderState.encoding.states,
+      builderState.mark,
+      builderState.encoding,
   ])
 
   return (
@@ -44,7 +41,6 @@ export function BuilderPane(props: BuilderPaneProps) {
         />
 
       <LayerBuilder
-        key={`builder-${key}`}
         layerState={builderState}
         columnTypes={props.columnTypes}
         ui={props.ui}

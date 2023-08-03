@@ -17,7 +17,7 @@ export function LayerBuilder(props: BuilderPaneProps) {
   const selectedChannels = Object.entries(props.widgets.channels)
     .filter(([channel]) => (
       specConfig.keepChannel(
-        channel, props.layerState.mark.state.type, props.smartHideProperties
+        channel, props.layerState.mark.type, props.smartHideProperties
       )
     ))
 
@@ -31,8 +31,8 @@ export function LayerBuilder(props: BuilderPaneProps) {
     <props.ui.LayerContainer>
       <MarkBuilder
         widgets={props.widgets}
-        state={props.layerState.mark.state}
-        setProperty={props.layerState.mark.setProperty}
+        state={props.layerState.mark}
+        makeSetter={props.layerState.getMarkSetter}
         ui={props.ui}
         smartHideProperties={props.smartHideProperties}
       />
@@ -41,8 +41,8 @@ export function LayerBuilder(props: BuilderPaneProps) {
         .map(([channel]) => (
           <ChannelBuilder
             channel={channel}
-            channelState={props.layerState.encoding.states[channel]}
-            setChannelProperty={props.layerState.encoding.setProperty(channel)}
+            channelState={props.layerState.encoding[channel]}
+            makeSetter={props.layerState.getEncodingSetter(channel)}
             widgets={props.widgets}
             channelsToLabels={channelsToLabels}
             ui={props.ui}

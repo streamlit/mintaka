@@ -5,7 +5,7 @@ import * as specConfig from "../specConfig.ts"
 export function ChannelBuilder({
   channel,
   channelState,
-  setChannelProperty,
+  makeSetter,
   widgets,
   ui,
   smartHideProperties,
@@ -16,10 +16,6 @@ export function ChannelBuilder({
   const state = channelState ?? {}
   const { channels, channelProperties } = widgets
   const [advancedShown, showAdvanced] = useState(false)
-
-  const makeSetter = (key: str) => {
-    return (newValue: any) => setChannelProperty(key, newValue)
-  }
 
   const validValues = specConfig.CHANNEL_PROPERTY_VALUES
 

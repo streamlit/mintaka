@@ -2,16 +2,19 @@ import React, { useState } from "react"
 
 import * as specConfig from "../specConfig.ts"
 
-export function MarkBuilder({ widgets, ui, state, setProperty, smartHideProperties }) {
+export function MarkBuilder({
+  widgets,
+  ui,
+  state,
+  makeSetter,
+  //setProperty,
+  smartHideProperties,
+}) {
   const [advancedShown, showAdvanced] = useState(false)
 
   // TODO: Figure out better solution
   //const { state, setProperty } = markState
   const validValues = specConfig.MARK_PROPERTY_VALUES
-
-  const makeSetter = (key: str) => {
-    return (newValue: any) => setProperty(key, newValue)
-  }
 
   const uiParams = {
     align: { widgetHint: "select" },

@@ -6,8 +6,7 @@ import arrow from "vega-loader-arrow"
 import backspaceIconSvg from "./assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 import tuneIconSvg from "./assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
-import { useSpecState } from "./components/useSpecState.ts"
-import { BuilderPane } from "./components/Builder.tsx"
+import { BuilderPane } from "./components/BuilderPane.tsx"
 import { simpleColumnTypeDetector } from "./simpleColumnTypeDetector.ts"
 import { PreviewPane } from "./components/PreviewPane.tsx"
 
@@ -22,7 +21,7 @@ import "./App.css"
 // Register arrow reader under type "arrow"
 formats("arrow", arrow);
 
-const spec = {
+const baseSpec = {
   mark: "circle", // Anything. So Vega doesn't throw a warning.
   width: "container",
   height: "container",
@@ -32,16 +31,12 @@ function App() {
   const [dataset, setDataset] = useState(irisDataset)
   const [columnTypes, setcolumnTypes] = useState({})
   const [key, setKey] = useState(0)
-  const specState = useSpecState(spec)
+  const [generatedSpec, setGeneratedSpec] = useState(baseSpec)
 
   // Handle dataset changes gracefully.
   useEffect(() => {
     setKey(key + 1)
-  }, [
-    dataset,
-    // key,
-    // setKey,
-  ])
+  }, [dataset, /* key, setKey */])
 
   useEffect(() => {
     setcolumnTypes(Object.fromEntries(
@@ -56,15 +51,15 @@ function App() {
       <div className="flex h-[800px] flex-row border border-slate-200 rounded">
         <BuilderPane
           key={key}
-          state={specState}
           columnTypes={columnTypes}
-          baseSpec={spec}
+          baseSpec={baseSpec}
+          setGeneratedSpec={setGeneratedSpec}
           ui={UI_COMPONENTS}
         />
 
         <PreviewPane
           className="flex-auto align-self-stretch"
-          spec={specState.spec}
+          spec={generatedSpec}
           data={dataset}
         />
       </div>
@@ -93,7 +88,7 @@ function App() {
           <h3 className="text-slate-500 font-bold text-xs uppercase">Output</h3>
           <pre className="text-slate-800 bg-slate-100 text-sm p-4 rounded-lg">
             <code>
-              { JSON.stringify(specState.spec, undefined, 4) }
+              { JSON.stringify(generatedSpec, undefined, 4) }
             </code>
           </pre>
         </div>

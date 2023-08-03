@@ -3,18 +3,18 @@ import merge from "lodash/merge"
 import { haveAnyElementsInCommon } from "./array.ts"
 import * as specConfig from "./specConfig.ts"
 
-export function buildVegaSpec(builderState, columnTypes, baseSpec) {
+export function generateVegaSpec(builderState, columnTypes, baseSpec) {
   const mark = Object.fromEntries(
-    Object.entries(builderState.mark.state)
+    Object.entries(builderState.mark)
       .filter(([_, v]) => v != null)
       .filter(([k]) =>
-        specConfig.keepMarkProperty(k, builderState.mark.state.type)))
+        specConfig.keepMarkProperty(k, builderState.mark.type)))
 
   const encoding = Object.fromEntries(
-    Object.entries(builderState.encoding.states)
+    Object.entries(builderState.encoding)
       .filter(([channel]) =>
         specConfig.keepChannel(
-          channel, builderState.mark.state.type))
+          channel, builderState.mark.type))
       .map(([channel, channelState]) => {
         const channelSpec = buildChannelSpec(channel, channelState, columnTypes)
         if (channelSpec) return [channel, channelSpec]
@@ -40,7 +40,7 @@ export function buildVegaSpec(builderState, columnTypes, baseSpec) {
     },
   }
 
-  const transforms = buildTransforms(builderState.encoding.states)
+  const transforms = buildTransforms(builderState.encoding)
 
   if (transforms) {
     builderSpec.data = {
