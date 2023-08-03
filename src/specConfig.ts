@@ -15,8 +15,6 @@ export const UI_EXTRAS = {
 // (string keys in JS Objects are guaranteed to be ordered by insertion order)
 
 export const PRESETS = {
-  "Custom": null,
-
   "Scatter plot": {
     mark: {
       type: "point",
@@ -117,6 +115,40 @@ export const PRESETS = {
           color: { field: "C2", bin: true },
           xOffset: { field: "C2", bin: true }
         },
+      },
+    }
+  },
+
+  "Stacked bar chart": {
+    mark: {
+      type: "bar",
+    },
+    findColumns: {
+      A1: { type: ["quantitative"] },
+      C1: { type: ["nominal", "ordinal"], maxUnique: 10 },
+      A2: {},
+      C2: {},
+    },
+    encoding: {
+    },
+    ifColumn: {
+      A1: {
+        encoding: {
+          y: { field: "A1", aggregate: "count" },
+          x: { field: "A1", bin: true },
+        },
+      },
+      A2: {
+        encoding: {
+          x: { field: "A2", type: "nominal", sort: "ascending" },
+          y: { field: "A2", aggregate: "count" },
+        },
+      },
+      C1: {
+        encoding: { color: { field: "C1", bin: null } },
+      },
+      C2: {
+        encoding: { color: { field: "C2", bin: true } },
       },
     }
   },
