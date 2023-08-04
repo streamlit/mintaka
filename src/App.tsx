@@ -99,7 +99,7 @@ function App() {
 
 function BuilderContainer({children}) {
   return (
-    <div className="flex flex-col gap-8 p-4 w-64 overflow-y-auto">
+    <div className="flex flex-col p-4 w-64 overflow-y-auto">
       {children}
     </div>
   )
@@ -107,7 +107,23 @@ function BuilderContainer({children}) {
 
 function LayerContainer({children}) {
   return (
-    <div className="flex flex-row flex-wrap content-start order-1">
+    <div className="flex flex-col order-1">
+      {children}
+    </div>
+  )
+}
+
+function EncodingContainer({children}) {
+  return (
+    <div className="flex flex-col order-1">
+      {children}
+    </div>
+  )
+}
+
+function EncodingGroupContainer({children}) {
+  return (
+    <div className="flex flex-row flex-wrap items-start order-1">
       {children}
     </div>
   )
@@ -150,49 +166,50 @@ function PresetsContainer({title, children}) {
   )
 }
 
-function MarkContainer({title, children, showAdvanced}) {
+function MarkContainer({title, children, showAdvanced, setUIState}) {
   return (
     <GenericContainer
       title={title}
-      showAdvanced={showAdvanced}
-      expandedByDefault={true}
-      expandable={true}
+      expandable={false}
+      setUIState={setUIState}
     >
       {children}
     </GenericContainer>
   )
 }
 
-function ChannelContainer({title, children, expandedByDefault, showAdvanced}) {
+function ChannelContainer({title, children, groupName, setUIState}) {
   return (
     <GenericContainer
       title={title}
-      expandedByDefault={expandedByDefault}
-      showAdvanced={showAdvanced}
-      expandable={true}
+      expandedByDefault={false}
+      expandable={groupName == "advanced"}
+      setUIState={setUIState}
     >
       {children}
     </GenericContainer>
   )
 }
 
-function GenericContainer({title, children, expandable, expandedByDefault, showAdvanced}) {
+function GenericContainer({title, children, expandable, expandedByDefault, showAdvanced, setUIState}) {
   const [expanded, setExpanded] = useState(expandedByDefault || !expandable)
   const [advShown, setAdvShown] = useState(false)
 
   const toggleAdvanced = useCallback(() => {
     setAdvShown(!advShown)
+    if (setUIState) setUIState(advShown ? null : "advShown")
     if (showAdvanced) showAdvanced(!advShown)
-  }, [advShown, setAdvShown, showAdvanced])
+  }, [advShown, setAdvShown, setUIState, showAdvanced])
 
   const toggleExpanded = useCallback(() => {
     setExpanded(!expanded)
 
-    if (!expanded == false) {
+    if (expanded) {
       setAdvShown(false)
       if (showAdvanced) showAdvanced(false)
+      if (setUIState) setUIState(null)
     }
-  }, [expandable, expanded, setExpanded, setAdvShown, showAdvanced])
+  }, [expandable, expanded, setExpanded, setAdvShown, setUIState])
 
   const expandedWrapperStyles = [
     "flex flex-col",
@@ -235,7 +252,7 @@ function GenericContainer({title, children, expandable, expandedByDefault, showA
             {title.toUpperCase()}
           </label>
 
-          {expanded && showAdvanced && (
+          {expanded && setUIState && (
             <div className={toolbarStyles}>
               <button className={advButtonStyles} onClick={toggleAdvanced}>
                 <img src={tuneIconSvg} alt="Advanced" />
@@ -254,28 +271,29 @@ function GenericContainer({title, children, expandable, expandedByDefault, showA
   )
 }
 
-function BasicChannelPropertiesContainer({children}) {
-  return (
-    <div className="grid grid-cols-3 gap-1">
-      {children}
-    </div>
-  )
+function ChannelPropertiesContainer({children, groupName, uiState}) {
+  if (groupName == "basic") {
+    return (
+      <div className="grid grid-cols-3 gap-1">
+        {children}
+      </div>
+    )
+
+  } else {
+    const styles = [
+      "grid grid-cols-3 gap-1",
+      uiState == "advShown" ? "" : "hidden",
+    ].join(" ")
+
+    return (
+      <div className={styles}>
+        {children}
+      </div>
+    )
+  }
 }
 
-function AdvancedChannelPropertiesContainer({visible, children}) {
-  const styles = [
-    "grid grid-cols-3 gap-1",
-    visible ? "" : "hidden",
-  ].join(" ")
-
-  return (
-    <div className={styles}>
-      {children}
-    </div>
-  )
-}
-
-function GenericPickerWidget({propType, widgetHint, label, value, setValue, items, placeholder}) {
+function GenericPickerWidget({propType, widgetHint, label, value, setValue, items, placeholder, groupName}) {
   if (propType == "chartType") label = null
 
   switch (widgetHint) {
@@ -286,6 +304,7 @@ function GenericPickerWidget({propType, widgetHint, label, value, setValue, item
           items={items}
           value={value}
           setValue={setValue}
+          groupName={groupName}
         />
       )
 
@@ -296,6 +315,7 @@ function GenericPickerWidget({propType, widgetHint, label, value, setValue, item
           items={items}
           value={value}
           setValue={setValue}
+          groupName={groupName}
         />
       )
 
@@ -309,6 +329,7 @@ function GenericPickerWidget({propType, widgetHint, label, value, setValue, item
           placeholder={placeholder ?? "Default"}
           value={value}
           setValue={setValue}
+          groupName={groupName}
         />
       )
   }
@@ -498,17 +519,17 @@ function WidgetWrapper({label, small, className, children}) {
 
 const UI_COMPONENTS = {
   BuilderContainer,
-  ToolbarContainer,
-  PresetsContainer,
+  Button,
+  ChannelContainer,
+  ChannelPropertiesContainer,
+  EncodingContainer,
+  EncodingGroupContainer,
+  GenericPickerWidget,
   LayerContainer,
   MarkContainer,
-  ChannelContainer,
-  AdvancedMarkPropertiesContainer: AdvancedChannelPropertiesContainer,
-  BasicMarkPropertiesContainer: BasicChannelPropertiesContainer,
-  AdvancedChannelPropertiesContainer,
-  BasicChannelPropertiesContainer,
-  GenericPickerWidget,
-  Button,
+  MarkPropertiesContainer: ChannelPropertiesContainer,
+  PresetsContainer,
+  ToolbarContainer,
 }
 
 export default App

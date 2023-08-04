@@ -1,61 +1,33 @@
 import React from "react"
 
-import * as specConfig from "../specConfig.ts"
-
-import { BuilderPaneProps } from "./commonTypes.ts"
 import { MarkBuilder } from "./MarkBuilder.tsx"
-import { ChannelBuilder } from "./ChannelBuilder.tsx"
+import { EncodingBuilder } from "./EncodingBuilder.tsx"
 
 
-export function LayerBuilder(props: BuilderPaneProps) {
-  const columnsLabelsToNames = {
-    "None": null,
-    ...Object.fromEntries(Object.keys(props.columnTypes)
-      .map(c => [c, c]))
-  }
-
-  const selectedChannels = Object.entries(props.widgets.channels)
-    .filter(([channel]) => (
-      specConfig.keepChannel(
-        channel, props.layerState.mark.type, props.smartHideProperties
-      )
-    ))
-
-  const channelsToLabels = {
-    "": specConfig.AUTO_FIELD,
-    ...Object.fromEntries(selectedChannels
-      .map(([name, propSpec]) => [propSpec.label, name]))
-  }
-
+export function LayerBuilder({
+  columnTypes,
+  smartHideProperties,
+  state,
+  ui,
+  widgets,
+}) {
   return (
-    <props.ui.LayerContainer>
+    <ui.LayerContainer>
       <MarkBuilder
-        widgets={props.widgets}
-        state={props.layerState.mark}
-        makeSetter={props.layerState.getMarkSetter}
-        ui={props.ui}
-        smartHideProperties={props.smartHideProperties}
+        widgets={widgets}
+        state={state.mark}
+        makeSetter={state.getMarkSetter}
+        ui={ui}
+        smartHideProperties={smartHideProperties}
       />
 
-      {selectedChannels
-        .map(([channel]) => (
-          <ChannelBuilder
-            channel={channel}
-            channelState={props.layerState.encoding[channel]}
-            makeSetter={props.layerState.getEncodingSetter(channel)}
-            widgets={props.widgets}
-            channelsToLabels={channelsToLabels}
-            ui={props.ui}
-            smartHideProperties={props.smartHideProperties}
-            columns={{
-              ...columnsLabelsToNames,
-              ...specConfig.UI_EXTRAS[channel]?.extraCols
-            }}
-            types={specConfig.FIELD_TYPES}
-            key={channel}
-          />
-        ))
-      }
-    </props.ui.LayerContainer>
+      <EncodingBuilder
+        columnTypes={columnTypes}
+        widgets={widgets}
+        ui={ui}
+        state={state}
+        smartHideProperties={smartHideProperties}
+      />
+    </ui.LayerContainer>
   )
 }

@@ -7,12 +7,16 @@ interface PreviewProps {
   className: str,
 }
 
-export function PreviewPane(props: PreviewProps): React.Node {
+export function PreviewPane({
+  data,
+  spec,
+  className,
+}: PreviewProps): React.Node {
   return (
     <Vega
-      className={props.className}
-      spec={props.spec}
-      data={{ dataset1: props.data }}
+      className={className}
+      spec={spec}
+      data={{ dataset1: data }}
       />
   )
 }

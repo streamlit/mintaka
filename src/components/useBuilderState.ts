@@ -1,22 +1,41 @@
 import { useState, useCallback } from "react"
 
-export function useBuilderState(widgets, columnTypes, fromVlSpec) {
+export function useBuilderState(widgets, columnTypes, baseSpec) {
   // TODO: If we want to use the baseSpec here for defaults, then we need
   // to be able to convert it to a format we use for the state. That's complex
   // because specs have several shorthands. For example, mark can be "circle"
   // or {"type": "circle"}.
 
   const getEmptyMark = () => {
-    return Object.fromEntries(
-      Object.keys(widgets.mark).map((name) => [
-        name,
-        fromVlSpec?.mark?.[name] ?? widgets.mark[name]?.default
-      ]))
+    // Flatten widgets.mark
+    const allMarks = Object.values(widgets.mark)
+      .reduce((obj, markGroup) => {
+        Object.assign(obj, markGroup)
+        return obj
+      }, {})
+
+    const marks = Object.fromEntries(
+      Object.keys(allMarks).map((name) => [
+        name, baseSpec?.mark?.[name]
+      ])
+    )
+
+    // Vega requirest a type in order to even draw.
+    if (!marks.type) marks.type = "point"
+
+    return marks
   }
 
   const getEmptyEncoding = () => {
+    // Flatten widgets.encoding
+    const allChannels = Object.values(widgets.encoding)
+      .reduce((obj, channelGroup) => {
+        Object.assign(obj, channelGroup)
+        return obj
+      }, {})
+
     return Object.fromEntries(
-      Object.entries(widgets.channels).map(([name, propertySpec]) => {
+      Object.entries(allChannels).map(([name, propertySpec]) => {
         const defaultColIndex = propertySpec.defaultColIndex
         const defaultColName = Object.keys(columnTypes)[defaultColIndex]
 
@@ -26,7 +45,7 @@ export function useBuilderState(widgets, columnTypes, fromVlSpec) {
 
         return [
           name,
-          fromVlSpec?.encoding?.[name] ?? propertySpecState
+          baseSpec?.encoding?.[name] ?? propertySpecState
         ]
       })
     )

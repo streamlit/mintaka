@@ -2,7 +2,7 @@ import merge from "lodash/merge"
 
 import { isElementOf } from "./array.ts"
 
-export function setBuilderStateFromPreset(
+export function updateStateFromPreset(
   builderState, presetSpec, columnTypes
 ) {
   if (presetSpec == null) return null

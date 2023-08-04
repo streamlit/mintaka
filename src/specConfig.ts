@@ -182,65 +182,77 @@ export const PRESETS = {
 
 export const WIDGETS = {
   mark: {
-    type: { label: "Type", advanced: false, default: "point" },
-    line: { label: "Line", advanced: true },
-    point: { label: "Point", advanced: true },
-    interpolate: { label: "Interpolate", advanced: true },
-    orient: { label: "Orient", advanced: true },
-    shape: { label: "Shape", advanced: true },
-    filled: { label: "Filled", advanced: true },
-    angle: { label: "Angle", advanced: true },
-    size: { label: "Size", advanced: true },
-    // width: { label: "Width", advanced: true },
-    // height: { label: "Height", advanced: true },
-    // strokeWidth: { label: "strokeWidth", advanced: true },
-    // strokeDash: { label: "strokeDash", advanced: true },
-    // href: { label: "Href", advanced: true},
+    basic: {
+      type: { label: "Type" },
+    },
+    advanced: {
+      line: { label: "Line" },
+      point: { label: "Point" },
+      interpolate: { label: "Interpolate" },
+      orient: { label: "Orient" },
+      shape: { label: "Shape" },
+      filled: { label: "Filled" },
+      angle: { label: "Angle" },
+      size: { label: "Size" },
+      // width: { label: "Width" },
+      // height: { label: "Height" },
+      // strokeWidth: { label: "strokeWidth" },
+      // strokeDash: { label: "strokeDash" },
+      // href: { label: "Href" },
+    },
   },
 
-  channels: {
-    text: { label: "Text", advanced: false },
-    url: { label: "URL", advanced: false },
-    x: { label: "X", advanced: false, defaultColIndex: 0 },
-    x2: { label: "X2", advanced: true },
-    y: { label: "Y", advanced: false, defaultColIndex: 1 },
-    y2: { label: "Y2", advanced: true },
-    theta: { label: "Theta", advanced: false, defaultColIndex: 0 },
-    theta2: { label: "Theta2", advanced: true },
-    radius: { label: "Radius", advanced: true },
-    radius2: { label: "Radius2", advanced: true },
-    latitude: { label: "Latitude", advanced: false },
-    latitude2: { label: "Latitude2", advanced: true },
-    longitude: { label: "Longitude", advanced: false },
-    longitude2: { label: "Longitude2", advanced: true },
-    color: { label: "Color", advanced: false },
-    size: { label: "Size", advanced: true },
-    opacity: { label: "Opacity", advanced: true },
-    facet: { label: "Facet", advanced: true },
-    row: { label: "Row", advanced: true },
-    column: { label: "Column", advanced: true },
-    xOffset: { label: "X offset", advanced: true },
-    yOffset: { label: "Y offset", advanced: true },
-    // angle
-    // strokeWidth, strokeDash
-    // shape
-    // tooltip
+  encoding: {
+    basic: {
+      text: { label: "Text" },
+      url: { label: "URL" },
+      x: { label: "X" },
+      y: { label: "Y" },
+      theta: { label: "Theta" },
+      latitude: { label: "Latitude" },
+      longitude: { label: "Longitude" },
+      color: { label: "Color" },
+    },
+
+    advanced: {
+      x2: { label: "X2" },
+      y2: { label: "Y2" },
+      theta2: { label: "Theta2" },
+      radius: { label: "Radius" },
+      radius2: { label: "Radius2" },
+      latitude2: { label: "Latitude2" },
+      longitude2: { label: "Longitude2" },
+      size: { label: "Size" },
+      opacity: { label: "Opacity" },
+      facet: { label: "Facet" },
+      row: { label: "Row" },
+      column: { label: "Column" },
+      xOffset: { label: "X offset" },
+      yOffset: { label: "Y offset" },
+      // angle
+      // strokeWidth, strokeDash
+      // shape
+      // tooltip
+    },
   },
 
   channelProperties: {
-    field: { label: "Field", advanced: false },
-    value: { label: "Value", advanced: true },
-    type: { label: "Type", advanced: true },
-    sort: { label: "Sort", advanced: true },
-    sortBy: { label: "Sort by", advanced: true },
-    aggregate: { label: "Aggregate", advanced: true },
-    bin: { label: "Bin", advanced: true },
-    binStep: { label: "Bin size", advanced: true },
-    stack: { label: "Stack", advanced: true },
-    legend: { label: "Legend", advanced: true },
-    timeUnit: { label: "Time unit", advanced: true },
-    title: { label: "Title", advanced: true },
-  }
+    basic: {
+      field: { label: "Field" },
+    },
+    advanced: {
+      value: { label: "Value" },
+      type: { label: "Type" },
+      sort: { label: "Sort" },
+      aggregate: { label: "Aggregate" },
+      bin: { label: "Bin" },
+      binStep: { label: "Bin size" },
+      stack: { label: "Stack" },
+      timeUnit: { label: "Time unit"},
+      title: { label: "Title" },
+      legend: { label: "Legend" },
+    },
+  },
 }
 
 export const AUTO_FIELD = "__null__"

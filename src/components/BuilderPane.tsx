@@ -9,50 +9,59 @@ import { LayerBuilder } from "./LayerBuilder.tsx"
 import { PresetBuilder } from "./PresetBuilder.tsx"
 
 
-export function BuilderPane(props: BuilderPaneProps) {
-  const widgets = props.widgets ?? specConfig.WIDGETS
-  const builderState = useBuilderState(widgets, props.columnTypes, props.baseSpec)
+export function BuilderPane({
+  widgets,
+  columnTypes,
+  baseSpec,
+  setGeneratedSpec,
+  ui,
+  presets,
+  smartHideProperties
+}: BuilderPaneProps) {
+  if (!widgets) widgets = specConfig.WIDGETS
+
+  const state = useBuilderState(widgets, columnTypes, baseSpec)
 
   const reset = useCallback(() => {
-    builderState.reset()
-  }, [ builderState ])
+    state.reset()
+  }, [ state ])
 
   useEffect(() => {
-    props.setGeneratedSpec(
-      generateVegaSpec(builderState, props.columnTypes, props.baseSpec)
+    setGeneratedSpec(
+      generateVegaSpec(state, columnTypes, baseSpec)
     )
   }, [
-      props.baseSpec,
-      props.columnTypes,
-      props.setGeneratedSpec,
-      // builderState,
-      builderState.mark,
-      builderState.encoding,
+      baseSpec,
+      columnTypes,
+      setGeneratedSpec,
+      // state,
+      state.mark,
+      state.encoding,
   ])
 
   return (
-    <props.ui.BuilderContainer>
+    <ui.BuilderContainer>
       <PresetBuilder
-        builderState={builderState}
-        columnTypes={props.columnTypes}
-        baseSpec={props.baseSpec}
-        ui={props.ui}
-        preset={props.presets}
+        state={state}
+        columnTypes={columnTypes}
+        baseSpec={baseSpec}
+        ui={ui}
+        preset={presets}
         />
 
       <LayerBuilder
-        layerState={builderState}
-        columnTypes={props.columnTypes}
-        ui={props.ui}
+        state={state}
+        columnTypes={columnTypes}
+        ui={ui}
         widgets={widgets}
-        smartHideProperties={props.smartHideProperties}
+        smartHideProperties={smartHideProperties}
         />
 
-      <props.ui.ToolbarContainer>
-        <props.ui.Button onClick={reset}>
+      <ui.ToolbarContainer>
+        <ui.Button onClick={reset}>
           Reset
-        </props.ui.Button>
-      </props.ui.ToolbarContainer>
-    </props.ui.BuilderContainer>
+        </ui.Button>
+      </ui.ToolbarContainer>
+    </ui.BuilderContainer>
   )
 }
