@@ -30,11 +30,20 @@ export const PRESETS = {
     encoding: {
       x: { field: "A", scale: { zero: false } },
       y: { field: "B", scale: { zero: false } },
-      size: { field: "D" },
     },
     ifColumn: {
-      C1: { encoding: { color: { field: "C1" } } },
-      C2: { encoding: { color: { field: "C2" } } },
+      C1: {
+        encoding: {
+          color: { field: "C1" },
+          size: { field: "C2" },
+        }
+      },
+      C2: {
+        encoding: {
+          color: { field: "C2" },
+          size: { field: "D" },
+        }
+      },
     }
   },
 
@@ -70,11 +79,31 @@ export const PRESETS = {
     },
     encoding: {
       x: { field: "A" },
-      opacity: { value: 0.7 },
+      opacity: { value: 0.75 },
     },
     ifColumn: {
       B1: { encoding: { y: { field: "B1", aggregate: "mean", stack: false } } },
       B2: { encoding: { y: { field: "B2", stack: false } } },
+      C: { encoding: { color: { field: "C" } } },
+    },
+  },
+
+  "Stacked area chart": {
+    mark: {
+      type: "area",
+    },
+    findColumns: {
+      A: { type: ["quantitative", null] },
+      B1: { type: ["quantitative"] },
+      B2: { type: [null] },
+      C: { type: ["nominal", "ordinal"], maxUnique: 10 },
+    },
+    encoding: {
+      x: { field: "A" },
+    },
+    ifColumn: {
+      B1: { encoding: { y: { field: "B1", aggregate: "mean" } } },
+      B2: { encoding: { y: { field: "B2" } } },
       C: { encoding: { color: { field: "C" } } },
     },
   },
@@ -178,6 +207,33 @@ export const PRESETS = {
       },
     }
   },
+
+  "Ring chart": {
+    mark: {
+      type: "arc",
+      radius2: { expr: "min(containerSize()[0], containerSize()[1]) / 3" },
+    },
+    findColumns: {
+      A: { type: ["quantitative", null] },
+      B1: { type: ["nominal", "ordinal"], maxUnique: 20 },
+      B2: {},
+    },
+    encoding: {
+      theta: { field: "A", aggregate: "count" },
+    },
+    ifColumn: {
+      B1: {
+        encoding: {
+          color: { field: "B1", bin: null },
+        }
+      },
+      B2: {
+        encoding: {
+          color: { field: "B2", bin: true },
+        }
+      },
+    }
+  },
 }
 
 export const WIDGETS = {
@@ -194,6 +250,8 @@ export const WIDGETS = {
       filled: { label: "Filled" },
       angle: { label: "Angle" },
       size: { label: "Size" },
+      radius: { label: "Radius" },
+      radius2: { label: "Inner radius" },
       // width: { label: "Width" },
       // height: { label: "Height" },
       // strokeWidth: { label: "strokeWidth" },
@@ -406,6 +464,10 @@ export function keepMarkProperty(property, markType, smartHideProperties = true)
     case "angle":
     case "size":
       return isElementOf(markType, ["point", "text", "image"])
+
+    case "radius":
+    case "radius2":
+      return markType == "arc"
 
     case "width":
     case "height":
