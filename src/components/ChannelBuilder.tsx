@@ -1,18 +1,28 @@
 import React, { useState } from "react"
 
 export function ChannelBuilder({
-  channel,
+  channel: channelName,
   channelSpec,
   channelState,
-  groupName,
-  makeSetter,
-  config,
-  ui,
-  smartHideProperties,
   columns,
+  config,
+  groupName: channelGroupName,
+  makeSetter,
+  smartHideProperties,
+  ui,
 }): React.Node {
   const state = channelState ?? {}
   const { channelProperties } = config
+
+  // Useful variables for the developer.
+  const hasSomethingSet = Object.values(state).some(v => v != null)
+  const groupHasSomethingSet = Object.fromEntries(
+    Object.entries(channelProperties).map(([groupName, groupItems]) =>
+      [groupName, Object.keys(groupItems).some(k => state[k] != null)]
+    )
+  )
+
+  // Some state for the developer to use however they want.
   const [uiState, setUIState] = useState(null)
 
   const validValues = config.channelPropertyValues
@@ -28,17 +38,19 @@ export function ChannelBuilder({
     timeUnit: { widgetHint: "select" },
     type: {
       widgetHint: "select",
-      validValues: prepareTypes(channel, config.fieldTypes),
+      validValues: prepareTypes(channelName, config.fieldTypes),
     },
     value: { widgetHint: "json" },
   }
 
   return (
     <ui.ChannelContainer
-      vlName={channel}
+      vlName={channelName}
       title={channelSpec.label}
-      groupName={groupName}
+      groupName={channelGroupName}
       setUIState={setUIState}
+      hasSomethingSet={hasSomethingSet}
+      groupHasSomethingSet={groupHasSomethingSet}
     >
 
       {Object.entries(channelProperties).map(([groupName, groupItems]) => (
@@ -46,11 +58,12 @@ export function ChannelBuilder({
           groupName={groupName}
           uiState={uiState}
           key={groupName}
+          hasSomethingSet={groupHasSomethingSet[groupName]}
         >
 
           {Object.entries(groupItems)
             .filter(([name, _]) =>
-              config.selectChannelProperty(name, channel, state, smartHideProperties))
+              config.selectChannelProperty(name, channelName, state, smartHideProperties))
             .map(([name, propSpec]) => (
               <ui.GenericPickerWidget
                 propType="channel-property"
@@ -75,11 +88,11 @@ export function ChannelBuilder({
 }
 
 
-function prepareTypes(channel, fieldTypes) {
+function prepareTypes(channelName, fieldTypes) {
   const flippedTypes =
     Object.fromEntries(Object.entries(fieldTypes).map(e => e.reverse()))
 
-  if (channel != "geoshape") {
+  if (channelName != "geoshape") {
     return Object.fromEntries(
       Object.entries(flippedTypes).filter(([_, n]) => n != "geojson")
     )

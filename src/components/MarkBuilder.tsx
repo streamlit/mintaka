@@ -8,6 +8,7 @@ export function MarkBuilder({
   //setProperty,
   smartHideProperties,
 }) {
+  // Some state for the developer to use however they want.
   const [uiState, setUIState] = useState(null)
 
   const uiParams = {

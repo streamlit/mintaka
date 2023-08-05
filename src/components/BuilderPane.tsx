@@ -10,13 +10,13 @@ import { PresetBuilder } from "./PresetBuilder.tsx"
 
 
 export function BuilderPane({
-  config,
   columnTypes,
+  config,
   initialState,
-  setGeneratedSpec,
-  ui,
   presets,
-  smartHideProperties
+  setGeneratedSpec,
+  smartHideProperties,
+  ui,
 }: BuilderPaneProps) {
   if (!config) config = CONFIG
 

@@ -159,7 +159,7 @@ function PresetsContainer({title, children}) {
   )
 }
 
-function MarkContainer({title, children, showAdvanced, setUIState}) {
+function MarkContainer({title, children, setUIState}) {
   return (
     <GenericContainer
       title={title}
@@ -171,11 +171,12 @@ function MarkContainer({title, children, showAdvanced, setUIState}) {
   )
 }
 
-function ChannelContainer({title, children, groupName, setUIState}) {
+function ChannelContainer({title, children, groupName, setUIState, hasSomethingSet, groupHasSomethingSet}) {
   return (
     <GenericContainer
       title={title}
-      expandedByDefault={false}
+      expandedByDefault={hasSomethingSet}
+      advShownByDefault={groupHasSomethingSet.advanced}
       expandable={groupName == "advanced"}
       setUIState={setUIState}
     >
@@ -184,22 +185,34 @@ function ChannelContainer({title, children, groupName, setUIState}) {
   )
 }
 
-function GenericContainer({title, children, expandable, expandedByDefault, showAdvanced, setUIState}) {
-  const [expanded, setExpanded] = useState(expandedByDefault || !expandable)
-  const [advShown, setAdvShown] = useState(false)
+function GenericContainer({title, children, expandable, expandedByDefault, advShownByDefault, setUIState}) {
+  const [expanded, setExpanded] = useState(!!expandedByDefault || !expandable)
+  const [advShown, setAdvShown] = useState(!!advShownByDefault)
+
+  useEffect(() => {
+    if (expanded == expandedByDefault) return
+    if (expandable) setExpanded(expandedByDefault)
+  }, [expandable, expandedByDefault])
+
+  const showAdvanced = (newValue) => {
+    if (newValue == advShown) return
+    setAdvShown(newValue)
+    if (setUIState) setUIState(newValue ? "advShown": null)
+  }
+
+  useEffect(() => {
+    showAdvanced(advShownByDefault)
+  }, [advShownByDefault])
 
   const toggleAdvanced = useCallback(() => {
-    setAdvShown(!advShown)
-    if (setUIState) setUIState(advShown ? null : "advShown")
-    if (showAdvanced) showAdvanced(!advShown)
-  }, [advShown, setAdvShown, setUIState, showAdvanced])
+    showAdvanced(!advShown)
+  }, [advShown, setAdvShown, setUIState])
 
   const toggleExpanded = useCallback(() => {
     setExpanded(!expanded)
 
     if (expanded) {
       setAdvShown(false)
-      if (showAdvanced) showAdvanced(false)
       if (setUIState) setUIState(null)
     }
   }, [expandable, expanded, setExpanded, setAdvShown, setUIState])
@@ -208,11 +221,13 @@ function GenericContainer({title, children, expandable, expandedByDefault, showA
     "flex flex-col",
     "w-full pb-4",
     "order-1",
+    "EXPANDED",
   ].join(" ")
 
   const collapsedWrapperStyles = [
     "inline-flex pr-2 last:pr-0",
     "order-2",
+    "COLLAPSED",
   ].join(" ")
 
   const wrapperStyles = [
