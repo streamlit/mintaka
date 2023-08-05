@@ -21,17 +21,11 @@ import "./App.css"
 // Register arrow reader under type "arrow"
 formats("arrow", arrow);
 
-const baseSpec = {
-  mark: "circle", // Anything. So Vega doesn't throw a warning.
-  width: "container",
-  height: "container",
-}
-
 function App() {
   const [dataset, setDataset] = useState(irisDataset)
   const [columnTypes, setcolumnTypes] = useState({})
   const [key, setKey] = useState(0)
-  const [generatedSpec, setGeneratedSpec] = useState(baseSpec)
+  const [generatedSpec, setGeneratedSpec] = useState()
 
   // Handle dataset changes gracefully.
   useEffect(() => {
@@ -52,7 +46,6 @@ function App() {
         <BuilderPane
           key={key}
           columnTypes={columnTypes}
-          baseSpec={baseSpec}
           setGeneratedSpec={setGeneratedSpec}
           ui={UI_COMPONENTS}
         />

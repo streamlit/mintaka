@@ -1,6 +1,6 @@
 import React from "react"
 
-import * as specConfig from "../specConfig.ts"
+import { UI_EXTRAS } from "../config.ts"
 
 import { ChannelBuilder } from "./ChannelBuilder.tsx"
 
@@ -10,7 +10,7 @@ export function EncodingBuilder({
   smartHideProperties,
   state,
   ui,
-  widgets,
+  config,
 }) {
   const columnsLabelsToNames = {
     "None": null,
@@ -20,14 +20,14 @@ export function EncodingBuilder({
 
   return (
     <ui.EncodingContainer>
-      {Object.entries(widgets.encoding).map(([groupName, groupItems]) => (
+      {Object.entries(config.encoding).map(([groupName, groupItems]) => (
         <ui.EncodingGroupContainer
           groupName={groupName}
           key={groupName}
         >
           {Object.entries(groupItems)
             .filter(([name]) => (
-              specConfig.keepChannel(
+              config.selectChannel(
                 name, state.mark.type, smartHideProperties
               )
             ))
@@ -38,12 +38,12 @@ export function EncodingBuilder({
                 channelState={state.encoding[name]}
                 groupName={groupName}
                 makeSetter={state.getEncodingSetter(name)}
-                widgets={widgets}
+                config={config}
                 ui={ui}
                 smartHideProperties={smartHideProperties}
                 columns={{
                   ...columnsLabelsToNames,
-                  ...specConfig.UI_EXTRAS[name]?.extraCols
+                  ...UI_EXTRAS[name]?.extraCols
                 }}
                 key={name}
               />

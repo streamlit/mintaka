@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react"
 
-import * as specConfig from "../specConfig.ts"
+import { CONFIG } from "../config.ts"
 import { generateVegaSpec } from "../vegaBuilder.ts"
 
 import { useBuilderState } from "./useBuilderState.ts"
@@ -10,17 +10,17 @@ import { PresetBuilder } from "./PresetBuilder.tsx"
 
 
 export function BuilderPane({
-  widgets,
+  config,
   columnTypes,
-  baseSpec,
+  initialState,
   setGeneratedSpec,
   ui,
   presets,
   smartHideProperties
 }: BuilderPaneProps) {
-  if (!widgets) widgets = specConfig.WIDGETS
+  if (!config) config = CONFIG
 
-  const state = useBuilderState(widgets, columnTypes, baseSpec)
+  const state = useBuilderState(config, columnTypes, initialState)
 
   const reset = useCallback(() => {
     state.reset()
@@ -28,10 +28,9 @@ export function BuilderPane({
 
   useEffect(() => {
     setGeneratedSpec(
-      generateVegaSpec(state, columnTypes, baseSpec)
+      generateVegaSpec(state, columnTypes, config)
     )
   }, [
-      baseSpec,
       columnTypes,
       setGeneratedSpec,
       // state,
@@ -44,7 +43,6 @@ export function BuilderPane({
       <PresetBuilder
         state={state}
         columnTypes={columnTypes}
-        baseSpec={baseSpec}
         ui={ui}
         preset={presets}
         />
@@ -53,7 +51,7 @@ export function BuilderPane({
         state={state}
         columnTypes={columnTypes}
         ui={ui}
-        widgets={widgets}
+        config={config}
         smartHideProperties={smartHideProperties}
         />
 

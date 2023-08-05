@@ -1,62 +1,47 @@
 import { useState, useCallback } from "react"
 
-export function useBuilderState(widgets, columnTypes, baseSpec) {
-  // TODO: If we want to use the baseSpec here for defaults, then we need
-  // to be able to convert it to a format we use for the state. That's complex
-  // because specs have several shorthands. For example, mark can be "circle"
-  // or {"type": "circle"}.
-
-  const getEmptyMark = () => {
+export function useBuilderState(widgets, columnTypes, initialState) {
+  const getInitialMark = () => {
     // Flatten widgets.mark
-    const allMarks = Object.values(widgets.mark)
+    const flatMark = Object.values(widgets.mark)
       .reduce((obj, markGroup) => {
         Object.assign(obj, markGroup)
         return obj
       }, {})
 
-    const marks = Object.fromEntries(
-      Object.keys(allMarks).map((name) => [
-        name, baseSpec?.mark?.[name]
+    const mark = Object.fromEntries(
+      Object.keys(flatMark).map(name => [
+        name, initialState?.mark?.[name]
       ])
     )
 
     // Vega requirest a type in order to even draw.
-    if (!marks.type) marks.type = "point"
+    if (!mark.type) mark.type = "point"
 
-    return marks
+    return mark
   }
 
-  const getEmptyEncoding = () => {
+  const getInitialEncoding = () => {
     // Flatten widgets.encoding
-    const allChannels = Object.values(widgets.encoding)
+    const flatEncoding = Object.values(widgets.encoding)
       .reduce((obj, channelGroup) => {
         Object.assign(obj, channelGroup)
         return obj
       }, {})
 
     return Object.fromEntries(
-      Object.entries(allChannels).map(([name, propertySpec]) => {
-        const defaultColIndex = propertySpec.defaultColIndex
-        const defaultColName = Object.keys(columnTypes)[defaultColIndex]
-
-        const propertySpecState = defaultColIndex == null
-          ? {}
-          : { field: defaultColName }
-
-        return [
-          name,
-          baseSpec?.encoding?.[name] ?? propertySpecState
-        ]
-      })
+      Object.keys(flatEncoding).map(name => [
+        name, initialState?.encoding?.[name]
+      ])
     )
   }
 
-  const [mark, setMark] = useState(getEmptyMark)
-  const [encoding, setEncoding] = useState(getEmptyEncoding)
+  const [mark, setMark] = useState(getInitialMark)
+  const [encoding, setEncoding] = useState(getInitialEncoding)
 
   const reset = useCallback(() => {
-    setMark(getEmptyMark())
-    setEncoding(getEmptyEncoding())
+    setMark(getInitialMark())
+    setEncoding(getInitialEncoding())
   })
 
   const getMarkSetter = useCallback(key => {

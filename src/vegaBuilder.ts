@@ -1,29 +1,29 @@
 import merge from "lodash/merge"
 
 import { haveAnyElementsInCommon } from "./array.ts"
-import * as specConfig from "./specConfig.ts"
+import { AUTO_FIELD, RANDOM_FIELD_NAME } from "./config.ts"
 
-export function generateVegaSpec(builderState, columnTypes, baseSpec) {
+export function generateVegaSpec(builderState, columnTypes, config) {
   const mark = Object.fromEntries(
     Object.entries(builderState.mark)
       .filter(([_, v]) => v != null)
-      .filter(([k]) =>
-        specConfig.keepMarkProperty(k, builderState.mark.type)))
+      .filter(([name]) =>
+        config.selectMarkProperty(name, builderState.mark)))
 
   const encoding = Object.fromEntries(
     Object.entries(builderState.encoding)
-      .filter(([channel]) =>
-        specConfig.keepChannel(
-          channel, builderState.mark.type))
-      .map(([channel, channelState]) => {
-        const channelSpec = buildChannelSpec(channel, channelState, columnTypes)
-        if (channelSpec) return [channel, channelSpec]
+      .filter(([_, v]) => v != null)
+      .filter(([name]) =>
+        config.selectChannel(
+          name, builderState.mark.type))
+      .map(([name, channelState]) => {
+        const channelSpec = buildChannelSpec(name, channelState, columnTypes)
+        if (channelSpec) return [name, channelSpec]
         return []
       }))
 
   const builderSpec = {
     mark: {
-      tooltip: true,
       ...mark,
     },
 
@@ -49,7 +49,7 @@ export function generateVegaSpec(builderState, columnTypes, baseSpec) {
     }
   }
 
-  const outSpec = merge({}, baseSpec, builderSpec)
+  const outSpec = merge({}, builderSpec)
 
   // The row, column, and facet encodings use the chart-wide size,
   // which is usually not what users want. Besides, they don't work when
@@ -63,9 +63,9 @@ export function generateVegaSpec(builderState, columnTypes, baseSpec) {
   return outSpec
 }
 
-function buildChannelSpec(channel, state, columnTypes) {
+function buildChannelSpec(channelName, state, columnTypes) {
   const channelSpec = {}
-  // TODO: use keepChannelProperty here and make this whole thing more automated.
+  // TODO: use selectChannelProperty here and make this whole thing more automated.
 
   if (state.title != null) channelSpec.title = state.title
   if (state.legend != null) channelSpec.legend = state.legend
@@ -80,7 +80,7 @@ function buildChannelSpec(channel, state, columnTypes) {
     if (state.field != null) {
       channelSpec.field = state.field
       channelSpec.type = getColType(
-        channel, state.type, state.field, columnTypes)
+        channelName, state.type, state.field, columnTypes)
     }
 
     if (state.sortBy == null) {
@@ -110,22 +110,22 @@ function buildChannelSpec(channel, state, columnTypes) {
 
 function buildTransforms(channelStates) {
   const hasRandomField = Object.values(channelStates)
-    .some(channelState => channelState.field == specConfig.RANDOM_FIELD_NAME)
+    .some(channelState => channelState?.field == RANDOM_FIELD_NAME)
 
   const transforms = []
 
   if (hasRandomField) {
     transforms.push(
-      {"calculate": "random()", "as": specConfig.RANDOM_FIELD_NAME},
+      {"calculate": "random()", "as": RANDOM_FIELD_NAME},
     )
   }
 
   return transforms.length > 0 ? transforms : null
 }
 
-function getColType(channel, colType, colName, columnTypes) {
-  if (colType != null && colType != specConfig.AUTO_FIELD) return colType
-  if (colName == specConfig.RANDOM_FIELD_NAME) return "quantitative"
+function getColType(channelName, colType, colName, columnTypes) {
+  if (colType != null && colType != AUTO_FIELD) return colType
+  if (colName == RANDOM_FIELD_NAME) return "quantitative"
 
   return columnTypes[colName].type
 }

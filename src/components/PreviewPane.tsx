@@ -12,6 +12,15 @@ export function PreviewPane({
   spec,
   className,
 }: PreviewProps): React.Node {
+  if (!spec) spec = {}
+
+  if (!spec.encoding?.column
+    && !spec.encoding?.row
+    && !spec.encoding?.facet) {
+    if (!spec.height) spec.height = "container"
+    if (!spec.width) spec.width = "container"
+  }
+
   return (
     <Vega
       className={className}

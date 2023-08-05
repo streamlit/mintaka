@@ -9,12 +9,12 @@ export function LayerBuilder({
   smartHideProperties,
   state,
   ui,
-  widgets,
+  config,
 }) {
   return (
     <ui.LayerContainer>
       <MarkBuilder
-        widgets={widgets}
+        config={config}
         state={state.mark}
         makeSetter={state.getMarkSetter}
         ui={ui}
@@ -23,7 +23,7 @@ export function LayerBuilder({
 
       <EncodingBuilder
         columnTypes={columnTypes}
-        widgets={widgets}
+        config={config}
         ui={ui}
         state={state}
         smartHideProperties={smartHideProperties}

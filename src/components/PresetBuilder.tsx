@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from "react"
 
-import * as specConfig from "../specConfig.ts"
+import { PRESETS } from "../config.ts"
 import { updateStateFromPreset } from "../presetParser.ts"
 
 
@@ -10,7 +10,7 @@ export function PresetBuilder({
   state,
   ui,
 }) {
-  if (!presets) presets = specConfig.PRESETS
+  if (!presets) presets = PRESETS
 
   const setPreset = useCallback((preset) => {
     updateStateFromPreset(state, preset, columnTypes)
