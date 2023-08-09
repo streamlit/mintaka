@@ -12,7 +12,6 @@ interface BuilderPaneProps {
   marks: any,  // name -> {label, advanced, isDefault}
   channels: any,  // name -> {label, advanced, defaultFieldIndex}
   fields: any,  // name -> {label, advanced}
-  smartHideFields: boolean,
   components: {
     // TODO
   },

@@ -15,7 +15,6 @@ export function BuilderPane({
   initialState,
   presets,
   setGeneratedSpec,
-  smartHideProperties,
   ui,
 }: BuilderPaneProps) {
   if (!config) config = CONFIG
@@ -56,7 +55,6 @@ export function BuilderPane({
       <LayerBuilder
         columnTypes={columnTypes}
         config={config}
-        smartHideProperties={smartHideProperties}
         state={state}
         ui={ui}
         advancedMode={advancedMode}

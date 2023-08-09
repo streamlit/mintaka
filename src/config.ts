@@ -555,9 +555,7 @@ export const CONFIG = {
     },
   },
 
-  selectMarkProperty(name, state, smartHideProperties = true) {
-    if (!smartHideProperties) return true
-
+  selectMarkProperty(name, state) {
     const markType = state.mark.type
 
     switch (name) {
@@ -594,9 +592,7 @@ export const CONFIG = {
     }
   },
 
-  selectChannel(name, state, smartHideProperties = true) {
-    if (!smartHideProperties) return true
-
+  selectChannel(name, state) {
     const markType = state?.mark?.type
 
     switch (name) {
@@ -651,11 +647,8 @@ export const CONFIG = {
     }
   },
 
-  selectChannelProperty(
-    name, channel, state, smartHideProperties = true): boolean
+  selectChannelProperty(name, channel, state): boolean
   {
-    if (!smartHideProperties) return true
-
     const fieldIsSet = Array.isArray(state.field)
       ? state.field.length > 0
       : state.field != null

@@ -8,7 +8,6 @@ import { ChannelBuilder } from "./ChannelBuilder.tsx"
 export function EncodingBuilder({
   advancedMode,
   columnTypes,
-  smartHideProperties,
   state,
   ui,
   config,
@@ -31,7 +30,7 @@ export function EncodingBuilder({
         >
           {Object.entries(groupItems)
             .filter(([name]) =>
-              config.selectChannel(name, state, smartHideProperties))
+              config.selectChannel(name, state))
             .map(([name, channelSpec]) => (
               <ChannelBuilder
                 channel={name}
@@ -41,7 +40,6 @@ export function EncodingBuilder({
                 makeSetter={state.getEncodingSetter(name)}
                 config={config}
                 ui={ui}
-                smartHideProperties={smartHideProperties}
                 columns={{
                   ...columnsLabelsToNames,
                   ...UI_EXTRAS[name]?.extraCols

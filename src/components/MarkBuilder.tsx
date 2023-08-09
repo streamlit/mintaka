@@ -5,7 +5,6 @@ export function MarkBuilder({
   ui,
   state,
   makeSetter,
-  smartHideProperties,
 }) {
   // Some state for the developer to use however they want.
   const [uiState, setUIState] = useState(null)
@@ -42,7 +41,7 @@ export function MarkBuilder({
 
           {Object.entries(groupItems)
             .filter(([name]) =>
-              config.selectMarkProperty(name, state, smartHideProperties))
+              config.selectMarkProperty(name, state))
             .map(([name, propSpec]) => (
               <ui.GenericPickerWidget
                 propType="mark-property"

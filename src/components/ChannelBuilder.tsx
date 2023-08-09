@@ -9,7 +9,6 @@ export function ChannelBuilder({
   config,
   groupName: channelGroupName,
   makeSetter,
-  smartHideProperties,
   ui,
 }): React.Node {
   const state = channelState ?? {}
@@ -68,7 +67,7 @@ export function ChannelBuilder({
 
           {Object.entries(groupItems)
             .filter(([name]) =>
-              config.selectChannelProperty(name, channelName, state, smartHideProperties))
+              config.selectChannelProperty(name, channelName, state))
             .map(([name, propSpec]) => (
               <ui.GenericPickerWidget
                 propType="channel-property"
