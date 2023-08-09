@@ -6,16 +6,17 @@ import { AUTO_FIELD, RANDOM_FIELD_NAME } from "./config.ts"
 export function generateVegaSpec(builderState, columnTypes, config) {
   const mark = Object.fromEntries(
     Object.entries(builderState.mark)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
       .filter(([name]) =>
-        config.selectMarkProperty(name, builderState.mark)))
+        config.selectMarkProperty(name, builderState)))
 
   const encoding = Object.fromEntries(
     Object.entries(builderState.encoding)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
       .filter(([name]) =>
-        config.selectChannel(
-          name, builderState.mark.type))
+        config.selectChannel(name, builderState))
       .map(([name, channelState]) => {
         const channelSpec = buildChannelSpec(name, channelState, columnTypes)
         if (channelSpec) return [name, channelSpec]
@@ -40,13 +41,12 @@ export function generateVegaSpec(builderState, columnTypes, config) {
     },
   }
 
-  const transforms = buildTransforms(builderState.encoding)
+  const transforms = []
+  convertFieldListToStrAndMaybeFold(encoding, transforms)
+  addJitterColumn(encoding, transforms)
 
-  if (transforms) {
-    builderSpec.data = {
-      ...builderSpec.data,
-      transform: transforms,
-    }
+  if (transforms.length > 0) {
+    builderSpec.transform = transforms
   }
 
   const outSpec = merge({}, builderSpec)
@@ -77,7 +77,12 @@ function buildChannelSpec(channelName, state, columnTypes) {
       channelSpec.value = state.value
     }
   } else {
-    if (state.field != null) {
+    if (Array.isArray(state.field)) {
+      channelSpec.field = state.field
+      // Guess type based on 0th field.
+      channelSpec.type = getColType(
+        channelName, state.type, state.field[0], columnTypes)
+    } else {
       channelSpec.field = state.field
       channelSpec.type = getColType(
         channelName, state.type, state.field, columnTypes)
@@ -108,24 +113,58 @@ function buildChannelSpec(channelName, state, columnTypes) {
   return Object.keys(channelSpec).length > 0 ? channelSpec : null
 }
 
-function buildTransforms(channelStates) {
-  const hasRandomField = Object.values(channelStates)
-    .some(channelState => channelState?.field == RANDOM_FIELD_NAME)
-
-  const transforms = []
-
-  if (hasRandomField) {
-    transforms.push(
-      {"calculate": "random()", "as": RANDOM_FIELD_NAME},
-    )
-  }
-
-  return transforms.length > 0 ? transforms : null
-}
-
 function getColType(channelName, colType, colName, columnTypes) {
   if (colType != null && colType != AUTO_FIELD) return colType
   if (colName == RANDOM_FIELD_NAME) return "quantitative"
 
-  return columnTypes[colName].type
+  return columnTypes[colName]?.type
+}
+
+const KEYS = "vlcb--folded-keys-"
+const VALUES = "vlcb--folded-values-"
+
+function convertFieldListToStrAndMaybeFold(encoding, transforms) {
+  Object.entries(encoding)
+    .forEach(([channelName, channelSpec]) => {
+      if (!Array.isArray(channelSpec?.field)) return
+
+      if (channelSpec.field.length > 1) {
+        foldChannel(channelName, channelSpec, encoding, transforms)
+      } else {
+        channelSpec.field = channelSpec.field[0]
+      }
+    })
+}
+
+function foldChannel(channelName, channelSpec, encoding, transforms) {
+  const fields = channelSpec.field
+
+  const values = VALUES + channelName
+  const keys = KEYS + channelName
+
+  channelSpec.field = values
+
+  if (!channelSpec.title) {
+    channelSpec.title = "value"  // TODO: Allow user to customize this.
+  }
+
+  encoding.color = {
+    field: keys,
+    title: "color",  // TODO: Allow user to customize this.
+  }
+
+  transforms.push(
+    { fold: fields, as: [ keys, values ] }
+  )
+}
+
+function addJitterColumn(encoding, transforms) {
+  const hasRandomField = Object.values(encoding)
+    .some(channelSpec => channelSpec?.field == RANDOM_FIELD_NAME)
+
+  if (!hasRandomField) return
+
+  transforms.push(
+    { calculate: "random()", as: RANDOM_FIELD_NAME },
+  )
 }

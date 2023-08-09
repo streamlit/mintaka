@@ -6,6 +6,7 @@ import { ChannelBuilder } from "./ChannelBuilder.tsx"
 
 
 export function EncodingBuilder({
+  advancedMode,
   columnTypes,
   smartHideProperties,
   state,
@@ -13,24 +14,24 @@ export function EncodingBuilder({
   config,
 }) {
   const columnsLabelsToNames = {
-    "None": null,
+    "": null,
     ...Object.fromEntries(Object.keys(columnTypes)
       .map(c => [c, c]))
   }
 
   return (
     <ui.EncodingContainer>
-      {Object.entries(config.encoding).map(([groupName, groupItems]) => (
-        <ui.EncodingGroupContainer
+      {Object.entries(config.encoding)
+        .filter(([groupName]) => (
+          advancedMode ? true : groupName == "basic"))
+        .map(([groupName, groupItems]) => (
+        <ui.EncodingGroup
           groupName={groupName}
           key={groupName}
         >
           {Object.entries(groupItems)
-            .filter(([name]) => (
-              config.selectChannel(
-                name, state.mark.type, smartHideProperties
-              )
-            ))
+            .filter(([name]) =>
+              config.selectChannel(name, state, smartHideProperties))
             .map(([name, channelSpec]) => (
               <ChannelBuilder
                 channel={name}
@@ -45,11 +46,12 @@ export function EncodingBuilder({
                   ...columnsLabelsToNames,
                   ...UI_EXTRAS[name]?.extraCols
                 }}
+                advancedMode={advancedMode}
                 key={name}
               />
             ))
           }
-        </ui.EncodingGroupContainer>
+        </ui.EncodingGroup>
       ))}
     </ui.EncodingContainer>
   )

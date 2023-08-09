@@ -6,27 +6,31 @@ import { EncodingBuilder } from "./EncodingBuilder.tsx"
 
 export function LayerBuilder({
   columnTypes,
+  config,
   smartHideProperties,
   state,
   ui,
-  config,
+  advancedMode,
 }) {
   return (
     <ui.LayerContainer>
-      <MarkBuilder
-        config={config}
-        state={state.mark}
-        makeSetter={state.getMarkSetter}
-        ui={ui}
-        smartHideProperties={smartHideProperties}
-      />
+      { advancedMode ? (
+        <MarkBuilder
+          config={config}
+          makeSetter={state.getMarkSetter}
+          smartHideProperties={smartHideProperties}
+          state={state}
+          ui={ui}
+        />
+      ) : null }
 
       <EncodingBuilder
         columnTypes={columnTypes}
         config={config}
-        ui={ui}
-        state={state}
         smartHideProperties={smartHideProperties}
+        state={state}
+        advancedMode={advancedMode}
+        ui={ui}
       />
     </ui.LayerContainer>
   )

@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 
 export function ChannelBuilder({
+  advancedMode,
   channel: channelName,
   channelSpec,
   channelState,
@@ -31,14 +32,14 @@ export function ChannelBuilder({
     aggregate: { widgetHint: "select" },
     bin: { widgetHint: "toggle" },
     binStep: { widgetHint: "number" },
-    field: { widgetHint: "select", validValues: columns },
+    field: { widgetHint: "multiselect", validValues: columns },
     legend: { widgetHint: "toggle" },
     sort: { widgetHint: "select" },
     stack: { widgetHint: "select" },
     timeUnit: { widgetHint: "select" },
     type: {
       widgetHint: "select",
-      validValues: prepareTypes(channelName, config.fieldTypes),
+      validValues: prepareTypes(channelName, config.channelPropertyValues.type),
     },
     value: { widgetHint: "json" },
   }
@@ -51,10 +52,14 @@ export function ChannelBuilder({
       setUIState={setUIState}
       hasSomethingSet={hasSomethingSet}
       groupHasSomethingSet={groupHasSomethingSet}
+      advancedMode={advancedMode}
     >
 
-      {Object.entries(channelProperties).map(([groupName, groupItems]) => (
-        <ui.ChannelPropertiesContainer
+      {Object.entries(channelProperties)
+        .filter(([groupName]) => (
+          advancedMode ? true : groupName == "basic"))
+        .map(([groupName, groupItems]) => (
+        <ui.ChannelPropertyGroup
           groupName={groupName}
           uiState={uiState}
           key={groupName}
@@ -62,13 +67,15 @@ export function ChannelBuilder({
         >
 
           {Object.entries(groupItems)
-            .filter(([name, _]) =>
+            .filter(([name]) =>
               config.selectChannelProperty(name, channelName, state, smartHideProperties))
             .map(([name, propSpec]) => (
               <ui.GenericPickerWidget
                 propType="channel-property"
+                parentName={channelName}
                 propName={name}
-                widgetHint={uiParams[name]?.widgetHint ?? "json"}
+                groupName={groupName}
+                widgetHint={propSpec.widgetHint ?? uiParams[name]?.widgetHint ?? "json"}
                 label={propSpec.label}
                 value={state[name]}
                 setValue={makeSetter(name)}
@@ -80,7 +87,7 @@ export function ChannelBuilder({
             ))
           }
 
-        </ui.ChannelPropertiesContainer>
+        </ui.ChannelPropertyGroup>
       ))}
 
     </ui.ChannelContainer>
@@ -89,14 +96,12 @@ export function ChannelBuilder({
 
 
 function prepareTypes(channelName, fieldTypes) {
-  const flippedTypes =
-    Object.fromEntries(Object.entries(fieldTypes).map(e => e.reverse()))
-
   if (channelName != "geoshape") {
     return Object.fromEntries(
-      Object.entries(flippedTypes).filter(([_, n]) => n != "geojson")
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      Object.entries(fieldTypes).filter(([_, n]) => n != "geojson")
     )
   }
 
-  return flippedTypes
+  return fieldTypes
 }

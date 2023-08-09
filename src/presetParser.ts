@@ -43,6 +43,7 @@ function findColumn(filterSpec, columnTypes, columnsAlreadyFound) {
   if (!filterSpec) return
 
   let candidateColsAndTypes = Object.entries(columnTypes)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, info]) => {
         let keep = true
 
@@ -64,6 +65,7 @@ function findColumn(filterSpec, columnTypes, columnsAlreadyFound) {
 function followIfConditions(spec, columns) {
   const matchingIfSpecs = Object.entries(spec.ifColumn ?? {})
     .filter(([col]) => columns[col] != null)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .map(([_, spec]) => spec)
 
   if (matchingIfSpecs) merge(spec, ...matchingIfSpecs.reverse())

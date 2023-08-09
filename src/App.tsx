@@ -30,6 +30,7 @@ function App() {
   // Handle dataset changes gracefully.
   useEffect(() => {
     setKey(key + 1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataset, /* key, setKey */])
 
   useEffect(() => {
@@ -42,7 +43,7 @@ function App() {
 
   return (
     <div className="flex flex-col gap-32">
-      <div className="flex h-[800px] flex-row border border-slate-200 rounded">
+      <div className="flex h-[800px] flex-row gap-4">
         <BuilderPane
           key={key}
           columnTypes={columnTypes}
@@ -92,7 +93,7 @@ function App() {
 
 function BuilderContainer({children}) {
   return (
-    <div className="flex flex-col p-4 w-64 overflow-y-auto">
+    <div className="flex flex-col w-64 p-1 overflow-y-auto">
       {children}
     </div>
   )
@@ -100,7 +101,7 @@ function BuilderContainer({children}) {
 
 function LayerContainer({children}) {
   return (
-    <div className="flex flex-col order-1">
+    <div className="flex flex-col order-1 gap-2">
       {children}
     </div>
   )
@@ -108,15 +109,22 @@ function LayerContainer({children}) {
 
 function EncodingContainer({children}) {
   return (
-    <div className="flex flex-col order-1">
+    <div className="flex flex-col order-1 gap-2">
       {children}
     </div>
   )
 }
 
-function EncodingGroupContainer({children}) {
+function EncodingGroup({children}) {
+  const styles = [
+    "flex flex-row flex-wrap items-start order-1",
+    "gap-2 pt-2",
+    "border-t border-slate-200",
+    "empty:hidden",
+  ].join(" ")
+
   return (
-    <div className="flex flex-row flex-wrap items-start order-1">
+    <div className={styles}>
       {children}
     </div>
   )
@@ -124,7 +132,7 @@ function EncodingGroupContainer({children}) {
 
 function ToolbarContainer({children}) {
   return (
-    <div className="flex-auto flex flex-row flex-wrap items-end order-1">
+    <div className="flex-auto flex flex-row flex-wrap items-end justify-center order-1">
       {children}
     </div>
   )
@@ -153,6 +161,7 @@ function PresetsContainer({title, children}) {
     <GenericContainer
       title={title}
       expandable={false}
+      className="pb-2"
     >
       {children}
     </GenericContainer>
@@ -165,34 +174,52 @@ function MarkContainer({title, children, setUIState}) {
       title={title}
       expandable={false}
       setUIState={setUIState}
+      advancedMode={true}
     >
       {children}
     </GenericContainer>
   )
 }
 
-function ChannelContainer({title, children, groupName, setUIState, hasSomethingSet, groupHasSomethingSet}) {
+function ChannelContainer({
+  title,
+  children,
+  groupName,
+  setUIState,
+  hasSomethingSet,
+  groupHasSomethingSet,
+  advancedMode,
+}) {
   return (
     <GenericContainer
       title={title}
-      expandedByDefault={hasSomethingSet}
-      advShownByDefault={groupHasSomethingSet.advanced}
-      expandable={groupName == "advanced"}
+      expandable={groupName != "basic"}
       setUIState={setUIState}
+      advancedMode={advancedMode}
     >
       {children}
     </GenericContainer>
   )
 }
 
-function GenericContainer({title, children, expandable, expandedByDefault, advShownByDefault, setUIState}) {
+function GenericContainer({
+  title,
+  children,
+  className,
+  expandable,
+  expandedByDefault,
+  advShownByDefault,
+  setUIState,
+  advancedMode,
+}) {
   const [expanded, setExpanded] = useState(!!expandedByDefault || !expandable)
   const [advShown, setAdvShown] = useState(!!advShownByDefault)
 
   useEffect(() => {
     if (expanded == expandedByDefault) return
     if (expandable) setExpanded(expandedByDefault)
-  }, [expandable, expandedByDefault])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expandable, expandedByDefault, /* expanded, setExpanded */])
 
   const showAdvanced = (newValue) => {
     if (newValue == advShown) return
@@ -202,11 +229,13 @@ function GenericContainer({title, children, expandable, expandedByDefault, advSh
 
   useEffect(() => {
     showAdvanced(advShownByDefault)
-  }, [advShownByDefault])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [advShownByDefault, /* showAdvanced */])
 
   const toggleAdvanced = useCallback(() => {
     showAdvanced(!advShown)
-  }, [advShown, setAdvShown, setUIState])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [advShown, setAdvShown, setUIState, showAdvanced])
 
   const toggleExpanded = useCallback(() => {
     setExpanded(!expanded)
@@ -215,19 +244,19 @@ function GenericContainer({title, children, expandable, expandedByDefault, advSh
       setAdvShown(false)
       if (setUIState) setUIState(null)
     }
-  }, [expandable, expanded, setExpanded, setAdvShown, setUIState])
+  }, [expanded, setExpanded, setAdvShown, setUIState])
 
   const expandedWrapperStyles = [
     "flex flex-col",
-    "w-full pb-4",
+    "w-full",
     "order-1",
-    "EXPANDED",
+    className,
   ].join(" ")
 
   const collapsedWrapperStyles = [
     "inline-flex pr-2 last:pr-0",
     "order-2",
-    "COLLAPSED",
+    className,
   ].join(" ")
 
   const wrapperStyles = [
@@ -260,7 +289,7 @@ function GenericContainer({title, children, expandable, expandedByDefault, advSh
             {title.toUpperCase()}
           </label>
 
-          {expanded && setUIState && (
+          {expanded && setUIState && advancedMode && (
             <div className={toolbarStyles}>
               <button className={advButtonStyles} onClick={toggleAdvanced}>
                 <img src={tuneIconSvg} alt="Advanced" />
@@ -279,7 +308,7 @@ function GenericContainer({title, children, expandable, expandedByDefault, advSh
   )
 }
 
-function ChannelPropertiesContainer({children, groupName, uiState}) {
+function ChannelPropertyGroup({children, groupName, uiState}) {
   if (groupName == "basic") {
     return (
       <div className="grid grid-cols-3 gap-1">
@@ -301,10 +330,25 @@ function ChannelPropertiesContainer({children, groupName, uiState}) {
   }
 }
 
-function GenericPickerWidget({propType, widgetHint, label, value, setValue, items, placeholder, groupName}) {
-  if (propType == "chartType") label = null
+function GenericPickerWidget({propType, widgetHint, label, value, setValue, items, placeholder, propName, parentName, groupName}) {
+  if (typeof widgetHint == "function") {
+    widgetHint = widgetHint({propType, parentName, propName, groupName})
+  }
+
+  if (propName == "preset") label = null
 
   switch (widgetHint) {
+    case "multiselect":
+      return (
+        <MultiSelect
+          label={label}
+          items={items}
+          value={value}
+          setValue={setValue}
+          groupName={groupName}
+        />
+      )
+
     case "select":
       return (
         <SelectBox
@@ -343,26 +387,126 @@ function GenericPickerWidget({propType, widgetHint, label, value, setValue, item
   }
 }
 
-function SelectBox({label, items, value, setValue, small}) {
-  let labels, values
+function MultiSelect({label, items, value, setValue}) {
+  const NO_VALUE_LABEL = Object.keys(items)[0]
+  const valueArr =
+      Array.isArray(value) ? value :
+      value == null ? []
+      : [value]
 
-  if (Array.isArray(items)) {
-    labels = items
-    values = items
-  } else {
-    labels = Object.keys(items ?? {})
-    values = Object.values(items ?? {})
-  }
+  const getLabelFromValue = useCallback((v) => {
+    return Object.entries(items ?? {})
+      .find(([_, itemValue]) => itemValue == v)
+      ?.[0]
+  }, [items])
 
-  const setValueWithTypes = useCallback((ev) => {
-    const label = ev.currentTarget.value
-    const newValue = values[labels.indexOf(label)]
+  // We use labels for selectbox values since they're always strings,
+  // and HTML Selectbox only supports value strings.
+  const [multiselectValue, setMultiselectValue] = useState([])
 
+  useEffect(() => {
+    const newSelectboxValue = valueArr?.map(v => getLabelFromValue(v))
+
+    if (!newSelectboxValue) return
+
+    if (newSelectboxValue?.length == multiselectValue.length
+      && newSelectboxValue?.every((v, i) => v == multiselectValue[i]))
+      return
+
+    setMultiselectValue(newSelectboxValue)
+  }, [value])
+
+  const setValueFromLabel = useCallback((ev) => {
+    const domLabel = ev.currentTarget.value
+    const index = parseInt(ev.currentTarget.dataset["index"], 10)
+
+    const domValue = items[domLabel]
+
+    if (multiselectValue.length > 1 && domLabel == NO_VALUE_LABEL) {
+      multiselectValue.splice(index, 1)
+    } else {
+      multiselectValue[index] = domLabel
+    }
+
+    setMultiselectValue(multiselectValue)
+
+    const newValue = multiselectValue.map(l => items[l])
     setValue(newValue)
-  }, [labels, values, setValue])
+  }, [setValue, multiselectValue, setMultiselectValue])
 
-  const currIndex = values.indexOf(value)
-  const currItemLabel = labels[currIndex]
+  const addSeries = useCallback(() => {
+    setMultiselectValue([ ...multiselectValue, NO_VALUE_LABEL ])
+  }, [multiselectValue, setMultiselectValue])
+
+  const selectStyles=[
+    "py-0.5 flex-auto",
+    "border hover:bg-slate-200 border-transparent rounded-md",
+    "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
+    "text-slate-500",
+    "cursor-pointer",
+    "bg-slate-100",
+    "text-sm",
+  ].join(" ")
+
+  const buttonStyles=[
+    "text-xs",
+    "text-slate-500 hover:text-pink-500",
+    "cursor-pointer",
+    "flex items-center justify-start",
+    "h-6",
+  ].join(" ")
+
+  return (
+    <WidgetWrapper label={label}>
+      {multiselectValue.map((selectboxValue, i) => (
+        <select
+          key={i}
+          data-index={i}
+          className={selectStyles}
+          value={selectboxValue}
+          onChange={setValueFromLabel}
+        >
+          {Object.keys(items).map(label => (
+            <option value={label} key={label}>
+              {label}
+            </option>
+          ))}
+        </select>
+      ))}
+
+      <a className={buttonStyles} onClick={addSeries}>
+        + Add series
+      </a>
+    </WidgetWrapper>
+  )
+}
+
+function SelectBox({label, items, value, setValue}) {
+  const getLabelFromValue = useCallback((v) => {
+    return Object.entries(items ?? {})
+      .find(([_, itemValue]) => itemValue == v)
+      ?.[0]
+  }, [items])
+
+  // We use labels for selectbox values since they're always strings,
+  // and HTML Selectbox only supports value strings.
+  // (BTW "" doesn't matter since the useEffect below will replace it)
+  const [selectboxValue, setSelectboxValue] = useState("")
+
+  useEffect(() => {
+    const currItemLabel = getLabelFromValue(value)
+    if (currItemLabel == selectboxValue) return
+
+    setSelectboxValue(currItemLabel)
+  }, [value])
+
+  const setValueFromLabel = useCallback((ev) => {
+    const label = ev.currentTarget.value
+    setSelectboxValue(label)
+
+    const newValue = items[label]
+    setValue(newValue)
+  }, [setValue, setSelectboxValue])
 
   const styles=[
     "py-0.5 flex-auto",
@@ -371,18 +515,17 @@ function SelectBox({label, items, value, setValue, small}) {
     "text-slate-500",
     "cursor-pointer",
     "bg-slate-100",
-    small ? "text-xs" : "text-sm",
+    "text-sm",
   ].join(" ")
 
   return (
-    <WidgetWrapper label={label} small={small}>
+    <WidgetWrapper label={label}>
       <select
-        key={/* This is a hack so presets work */ currItemLabel}
         className={styles}
-        defaultValue={currItemLabel}
-        onChange={setValueWithTypes}
+        value={selectboxValue}
+        onChange={setValueFromLabel}
       >
-        {labels.map(label => (
+        {Object.keys(items).map(label => (
           <option value={label} key={label}>
             {label}
           </option>
@@ -392,8 +535,8 @@ function SelectBox({label, items, value, setValue, small}) {
   )
 }
 
-function TextInput({label, value, placeholder, setValue, small}) {
-  const setValueWithTypes = useCallback((ev) => {
+function TextInput({label, value, placeholder, setValue}) {
+  const setValueFromString = useCallback((ev) => {
     const newValue = ev.currentTarget.value
     setValue(newValue == "" ? null : newValue)
   }, [setValue])
@@ -408,7 +551,7 @@ function TextInput({label, value, placeholder, setValue, small}) {
     "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
     "text-slate-500",
     "bg-slate-100",
-    small ? "text-xs" : "text-sm",
+    "text-sm",
   ].join(" ")
 
   const hasContent = value != null && value != ""
@@ -419,13 +562,13 @@ function TextInput({label, value, placeholder, setValue, small}) {
   ].join(" ")
 
   return (
-    <WidgetWrapper label={label} className="relative" small={small}>
+    <WidgetWrapper label={label} className="relative">
       <input
         className={styles}
         type="text"
         value={value ?? ""}
         placeholder={placeholder}
-        onChange={setValueWithTypes}
+        onChange={setValueFromString}
       />
       {hasContent ? (
         <button
@@ -440,7 +583,7 @@ function TextInput({label, value, placeholder, setValue, small}) {
   )
 }
 
-function Toggle({label, items, value, setValue, small}) {
+function Toggle({label, items, value, setValue}) {
   let values
 
   if (Array.isArray(items)) {
@@ -476,7 +619,7 @@ function Toggle({label, items, value, setValue, small}) {
   const toggleClasses = [troughClasses, thumbClasses].join(" ")
 
   return (
-    <WidgetWrapper label={label} small={small}>
+    <WidgetWrapper label={label}>
       <HtmlLabel className="relative inline-flex items-center cursor-pointer">
         <input
           type="checkbox"
@@ -495,20 +638,20 @@ function HtmlLabel(props) {
   return <label {...props} />
 }
 
-function WidgetWrapper({label, small, className, children}) {
+function WidgetWrapper({label, className, children}) {
   const labelStyles = [
     "col-span-1",
-    "flex items-center",
+    "flex items-start",
     "text-sm",
     "text-slate-500",
-    small ? "text-xs" : "text-sm",
+    "text-sm",
   ].join(" ")
 
   const childrenStyles = [
     "col-span-2",
     "flex-auto",
-    "flex flex-col justify-center items-stretch",
-    "h-6",
+    "flex flex-col justify-start items-stretch gap-1",
+    "min-h-6",
     className,
   ].join(" ")
 
@@ -529,15 +672,16 @@ const UI_COMPONENTS = {
   BuilderContainer,
   Button,
   ChannelContainer,
-  ChannelPropertiesContainer,
+  ChannelPropertyGroup,
   EncodingContainer,
-  EncodingGroupContainer,
+  EncodingGroup,
   GenericPickerWidget,
   LayerContainer,
   MarkContainer,
-  MarkPropertiesContainer: ChannelPropertiesContainer,
+  MarkPropertyGroup: ChannelPropertyGroup,
   PresetsContainer,
   ToolbarContainer,
+  Toggle,
 }
 
 export default App

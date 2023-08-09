@@ -19,13 +19,16 @@ export function PresetBuilder({
   useEffect(() => {
     if (!Object.keys(presets).length) return
     updateStateFromPreset(state, Object.values(presets)[0], columnTypes)
-  }, [presets])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presets, columnTypes, /* state */])
 
   return (presets && Object.keys(presets).length) ? (
     <ui.PresetsContainer title="Chart type">
       <ui.GenericPickerWidget
-        propType="chartType"
+        propType="preset-property"
+        parentName={null}
         propName="preset"
+        groupName={null}
         widgetHint={"select"}
         label={"Preset"}
         value={null}

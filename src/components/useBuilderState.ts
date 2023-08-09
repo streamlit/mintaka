@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react"
 
 export function useBuilderState(widgets, columnTypes, initialState) {
-  const getInitialMark = () => {
+  const getInitialMark = useCallback(() => {
     // Flatten widgets.mark
     const flatMark = Object.values(widgets.mark)
       .reduce((obj, markGroup) => {
@@ -19,9 +19,9 @@ export function useBuilderState(widgets, columnTypes, initialState) {
     if (!mark.type) mark.type = "point"
 
     return mark
-  }
+  })
 
-  const getInitialEncoding = () => {
+  const getInitialEncoding = useCallback(() => {
     // Flatten widgets.encoding
     const flatEncoding = Object.values(widgets.encoding)
       .reduce((obj, channelGroup) => {
@@ -34,7 +34,7 @@ export function useBuilderState(widgets, columnTypes, initialState) {
         name, initialState?.encoding?.[name]
       ])
     )
-  }
+  })
 
   const [mark, setMark] = useState(getInitialMark)
   const [encoding, setEncoding] = useState(getInitialEncoding)
@@ -42,7 +42,7 @@ export function useBuilderState(widgets, columnTypes, initialState) {
   const reset = useCallback(() => {
     setMark(getInitialMark())
     setEncoding(getInitialEncoding())
-  })
+  }, [setMark, getInitialMark, setEncoding, getInitialEncoding])
 
   const getMarkSetter = useCallback(key => {
     return value => {

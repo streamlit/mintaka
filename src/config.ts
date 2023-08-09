@@ -142,6 +142,47 @@ export const PRESETS = {
     }
   },
 
+  "Horizontal bar chart": {
+    mark: {
+      type: "bar",
+      tooltip: true,
+    },
+    findColumns: {
+      A1: { type: ["quantitative"] },
+      C1: { type: ["nominal", "ordinal"], maxUnique: 10 },
+      A2: {},
+      C2: {},
+    },
+    encoding: {
+    },
+    ifColumn: {
+      A1: {
+        encoding: {
+          x: { field: "A1", aggregate: "count", stack: false },
+          y: { field: "A1", bin: true },
+        },
+      },
+      A2: {
+        encoding: {
+          x: { field: "A2", aggregate: "count", stack: false },
+          y: { field: "A2", type: "nominal", sort: "ascending" },
+        },
+      },
+      C1: {
+        encoding: {
+          color: { field: "C1", bin: null },
+          yOffset: { field: "C1", bin: null },
+        },
+      },
+      C2: {
+        encoding: {
+          color: { field: "C2", bin: true },
+          yOffset: { field: "C2", bin: true }
+        },
+      },
+    }
+  },
+
   "Stacked bar chart": {
     mark: {
       type: "bar",
@@ -183,17 +224,25 @@ export const PRESETS = {
       tooltip: true,
     },
     findColumns: {
-      A: { type: ["quantitative", null] },
+      A1: { type: ["quantitative", null] },
       B1: { type: ["nominal", "ordinal"], maxUnique: 20 },
+      A2: {},
       B2: {},
     },
-    encoding: {
-      theta: { field: "A", aggregate: "count" },
-    },
     ifColumn: {
+      A1: {
+        encoding: {
+          theta: { field: "A1", aggregate: "sum" },
+        }
+      },
       B1: {
         encoding: {
           color: { field: "B1", bin: null },
+        }
+      },
+      A2: {
+        encoding: {
+          theta: { field: "A2", aggregate: "count" },
         }
       },
       B2: {
@@ -211,17 +260,25 @@ export const PRESETS = {
       tooltip: true,
     },
     findColumns: {
-      A: { type: ["quantitative", null] },
+      A1: { type: ["quantitative", null] },
       B1: { type: ["nominal", "ordinal"], maxUnique: 20 },
+      A2: {},
       B2: {},
     },
-    encoding: {
-      theta: { field: "A", aggregate: "count" },
-    },
     ifColumn: {
+      A1: {
+        encoding: {
+          theta: { field: "A1", aggregate: "sum" },
+        }
+      },
       B1: {
         encoding: {
           color: { field: "B1", bin: null },
+        }
+      },
+      A2: {
+        encoding: {
+          theta: { field: "A2", aggregate: "count" },
         }
       },
       B2: {
@@ -231,15 +288,37 @@ export const PRESETS = {
       },
     }
   },
+
+  "Heat map": {
+    mark: {
+      type: "rect",
+      tooltip: true,
+    },
+    findColumns: {
+      A: {},
+      B: {},
+    },
+    encoding: {
+      x: { field: "A", bin: true },
+      y: { field: "B" , bin: true },
+      color: { field: "A" , aggregate: "count" },
+    },
+  },
 }
 
-export const AUTO_FIELD = "__null__"
+export const AUTO_FIELD = Symbol("AUTO_FIELD")
 
 export const CONFIG = {
   mark: {
+    // Format:
+    //   [groupName]: {
+    //     [propertyName]: { label: propertyLabel },
+    //   }
+
     basic: {
       type: { label: "Type" },
     },
+
     advanced: {
       angle: { label: "Angle" },
       filled: { label: "Filled" },
@@ -256,6 +335,11 @@ export const CONFIG = {
   },
 
   encoding: {
+    // Format:
+    //   [groupName]: {
+    //     [propertyName]: { label: propertyLabel },
+    //   }
+
     basic: {
       text: { label: "Text" },
       url: { label: "URL" },
@@ -265,11 +349,13 @@ export const CONFIG = {
       latitude: { label: "Latitude" },
       longitude: { label: "Longitude" },
       color: { label: "Color" },
+      size: { label: "Size" },
     },
 
     advanced: {
-      size: { label: "Size" },
       opacity: { label: "Opacity" },
+      shape: { label: "Shape" },
+      angle: { label: "Angle" },
       x2: { label: "X2" },
       y2: { label: "Y2" },
       latitude2: { label: "Latitude2" },
@@ -277,9 +363,6 @@ export const CONFIG = {
       radius: { label: "Radius" },
       radius2: { label: "Radius2" },
       theta2: { label: "Theta2" },
-      facet: { label: "Facet" },
-      column: { label: "Column" },
-      row: { label: "Row" },
       xOffset: { label: "X offset" },
       yOffset: { label: "Y offset" },
       // angle
@@ -287,13 +370,32 @@ export const CONFIG = {
       // shape
       // tooltip
     },
+
+    faceting: {
+      facet: { label: "Facet" },
+      column: { label: "Column" },
+      row: { label: "Row" },
+    },
   },
 
   channelProperties: {
+    // Format:
+    //   [groupName]: {
+    //     [propertyName]: { label: propertyLabel },
+    //   }
+
     basic: {
-      field: { label: "Field" },
+      field: {
+        label: "Field",
+        widgetHint({ parentName }) {
+          if (parentName == "y") return "multiselect"
+          return "select"
+        },
+      },
     },
+
     advanced: {
+      value: { label: "Value" },
       type: { label: "Type" },
       aggregate: { label: "Aggregate" },
       bin: { label: "Bin" },
@@ -303,20 +405,15 @@ export const CONFIG = {
       stack: { label: "Stack" },
       timeUnit: { label: "Time unit"},
       title: { label: "Title" },
-      value: { label: "Value" },
     },
   },
 
-  fieldTypes: {
-    [AUTO_FIELD]: "Auto",
-    nominal: "Nominal",
-    ordinal: "Ordinal",
-    quantitative: "Quantitative",
-    temporal: "Temporal",
-    geojson: "GeoJSON",
-  },
-
   markPropertyValues: {
+    // Format:
+    //   [propertyName]: {
+    //     [valueLabel]: value,
+    //   }
+
     type: {
       "Point": "point",
       "Line": "line",
@@ -324,12 +421,10 @@ export const CONFIG = {
       "Bar": "bar",
       "Arc": "arc",
       "Box plot": "boxplot",
-      "Circle": "circle",
       "Geo shape": "geoshape",
       "Image": "image",
       "Rect": "rect",
       "Rule": "rule",
-      "Square": "square",
       "Text": "text",
       "Tick": "tick",
     },
@@ -388,8 +483,22 @@ export const CONFIG = {
   },
 
   channelPropertyValues: {
+    // Format:
+    //   [propertyName]: {
+    //     [valueLabel]: value,
+    //   }
+
+    type: {
+      "Auto": AUTO_FIELD,
+      "Nominal": "nominal",
+      "Ordinal": "ordinal",
+      "Quantitative": "quantitative",
+      "Temporal": "temporal",
+      "GeoJSON": "geojson",
+    },
+
     aggregate: {
-      "None": null,
+      "": null,
       "Count": "count",
       "Sum": "sum",
       "Mean": "mean",
@@ -406,7 +515,7 @@ export const CONFIG = {
     },
 
     timeUnit: {
-      "Auto": null,
+      "": null,
       "Milliseconds": "milliseconds",
       "Seconds": "seconds",
       "Minutes": "minutes",
@@ -435,7 +544,7 @@ export const CONFIG = {
     },
 
     sort: {
-      "None": null,
+      "": null,
       "Ascending": "ascending",
       "Descending": "descending",
     },
@@ -449,7 +558,7 @@ export const CONFIG = {
   selectMarkProperty(name, state, smartHideProperties = true) {
     if (!smartHideProperties) return true
 
-    const markType = state.type
+    const markType = state.mark.type
 
     switch (name) {
       case "shape":
@@ -461,8 +570,7 @@ export const CONFIG = {
         return isElementOf(markType, ["line", "area"])
 
       case "angle":
-        return isElementOf(markType, ["text", "image"]) ||
-            markType == "point" && !isElementOf(state.shape, [null, undefined, "circle"])
+        return isElementOf(markType, ["text", "image", "point"])
 
       case "size":
         return isElementOf(markType, ["point", "text", "image"])
@@ -486,15 +594,23 @@ export const CONFIG = {
     }
   },
 
-  selectChannel(name, markType, smartHideProperties = true) {
+  selectChannel(name, state, smartHideProperties = true) {
     if (!smartHideProperties) return true
+
+    const markType = state?.mark?.type
 
     switch (name) {
       case "x":
       case "y":
-      case "xOffset":
-      case "yOffset":
         return !isElementOf(markType, ["arc", "geoshape"])
+
+      case "xOffset":
+        return isElementOf(markType, ["bar", "point"])
+          && isElementOf(state?.encoding?.x?.type, ["ordinal", "nominal"])
+
+      case "yOffset":
+        return isElementOf(markType, ["bar", "point"])
+          && isElementOf(state?.encoding?.y?.type, ["ordinal", "nominal"])
 
       case "x2":
       case "y2":
@@ -524,6 +640,12 @@ export const CONFIG = {
       case "geojson":
         return markType == "geoshape"
 
+      case "shape":
+        return isElementOf(markType, ["point", "line", "area"])
+
+      case "angle":
+        return isElementOf(markType, ["text", "image", "point"])
+
       default:
         return true
     }
@@ -534,7 +656,9 @@ export const CONFIG = {
   {
     if (!smartHideProperties) return true
 
-    const fieldIsSet = !!state.field
+    const fieldIsSet = Array.isArray(state.field)
+      ? state.field.length > 0
+      : state.field != null
 
     switch (name) {
       case "field":
@@ -577,7 +701,7 @@ export const CONFIG = {
   },
 }
 
-export const RANDOM_FIELD_NAME = "random--p5bJXXpQgvPz6yvQMFiy"
+export const RANDOM_FIELD_NAME = "vlcb--random-values"
 
 export const UI_EXTRAS = {
   xOffset: {

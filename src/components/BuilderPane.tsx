@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useEffect, useCallback, useState } from "react"
 
 import { CONFIG } from "../config.ts"
 import { generateVegaSpec } from "../vegaBuilder.ts"
@@ -22,6 +22,8 @@ export function BuilderPane({
 
   const state = useBuilderState(config, columnTypes, initialState)
 
+  const [ advancedMode, setAdvancedMode ] = useState(false)
+
   const reset = useCallback(() => {
     state.reset()
   }, [ state ])
@@ -30,7 +32,9 @@ export function BuilderPane({
     setGeneratedSpec(
       generateVegaSpec(state, columnTypes, config)
     )
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+      config,
       columnTypes,
       setGeneratedSpec,
       // state,
@@ -40,25 +44,36 @@ export function BuilderPane({
 
   return (
     <ui.BuilderContainer>
-      <PresetBuilder
-        state={state}
-        columnTypes={columnTypes}
-        ui={ui}
-        preset={presets}
-        />
+      { advancedMode ? null : (
+        <PresetBuilder
+          state={state}
+          columnTypes={columnTypes}
+          ui={ui}
+          preset={presets}
+          />
+      )}
 
       <LayerBuilder
-        state={state}
         columnTypes={columnTypes}
-        ui={ui}
         config={config}
         smartHideProperties={smartHideProperties}
+        state={state}
+        ui={ui}
+        advancedMode={advancedMode}
         />
 
       <ui.ToolbarContainer>
         <ui.Button onClick={reset}>
           Reset
         </ui.Button>
+
+        <ui.Toggle
+          label="Advanced"
+          items={{off: false, on: true}}
+          value={false}
+          setValue={setAdvancedMode}
+        />
+
       </ui.ToolbarContainer>
     </ui.BuilderContainer>
   )

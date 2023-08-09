@@ -5,7 +5,6 @@ export function MarkBuilder({
   ui,
   state,
   makeSetter,
-  //setProperty,
   smartHideProperties,
 }) {
   // Some state for the developer to use however they want.
@@ -35,22 +34,24 @@ export function MarkBuilder({
     >
 
       {Object.entries(config.mark).map(([groupName, groupItems]) => (
-        <ui.MarkPropertiesContainer
+        <ui.MarkPropertyGroup
           groupName={groupName}
           uiState={uiState}
           key={groupName}
         >
 
           {Object.entries(groupItems)
-            .filter(([name, _]) =>
+            .filter(([name]) =>
               config.selectMarkProperty(name, state, smartHideProperties))
             .map(([name, propSpec]) => (
               <ui.GenericPickerWidget
                 propType="mark-property"
+                parentName={"mark"}
                 propName={name}
+                groupName={groupName}
                 widgetHint={uiParams[name]?.widgetHint ?? "json"}
                 label={propSpec.label}
-                value={state[name]}
+                value={state.mark[name]}
                 setValue={makeSetter(name)}
                 items={config?.markPropertyValues?.[name]}
                 placeholder={uiParams[name]?.placeholder ?? "Default"}
@@ -60,7 +61,7 @@ export function MarkBuilder({
             )
           )}
 
-        </ui.MarkPropertiesContainer>
+        </ui.MarkPropertyGroup>
       ))}
 
     </ui.MarkContainer>
