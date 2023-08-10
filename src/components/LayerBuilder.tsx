@@ -9,24 +9,23 @@ export function LayerBuilder({
   config,
   state,
   ui,
-  advancedMode,
+  viewMode,
 }) {
   return (
     <ui.LayerContainer>
-      { advancedMode ? (
-        <MarkBuilder
-          config={config}
-          makeSetter={state.getMarkSetter}
-          state={state}
-          ui={ui}
-        />
-      ) : null }
+      <MarkBuilder
+        config={config}
+        makeSetter={state.getMarkSetter}
+        state={state}
+        ui={ui}
+        viewMode={viewMode}
+      />
 
       <EncodingBuilder
         columnTypes={columnTypes}
         config={config}
         state={state}
-        advancedMode={advancedMode}
+        viewMode={viewMode}
         ui={ui}
       />
     </ui.LayerContainer>

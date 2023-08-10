@@ -9,13 +9,14 @@ export const PRESETS = {
       type: "point",
       filled: true,
       tooltip: true,
+      size: 100,
+      opacity: 0.5,
     },
     findColumns: {
       A: { type: ["quantitative", null] },
       B: { type: ["quantitative", null] },
       C1: { type: ["nominal", "ordinal"], maxUnique: 10 },
       C2: { type: ["quantitative", null] },
-      D: { type: ["quantitative", null] },
     },
     encoding: {
       x: { field: "A", scale: { zero: false } },
@@ -25,13 +26,11 @@ export const PRESETS = {
       C1: {
         encoding: {
           color: { field: "C1" },
-          size: { field: "C2" },
         }
       },
       C2: {
         encoding: {
           color: { field: "C2" },
-          size: { field: "D" },
         }
       },
     }
@@ -44,17 +43,13 @@ export const PRESETS = {
     },
     findColumns: {
       A: { type: ["quantitative", "temporal", null] },
-      B1: { type: ["quantitative"] },
-      B2: { type: [null] },
+      B: { type: ["quantitative", null] },
       C: { type: ["nominal", "ordinal"], maxUnique: 10 },
     },
     encoding: {
       x: { field: "A" },
-    },
-    ifColumn: {
-      B1: { encoding: { y: { field: "B1", aggregate: "mean" } } },
-      B2: { encoding: { y: { field: "B2" } } },
-      C: { encoding: { color: { field: "C" } } },
+      y: { field: "B" },
+      color: { field: "C" },
     },
   },
 
@@ -65,18 +60,14 @@ export const PRESETS = {
     },
     findColumns: {
       A: { type: ["quantitative", null] },
-      B1: { type: ["quantitative"] },
-      B2: { type: [null] },
+      B: { type: ["quantitative", null] },
       C: { type: ["nominal", "ordinal"], maxUnique: 10 },
     },
     encoding: {
       x: { field: "A" },
+      y: { field: "B", stack: false },
+      color: { field: "C" },
       opacity: { value: 0.75 },
-    },
-    ifColumn: {
-      B1: { encoding: { y: { field: "B1", aggregate: "mean", stack: false } } },
-      B2: { encoding: { y: { field: "B2", stack: false } } },
-      C: { encoding: { color: { field: "C" } } },
     },
   },
 
@@ -87,17 +78,13 @@ export const PRESETS = {
     },
     findColumns: {
       A: { type: ["quantitative", null] },
-      B1: { type: ["quantitative"] },
-      B2: { type: [null] },
+      B: { type: ["quantitative", null] },
       C: { type: ["nominal", "ordinal"], maxUnique: 10 },
     },
     encoding: {
       x: { field: "A" },
-    },
-    ifColumn: {
-      B1: { encoding: { y: { field: "B1", aggregate: "mean" } } },
-      B2: { encoding: { y: { field: "B2" } } },
-      C: { encoding: { color: { field: "C" } } },
+      y: { field: "B", stack: true },
+      color: { field: "C" },
     },
   },
 
@@ -309,6 +296,15 @@ export const PRESETS = {
 export const AUTO_FIELD = Symbol("AUTO_FIELD")
 
 export const CONFIG = {
+  modes: {
+    "Basic": {
+      exclude: ['mark', 'advanced', 'faceting'],
+    },
+    "Advanced": {
+      exclude: ['presets'],
+    },
+  },
+
   mark: {
     // Format:
     //   [groupName]: {
@@ -349,10 +345,10 @@ export const CONFIG = {
       latitude: { label: "Latitude" },
       longitude: { label: "Longitude" },
       color: { label: "Color" },
-      size: { label: "Size" },
     },
 
     advanced: {
+      size: { label: "Size" },
       opacity: { label: "Opacity" },
       shape: { label: "Shape" },
       angle: { label: "Angle" },
@@ -400,11 +396,12 @@ export const CONFIG = {
       aggregate: { label: "Aggregate" },
       bin: { label: "Bin" },
       binStep: { label: "Bin size" },
-      legend: { label: "Legend" },
+      maxBins: { label: "Max bins" },
       sort: { label: "Sort" },
       stack: { label: "Stack" },
       timeUnit: { label: "Time unit"},
       title: { label: "Title" },
+      legend: { label: "Legend" },
     },
   },
 
@@ -540,7 +537,7 @@ export const CONFIG = {
 
     legend: {
       "Off": false,
-      "On": null,
+      "Top": null,
     },
 
     sort: {
@@ -552,6 +549,7 @@ export const CONFIG = {
     bin: {
       "Off": null,
       "On": true,
+      "Already binned": "binned",
     },
   },
 
@@ -599,6 +597,10 @@ export const CONFIG = {
       case "x":
       case "y":
         return !isElementOf(markType, ["arc", "geoshape"])
+
+      case "color":
+        return (!Array.isArray(state?.encoding?.x?.field) || state?.encoding?.x?.field.length <= 1)
+           && (!Array.isArray(state?.encoding?.y?.field) || state?.encoding?.y?.field.length <= 1)
 
       case "xOffset":
         return isElementOf(markType, ["bar", "point"])
@@ -674,7 +676,10 @@ export const CONFIG = {
         return fieldIsSet && state.aggregate == null
 
       case "binStep":
-        return state.bin
+        return state.bin == true && !state.maxBins
+
+      case "maxBins":
+        return state.bin == true && !state.binStep
 
       case "stack":
         return fieldIsSet && isElementOf(channel, ["x", "y"])

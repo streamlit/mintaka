@@ -102,8 +102,12 @@ function buildChannelSpec(channelName, state, columnTypes) {
     if (state.stack != null) channelSpec.stack = state.stack
 
     if (state.bin) {
-      if (state.binStep != null) {
+      if (state.bin == "binned") {
+        channelSpec.bin = "binned"
+      } else if (state.binStep != null) {
         channelSpec.bin = { step: state.binStep }
+      } else if (state.maxBins != null) {
+        channelSpec.bin = { maxbins: state.maxBins }
       } else {
         channelSpec.bin = true
       }

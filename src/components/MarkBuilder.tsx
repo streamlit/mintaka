@@ -1,10 +1,13 @@
 import React, { useState } from "react"
 
+import { shouldIncludeSection } from "../modeParser.ts"
+
 export function MarkBuilder({
   config,
   ui,
   state,
   makeSetter,
+  viewMode,
 }) {
   // Some state for the developer to use however they want.
   const [uiState, setUIState] = useState(null)
@@ -24,6 +27,10 @@ export function MarkBuilder({
     // strokeDash: { label: "strokeDash" },
   }
 
+  if (!shouldIncludeSection("mark", viewMode)) {
+    return null
+  }
+
   // TODO: Only show "show advanced" button if there *are* advanced options!
 
   return (
@@ -37,11 +44,13 @@ export function MarkBuilder({
           groupName={groupName}
           uiState={uiState}
           key={groupName}
+          viewMode={viewMode}
         >
 
           {Object.entries(groupItems)
             .filter(([name]) =>
               config.selectMarkProperty(name, state))
+
             .map(([name, propSpec]) => (
               <ui.GenericPickerWidget
                 propType="mark-property"
@@ -61,7 +70,8 @@ export function MarkBuilder({
           )}
 
         </ui.MarkPropertyGroup>
-      ))}
+      ))
+      }
 
     </ui.MarkContainer>
   )

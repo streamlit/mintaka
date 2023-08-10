@@ -22,6 +22,8 @@ export function BuilderPane({
   const state = useBuilderState(config, columnTypes, initialState)
 
   const [ advancedMode, setAdvancedMode ] = useState(false)
+  const [ viewMode, setViewMode ] =
+    useState(Object.values(config?.modes)?.[0])
 
   const reset = useCallback(() => {
     state.reset()
@@ -43,21 +45,20 @@ export function BuilderPane({
 
   return (
     <ui.BuilderContainer>
-      { advancedMode ? null : (
-        <PresetBuilder
-          state={state}
-          columnTypes={columnTypes}
-          ui={ui}
-          preset={presets}
-          />
-      )}
+      <PresetBuilder
+        state={state}
+        columnTypes={columnTypes}
+        ui={ui}
+        preset={presets}
+        viewMode={viewMode}
+        />
 
       <LayerBuilder
         columnTypes={columnTypes}
         config={config}
         state={state}
         ui={ui}
-        advancedMode={advancedMode}
+        viewMode={viewMode}
         />
 
       <ui.ToolbarContainer>
@@ -65,12 +66,17 @@ export function BuilderPane({
           Reset
         </ui.Button>
 
-        <ui.Toggle
-          label="Advanced"
-          items={{off: false, on: true}}
-          value={false}
-          setValue={setAdvancedMode}
-        />
+        {config?.modes && (
+          <ui.GenericPickerWidget
+            propType="toolbar-property"
+            propName="mode"
+            widgetHint="select"
+            label="Mode"
+            items={config?.modes}
+            value={viewMode}
+            setValue={setViewMode}
+          />
+        )}
 
       </ui.ToolbarContainer>
     </ui.BuilderContainer>

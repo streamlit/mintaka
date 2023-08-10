@@ -1,7 +1,8 @@
 import React, { useState } from "react"
 
+import { shouldIncludeSection } from "../modeParser.ts"
+
 export function ChannelBuilder({
-  advancedMode,
   channel: channelName,
   channelSpec,
   channelState,
@@ -10,6 +11,7 @@ export function ChannelBuilder({
   groupName: channelGroupName,
   makeSetter,
   ui,
+  viewMode,
 }): React.Node {
   const state = channelState ?? {}
   const { channelProperties } = config
@@ -29,8 +31,9 @@ export function ChannelBuilder({
 
   const uiParams = {
     aggregate: { widgetHint: "select" },
-    bin: { widgetHint: "toggle" },
     binStep: { widgetHint: "number" },
+    bin: { widgetHint: "select" },
+    maxBins: { widgetHint: "number" },
     field: { widgetHint: "multiselect", validValues: columns },
     legend: { widgetHint: "toggle" },
     sort: { widgetHint: "select" },
@@ -51,12 +54,12 @@ export function ChannelBuilder({
       setUIState={setUIState}
       hasSomethingSet={hasSomethingSet}
       groupHasSomethingSet={groupHasSomethingSet}
-      advancedMode={advancedMode}
+      viewMode={viewMode}
     >
 
       {Object.entries(channelProperties)
         .filter(([groupName]) => (
-          advancedMode ? true : groupName == "basic"))
+          shouldIncludeSection(groupName, viewMode)))
         .map(([groupName, groupItems]) => (
         <ui.ChannelPropertyGroup
           groupName={groupName}

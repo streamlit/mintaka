@@ -7,8 +7,10 @@ import backspaceIconSvg from "./assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 import tuneIconSvg from "./assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
 import { BuilderPane } from "./components/BuilderPane.tsx"
-import { simpleColumnTypeDetector } from "./simpleColumnTypeDetector.ts"
 import { PreviewPane } from "./components/PreviewPane.tsx"
+import { isElementOf } from "./array.ts"
+import { shouldIncludeSection } from "./modeParser.ts"
+import { simpleColumnTypeDetector } from "./simpleColumnTypeDetector.ts"
 
 import irisDataset from "./data/iris.json"
 import carsDataset from "./data/cars.json"
@@ -59,7 +61,7 @@ function App() {
       </div>
 
       <details>
-        <summary className="text-slate-500 border-t border-slate-300 pt-2 hover:text-pink-400 cursor-pointer text-sm">Demo input / output</summary>
+        <summary className="text-slate-500 border-t border-slate-200 pt-2 hover:text-pink-400 cursor-pointer text-sm">Demo input / output</summary>
 
         <div className="flex flex-col gap-4 pt-4">
 
@@ -119,7 +121,6 @@ function EncodingGroup({children}) {
   const styles = [
     "flex flex-row flex-wrap items-start order-1",
     "gap-2 pt-2",
-    "border-t border-slate-200",
     "empty:hidden",
   ].join(" ")
 
@@ -132,7 +133,7 @@ function EncodingGroup({children}) {
 
 function ToolbarContainer({children}) {
   return (
-    <div className="flex-auto flex flex-row flex-wrap items-end justify-center order-1">
+    <div className="flex-auto flex flex-row flex-wrap items-end justify-center order-1 gap-1">
       {children}
     </div>
   )
@@ -168,13 +169,13 @@ function PresetsContainer({title, children}) {
   )
 }
 
-function MarkContainer({title, children, setUIState}) {
+function MarkContainer({title, children, setUIState, viewMode}) {
   return (
     <GenericContainer
       title={title}
       expandable={false}
       setUIState={setUIState}
-      advancedMode={true}
+      advOptionsAvailable={shouldIncludeSection("advanced", viewMode)}
     >
       {children}
     </GenericContainer>
@@ -188,14 +189,14 @@ function ChannelContainer({
   setUIState,
   hasSomethingSet,
   groupHasSomethingSet,
-  advancedMode,
+  viewMode,
 }) {
   return (
     <GenericContainer
       title={title}
       expandable={groupName != "basic"}
       setUIState={setUIState}
-      advancedMode={advancedMode}
+      advOptionsAvailable={shouldIncludeSection("advanced", viewMode)}
     >
       {children}
     </GenericContainer>
@@ -207,19 +208,12 @@ function GenericContainer({
   children,
   className,
   expandable,
-  expandedByDefault,
   advShownByDefault,
+  advOptionsAvailable,
   setUIState,
-  advancedMode,
 }) {
-  const [expanded, setExpanded] = useState(!!expandedByDefault || !expandable)
+  const [expanded, setExpanded] = useState(!expandable)
   const [advShown, setAdvShown] = useState(!!advShownByDefault)
-
-  useEffect(() => {
-    if (expanded == expandedByDefault) return
-    if (expandable) setExpanded(expandedByDefault)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [expandable, expandedByDefault, /* expanded, setExpanded */])
 
   const showAdvanced = (newValue) => {
     if (newValue == advShown) return
@@ -289,7 +283,7 @@ function GenericContainer({
             {title.toUpperCase()}
           </label>
 
-          {expanded && setUIState && advancedMode && (
+          {expanded && setUIState && advOptionsAvailable && (
             <div className={toolbarStyles}>
               <button className={advButtonStyles} onClick={toggleAdvanced}>
                 <img src={tuneIconSvg} alt="Advanced" />
@@ -335,7 +329,7 @@ function GenericPickerWidget({propType, widgetHint, label, value, setValue, item
     widgetHint = widgetHint({propType, parentName, propName, groupName})
   }
 
-  if (propName == "preset") label = null
+  if (isElementOf(propName, ["preset", "mode"])) label = null
 
   switch (widgetHint) {
     case "multiselect":
@@ -681,7 +675,6 @@ const UI_COMPONENTS = {
   MarkPropertyGroup: ChannelPropertyGroup,
   PresetsContainer,
   ToolbarContainer,
-  Toggle,
 }
 
 export default App

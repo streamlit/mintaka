@@ -2,6 +2,7 @@ import React, { useEffect, useCallback } from "react"
 
 import { PRESETS } from "../config.ts"
 import { updateStateFromPreset } from "../presetParser.ts"
+import { shouldIncludeSection } from "../modeParser.ts"
 
 
 export function PresetBuilder({
@@ -9,6 +10,7 @@ export function PresetBuilder({
   presets,
   state,
   ui,
+  viewMode,
 }) {
   if (!presets) presets = PRESETS
 
@@ -22,7 +24,13 @@ export function PresetBuilder({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [presets, columnTypes, /* state */])
 
-  return (presets && Object.keys(presets).length) ? (
+  if (!presets
+      || Object.keys(presets).length == 0
+      || !shouldIncludeSection('presets', viewMode)) {
+    return null
+  }
+
+  return (
     <ui.PresetsContainer title="Chart type">
       <ui.GenericPickerWidget
         propType="preset-property"
@@ -37,5 +45,5 @@ export function PresetBuilder({
         advanced={false}
       />
     </ui.PresetsContainer>
-  ) : null
+  )
 }
