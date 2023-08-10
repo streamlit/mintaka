@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from "react"
 
-import { PRESETS } from "../config.ts"
+import { PRESETS } from "../presets.ts"
 import { updateStateFromPreset } from "../presetParser.ts"
 import { shouldIncludeSection } from "../modeParser.ts"
 

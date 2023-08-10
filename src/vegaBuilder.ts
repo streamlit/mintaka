@@ -1,7 +1,7 @@
 import merge from "lodash/merge"
 
 import { haveAnyElementsInCommon } from "./array.ts"
-import { AUTO_FIELD, RANDOM_FIELD_NAME } from "./config.ts"
+import { RANDOM_FIELD_NAME } from "./config.ts"
 
 export function generateVegaSpec(builderState, columnTypes, config) {
   const mark = Object.fromEntries(
@@ -118,7 +118,7 @@ function buildChannelSpec(channelName, state, columnTypes) {
 }
 
 function getColType(channelName, colType, colName, columnTypes) {
-  if (colType != null && colType != AUTO_FIELD) return colType
+  if (colType != null) return colType
   if (colName == RANDOM_FIELD_NAME) return "quantitative"
 
   return columnTypes[colName]?.type
