@@ -16,7 +16,7 @@ export function PresetBuilder({
 
   const setPreset = useCallback((preset) => {
     updateStateFromPreset(state, preset, columnTypes)
-  }, [state, columnTypes])
+  }, [state.mark, state.encoding, columnTypes])
 
   useEffect(() => {
     if (!Object.keys(presets).length) return

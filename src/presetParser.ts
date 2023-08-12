@@ -3,7 +3,7 @@ import merge from "lodash/merge"
 import { isElementOf } from "./array.ts"
 
 export function updateStateFromPreset(
-  builderState, presetSpec, columnTypes
+  state, presetSpec, columnTypes
 ) {
   if (presetSpec == null) return null
 
@@ -20,8 +20,9 @@ export function updateStateFromPreset(
       {...channelSpec, field: columns[channelSpec.field]}
     ]))
 
-  builderState.setMark({ ...spec.mark })
-  builderState.setEncoding({ ...encodingState })
+  state.setPreset(presetSpec)
+  state.setMark({ ...spec.mark })
+  state.setEncoding({ ...encodingState })
 }
 
 function findColumns(findColsSpec, columnTypes) {

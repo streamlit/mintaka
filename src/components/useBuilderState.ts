@@ -36,13 +36,19 @@ export function useBuilderState(widgets, columnTypes, initialState) {
     )
   })
 
+  const [preset, setPreset] = useState(null)
   const [mark, setMark] = useState(getInitialMark)
   const [encoding, setEncoding] = useState(getInitialEncoding)
 
   const reset = useCallback(() => {
     setMark(getInitialMark())
     setEncoding(getInitialEncoding())
-  }, [setMark, getInitialMark, setEncoding, getInitialEncoding])
+  }, [
+    getInitialEncoding,
+    getInitialMark,
+    setEncoding,
+    setMark,
+  ])
 
   const getMarkSetter = useCallback(key => {
     return value => {
@@ -66,6 +72,8 @@ export function useBuilderState(widgets, columnTypes, initialState) {
   }, [encoding, setEncoding])
 
   return {
+    preset,
+    setPreset,
     mark,
     encoding,
     reset,

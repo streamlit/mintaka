@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useState } from "react"
 
 import { CONFIG } from "../config.ts"
 import { generateVegaSpec } from "../vegaBuilder.ts"
+import { updateStateFromPreset } from "../presetParser.ts"
 
 import { useBuilderState } from "./useBuilderState.ts"
 import { BuilderPaneProps } from "./commonTypes.ts"
@@ -27,12 +28,12 @@ export function BuilderPane({
 
   const reset = useCallback(() => {
     state.reset()
-  }, [ state ])
+    updateStateFromPreset(state, state.preset, columnTypes)
+  }, [ columnTypes, state.preset ])
 
   useEffect(() => {
-    setGeneratedSpec(
-      generateVegaSpec(state, columnTypes, config)
-    )
+    const spec = generateVegaSpec(state, columnTypes, config)
+    setGeneratedSpec(spec)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
       config,
@@ -49,7 +50,8 @@ export function BuilderPane({
         state={state}
         columnTypes={columnTypes}
         ui={ui}
-        preset={presets}
+        preset={state.preset}
+        presets={presets}
         viewMode={viewMode}
         />
 
