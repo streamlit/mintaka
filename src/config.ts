@@ -8,7 +8,7 @@ export const RANDOM_FIELD_NAME = "vlcb--random-values"
 export const CONFIG = {
   modes: {
     "Basic": {
-      exclude: ['mark', 'advanced', 'faceting'],
+      exclude: ['mark', 'requiredForSomeMarks', 'advanced', 'faceting'],
     },
     "Advanced": {
       exclude: ['presets'],
@@ -36,6 +36,7 @@ export const CONFIG = {
       radius: { label: "Radius" },
       shape: { label: "Shape" },
       size: { label: "Size" },
+      opacity: { label: "Opacity" },
       tooltip: { label: "Tooltip" },
     },
   },
@@ -46,9 +47,12 @@ export const CONFIG = {
     //     [propertyName]: { label: propertyLabel },
     //   }
 
-    basic: {
+    requiredForSomeMarks: {
       text: { label: "Text" },
       url: { label: "URL" },
+    },
+
+    basic: {
       x: { label: "X" },
       y: { label: "Y" },
       theta: { label: "Theta" },

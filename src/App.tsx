@@ -194,7 +194,7 @@ function ChannelContainer({
   return (
     <GenericContainer
       title={title}
-      expandable={groupName != "basic"}
+      expandable={!isElementOf(groupName, ["basic", "requiredForSomeMarks"])}
       setUIState={setUIState}
       advOptionsAvailable={shouldIncludeSection("advanced", viewMode)}
     >
