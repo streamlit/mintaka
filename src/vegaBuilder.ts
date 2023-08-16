@@ -18,7 +18,7 @@ export function generateVegaSpec(builderState, columnTypes, config) {
       .filter(([name]) =>
         config.selectChannel(name, builderState))
       .map(([name, channelState]) => {
-        const channelSpec = buildChannelSpec(name, channelState, columnTypes, config)
+        const channelSpec = buildChannelSpec(name, builderState, columnTypes, config)
         if (channelSpec) return [name, channelSpec]
         return []
       }))
@@ -67,7 +67,9 @@ export function generateVegaSpec(builderState, columnTypes, config) {
 function buildChannelSpec(channelName, state, columnTypes, config) {
   const channelSpec = {}
 
-  const s = Object.fromEntries(Object.entries(state)
+  const channelState = state?.encoding?.[channelName]
+
+  const s = Object.fromEntries(Object.entries(channelState)
     .filter(([name]) => config.selectChannelProperty(name, channelName, state)))
 
   if (Array.isArray(s.field)) {
