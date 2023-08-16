@@ -43,12 +43,12 @@ export function EncodingBuilder({
 
               .map(([name, channelSpec]) => (
                 <ChannelBuilder
-                  channel={name}
+                  channelName={name}
                   channelSpec={channelSpec}
-                  channelState={state.encoding[name]}
                   groupName={groupName}
                   makeSetter={state.getEncodingSetter(name)}
                   config={config}
+                  state={state}
                   ui={ui}
                   columns={{
                     ...columnsLabelsToNames,

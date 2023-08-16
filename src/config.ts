@@ -363,49 +363,52 @@ export const CONFIG = {
     }
   },
 
-  selectChannelProperty(name, channel, state): boolean
-  {
-    const fieldIsSet = Array.isArray(state.field)
-      ? state.field.length > 0
-      : state.field != null
+  selectChannelProperty(name, channelName, state): boolean {
+    const channelState = state?.encoding?.[channelName] ?? {}
+    const fieldIsSet = Array.isArray(channelState.field)
+      ? (channelState.field.length > 0 && channelState.field.some(f => f != null))
+      : channelState.field != null
 
     switch (name) {
       case "field":
         return true
 
       case "value":
-        return !fieldIsSet
+        return !fieldIsSet && !channelState.datum
+
+      case "datum":
+        return !fieldIsSet && !channelState.value
 
       case "sort":
       case "type":
         return fieldIsSet
 
       case "title":
-        return fieldIsSet && !isElementOf(channel, ["theta", "theta2", "radius", "radius2"])
+        return fieldIsSet && !isElementOf(channelName, ["theta", "theta2", "radius", "radius2"])
 
       case "aggregate":
-        return fieldIsSet && !state.bin
+        return fieldIsSet && !channelState.bin
 
       case "bin":
-        return fieldIsSet && state.aggregate == null
+        return fieldIsSet && channelState.aggregate == null
 
       case "binStep":
-        return state.bin == true && !state.maxBins
+        return channelState.bin == true && !channelState.maxBins
 
       case "maxBins":
-        return state.bin == true && !state.binStep
+        return channelState.bin == true && !channelState.binStep
 
       case "stack":
-        return fieldIsSet && isElementOf(channel, ["x", "y"])
+        return fieldIsSet && isElementOf(channelName, ["x", "y", "theta", "radius"])
 
       case "legend":
-        return fieldIsSet && isElementOf(channel, ["color", "size", "opacity"])
+        return fieldIsSet && isElementOf(channelName, ["color", "size", "opacity"])
 
       case "timeUnit":
-        return fieldIsSet && state.type == "temporal"
+        return fieldIsSet && channelState.type == "temporal"
 
       case "sortBy":
-        return fieldIsSet && isElementOf(state.type, ["nominal", "ordinal"])
+        return fieldIsSet && isElementOf(channelState.type, ["nominal", "ordinal"])
 
       default:
         return true

@@ -3,24 +3,24 @@ import React, { useState } from "react"
 import { shouldIncludeSection } from "../modeParser.ts"
 
 export function ChannelBuilder({
-  channel: channelName,
+  channelName,
   channelSpec,
-  channelState,
   columns,
   config,
   groupName: channelGroupName,
   makeSetter,
+  state,
   ui,
   viewMode,
 }): React.Node {
-  const state = channelState ?? {}
+  const channelState = state?.encoding?.[channelName] ?? {}
   const { channelProperties } = config
 
   // Useful variables for the developer.
-  const hasSomethingSet = Object.values(state).some(v => v != null)
+  const hasSomethingSet = Object.values(channelState).some(v => v != null)
   const groupHasSomethingSet = Object.fromEntries(
     Object.entries(channelProperties).map(([groupName, groupItems]) =>
-      [groupName, Object.keys(groupItems).some(k => state[k] != null)]
+      [groupName, Object.keys(groupItems).some(k => channelState[k] != null)]
     )
   )
 
@@ -79,7 +79,7 @@ export function ChannelBuilder({
                 groupName={groupName}
                 widgetHint={propSpec.widgetHint ?? uiParams[name]?.widgetHint ?? "json"}
                 label={propSpec.label}
-                value={state[name]}
+                value={channelState[name]}
                 setValue={makeSetter(name)}
                 items={uiParams[name]?.validValues ?? validValues?.[name]}
                 placeholder={uiParams[name]?.placeholder ?? "Default"}
