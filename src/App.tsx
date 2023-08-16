@@ -312,7 +312,7 @@ function ChannelPropertyGroup({children, groupName, uiState}) {
 
   } else {
     const styles = [
-      "grid grid-cols-3 gap-1",
+      "grid grid-cols-3 gap-1 items-center",
       uiState == "advShown" ? "" : "hidden",
     ].join(" ")
 
