@@ -26,15 +26,15 @@ export const CONFIG = {
     },
 
     advanced: {
-      angle: { label: "Angle" },
-      filled: { label: "Filled" },
-      interpolate: { label: "Interpolate" },
-      line: { label: "Line" },
-      orient: { label: "Orient" },
-      point: { label: "Point" },
-      radius2: { label: "Inner radius" },
-      radius: { label: "Radius" },
       shape: { label: "Shape" },
+      filled: { label: "Filled" },
+      line: { label: "Line" },
+      point: { label: "Point" },
+      interpolate: { label: "Interpolate" },
+      angle: { label: "Angle" },
+      orient: { label: "Orient" },
+      radius: { label: "Radius" },
+      radius2: { label: "Inner radius" },
       size: { label: "Size" },
       opacity: { label: "Opacity" },
       tooltip: { label: "Tooltip" },
@@ -75,9 +75,9 @@ export const CONFIG = {
       theta2: { label: "Theta2" },
       xOffset: { label: "X offset" },
       yOffset: { label: "Y offset" },
-      // angle
-      // strokeWidth, strokeDash
-      // shape
+      strokeDash: { label: "Dash" },
+      // strokeWidth
+      // detail
       // tooltip
     },
 
@@ -105,6 +105,7 @@ export const CONFIG = {
     },
 
     advanced: {
+      datum: { label: "Datum" },
       value: { label: "Value" },
       type: { label: "Type" },
       aggregate: { label: "Aggregate" },
@@ -138,6 +139,7 @@ export const CONFIG = {
       "Rule": "rule",
       "Text": "text",
       "Tick": "tick",
+      "Trail": "trail",
     },
 
     point: {
@@ -244,9 +246,10 @@ export const CONFIG = {
     },
 
     stack: {
-      "True": null,
+      "From bottom": null,
+      "From center": "center",
       "Normalize": "normalize",
-      "False": false,
+      "Overlap": false,
     },
 
     legend: {
@@ -354,6 +357,9 @@ export const CONFIG = {
 
       case "shape":
         return isElementOf(markType, ["point", "line", "area"])
+
+      case "strokeDash":
+        return isElementOf(markType, ["line", "area"])
 
       case "angle":
         return isElementOf(markType, ["text", "image", "point"])
