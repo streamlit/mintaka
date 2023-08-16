@@ -45,7 +45,7 @@ function App() {
 
   return (
     <div className="flex flex-col gap-32">
-      <div className="flex h-[800px] flex-row gap-4">
+      <div className="flex min-h-[800px] flex-row gap-4">
         <BuilderPane
           key={key}
           columnTypes={columnTypes}

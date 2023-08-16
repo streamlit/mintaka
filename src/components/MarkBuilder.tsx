@@ -39,7 +39,10 @@ export function MarkBuilder({
       setUIState={setUIState}
     >
 
-      {Object.entries(config.mark).map(([groupName, groupItems]) => (
+      {Object.entries(config.mark)
+        .filter(([groupName]) => (
+          shouldIncludeSection(groupName, viewMode)))
+        .map(([groupName, groupItems]) => (
         <ui.MarkPropertyGroup
           groupName={groupName}
           uiState={uiState}

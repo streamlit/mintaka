@@ -271,7 +271,7 @@ export const CONFIG = {
   },
 
   selectMarkProperty(name, state) {
-    const markType = state.mark.type
+    const markType = state?.mark?.type
 
     switch (name) {
       case "shape":
