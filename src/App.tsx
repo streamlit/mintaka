@@ -532,7 +532,11 @@ function SelectBox({label, items, value, setValue}) {
 function TextInput({label, value, placeholder, setValue}) {
   const setValueFromString = useCallback((ev) => {
     const newValue = ev.currentTarget.value
-    setValue(newValue == "" ? null : newValue)
+    try {
+      setValue(JSON.parse(newValue))
+    } catch (e) {
+      setValue(newValue == "" ? null : newValue)
+    }
   }, [setValue])
 
   const clearValue = useCallback(
