@@ -554,6 +554,12 @@ function TextInput({label, value, placeholder, setValue}) {
 
   const hasContent = value != null && value != ""
 
+  const valueString = value == null
+    ? value = ""
+    : typeof value == "string"
+      ? value
+      : JSON.stringify(value)
+
   const buttonStyles=[
     "absolute top-0 bottom-0 right-0 w-6",
     "flex items-center w-6 opacity-50 hover:opacity-100",
@@ -564,7 +570,7 @@ function TextInput({label, value, placeholder, setValue}) {
       <input
         className={styles}
         type="text"
-        value={value ?? ""}
+        value={valueString ?? ""}
         placeholder={placeholder}
         onChange={setValueFromString}
       />
