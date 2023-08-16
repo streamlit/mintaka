@@ -18,13 +18,14 @@ export function generateVegaSpec(builderState, columnTypes, config) {
       .filter(([name]) =>
         config.selectChannel(name, builderState))
       .map(([name, channelState]) => {
-        const channelSpec = buildChannelSpec(name, channelState, columnTypes)
+        const channelSpec = buildChannelSpec(name, channelState, columnTypes, config)
         if (channelSpec) return [name, channelSpec]
         return []
       }))
 
   const builderSpec = {
     mark: {
+      clip: true,
       ...mark,
     },
 
@@ -63,55 +64,61 @@ export function generateVegaSpec(builderState, columnTypes, config) {
   return outSpec
 }
 
-function buildChannelSpec(channelName, state, columnTypes) {
+function buildChannelSpec(channelName, state, columnTypes, config) {
   const channelSpec = {}
-  // TODO: use selectChannelProperty here and make this whole thing more automated.
 
-  if (state.title != null) channelSpec.title = state.title
-  if (state.legend != null) channelSpec.legend = state.legend
-  if (state.type == "temporal") channelSpec.timeUnit = state.timeUnit
-  if (state.scale != null) channelSpec.scale = state.scale
+  const s = Object.fromEntries(Object.entries(state)
+    .filter(([name]) => config.selectChannelProperty(name, channelName, state)))
 
-  if (state.field == null) {
-    if (state.value) {
-      channelSpec.value = state.value
-    }
+  if (Array.isArray(s.field)) {
+    channelSpec.field = s.field
+    // Guess type based on 0th field.
+    channelSpec.type = getColType(
+      channelName, s.type, s.field[0], columnTypes)
   } else {
-    if (Array.isArray(state.field)) {
-      channelSpec.field = state.field
-      // Guess type based on 0th field.
-      channelSpec.type = getColType(
-        channelName, state.type, state.field[0], columnTypes)
+    channelSpec.field = s.field
+    channelSpec.type = getColType(
+      channelName, s.type, s.field, columnTypes)
+  }
+
+  if (s.value) {
+    channelSpec.value = s.value
+  }
+
+  if (s.sortBy == null) {
+    if (s.sort != null) channelSpec.sort = s.sort
+  } else {
+    const sortSymbol = s.sort == "descending" ? "-" : ""
+    const sortEnc = s.sortBy ?? ""
+    channelSpec.sort = `${sortSymbol}${sortEnc}`
+  }
+
+  if (s.aggregate != null) channelSpec.aggregate = s.aggregate
+  if (s.stack != null) channelSpec.stack = s.stack
+
+  if (s.bin) {
+    if (s.bin == "binned") {
+      channelSpec.bin = "binned"
+    } else if (s.binStep != null) {
+      channelSpec.bin = { step: s.binStep }
+    } else if (s.maxBins != null) {
+      channelSpec.bin = { maxbins: s.maxBins }
     } else {
-      channelSpec.field = state.field
-      channelSpec.type = getColType(
-        channelName, state.type, state.field, columnTypes)
+      channelSpec.bin = true
     }
+  }
 
-    if (state.sortBy == null) {
-      if (state.sort != null) {
-        channelSpec.sort = state.sort
-      }
-    } else {
-      const sortSymbol = state.sort == "descending" ? "-" : ""
-      const sortEnc = state.sortBy ?? ""
-      channelSpec.sort = `${sortSymbol}${sortEnc}`
-    }
+  if (s.title != null) channelSpec.title = s.title
+  if (s.legend != null) channelSpec.legend = s.legend
+  if (s.type == "temporal") channelSpec.timeUnit = s.timeUnit
 
-    if (state.aggregate != null) channelSpec.aggregate = state.aggregate
-    if (state.stack != null) channelSpec.stack = state.stack
+  if (s.scaleType ?? s.scheme ?? s.domain ?? s.range != null) {
+    channelSpec.scale = {}
 
-    if (state.bin) {
-      if (state.bin == "binned") {
-        channelSpec.bin = "binned"
-      } else if (state.binStep != null) {
-        channelSpec.bin = { step: state.binStep }
-      } else if (state.maxBins != null) {
-        channelSpec.bin = { maxbins: state.maxBins }
-      } else {
-        channelSpec.bin = true
-      }
-    }
+    if (s.scaleType != null) channelSpec.scale.type = s.scaleType
+    if (s.scheme != null) channelSpec.scale.scheme = s.scheme
+    if (s.domain != null) channelSpec.scale.domain = s.domain
+    if (s.range != null) channelSpec.scale.range = s.range
   }
 
   return Object.keys(channelSpec).length > 0 ? channelSpec : null
@@ -152,10 +159,9 @@ function foldChannel(channelName, channelSpec, encoding, transforms) {
     channelSpec.title = "value"  // TODO: Allow user to customize this.
   }
 
-  encoding.color = {
-    field: keys,
-    title: "color",  // TODO: Allow user to customize this.
-  }
+  if (!encoding.color) encoding.color = {}
+  encoding.color.field = keys
+  encoding.color.title = "color"  // TODO: Allow user to customize this.
 
   transforms.push(
     { fold: fields, as: [ keys, values ] }

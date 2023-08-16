@@ -37,6 +37,8 @@ export function ChannelBuilder({
     field: { widgetHint: "multiselect", validValues: columns },
     legend: { widgetHint: "toggle" },
     sort: { widgetHint: "select" },
+    scheme: { widgetHint: "select" },
+    scaleType: { widgetHint: "select" },
     stack: { widgetHint: "select" },
     timeUnit: { widgetHint: "select" },
     type: {
