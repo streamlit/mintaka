@@ -157,13 +157,12 @@ function foldChannel(channelName, channelSpec, encoding, transforms) {
 
   channelSpec.field = values
 
-  if (!channelSpec.title) {
-    channelSpec.title = "value"  // TODO: Allow user to customize this.
-  }
-
-  if (!encoding.color) encoding.color = {}
+  if (!encoding?.color) encoding.color = {}
   encoding.color.field = keys
-  encoding.color.title = "color"  // TODO: Allow user to customize this.
+  encoding.color.type = "nominal"
+
+  if (!channelSpec.title) channelSpec.title = "value"  // TODO: Make customizable.
+  if (!encoding?.color?.title) encoding.color.title = "color"  // TODO: Make customizable.
 
   transforms.push(
     { fold: fields, as: [ keys, values ] }
