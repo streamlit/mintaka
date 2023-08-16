@@ -529,7 +529,7 @@ export const CONFIG = {
         return fieldIsSet && isElementOf(channelName, ["x", "y", "theta", "radius"])
 
       case "legend":
-        return fieldIsSet && isElementOf(channelName, ["color", "size", "opacity"])
+        return fieldIsSet && isElementOf(channelName, ["color", "size", "opacity", "shape", "strokeDash"])
 
       case "timeUnit":
         return fieldIsSet && channelState.type == "temporal"
