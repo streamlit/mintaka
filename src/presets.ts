@@ -78,7 +78,7 @@ export const PRESETS = {
     },
     encoding: {
       x: { field: "A" },
-      y: { field: "B", stack: true },
+      y: { field: "B", aggregate: "max", stack: true },
       color: { field: "C" },
     },
   },
@@ -112,13 +112,11 @@ export const PRESETS = {
       C1: {
         encoding: {
           color: { field: "C1", bin: null },
-          xOffset: { field: "C1", bin: null },
         },
       },
       C2: {
         encoding: {
           color: { field: "C2", bin: true },
-          xOffset: { field: "C2", bin: true }
         },
       },
     }
