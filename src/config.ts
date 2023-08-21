@@ -124,13 +124,7 @@ export const CONFIG = {
     //   }
 
     basic: {
-      field: {
-        label: "Field",
-        widgetHint({ parentName }) {
-          if (parentName == "y") return "multiselect"
-          return "select"
-        },
-      },
+      field: { label: "Field" }
     },
 
     data: {

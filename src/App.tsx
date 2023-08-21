@@ -361,8 +361,8 @@ function ChannelPropertyGroup({children, groupName, uiState, viewMode}) {
 }
 
 function GenericPickerWidget({propType, widgetHint, label, value, setValue, items, placeholder, propName, parentName, groupName}) {
-  if (typeof widgetHint == "function") {
-    widgetHint = widgetHint({propType, parentName, propName, groupName})
+  if (widgetHint == "multiselect" && propName == "field" && parentName != "y") {
+    widgetHint = "select"
   }
 
   if (isElementOf(propName, ["preset", "mode"])) label = null

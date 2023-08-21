@@ -71,7 +71,7 @@ export function ChannelBuilder({
                 parentName={channelName}
                 propName={name}
                 groupName={groupName}
-                widgetHint={propSpec.widgetHint ?? uiParams[name]?.widgetHint ?? "json"}
+                widgetHint={uiParams[name]?.widgetHint ?? "json"}
                 label={propSpec.label}
                 value={channelState[name]}
                 setValue={makeSetter(name)}
