@@ -9,7 +9,7 @@ import tuneIconSvg from "./assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 import { BuilderPane } from "./components/BuilderPane.tsx"
 import { PreviewPane } from "./components/PreviewPane.tsx"
 import { isElementOf } from "./array.ts"
-import { shouldIncludeSection } from "./modeParser.ts"
+import { shouldIncludeGroup } from "./modeParser.ts"
 import { simpleColumnTypeDetector } from "./simpleColumnTypeDetector.ts"
 
 import irisDataset from "./data/iris.json"
@@ -170,12 +170,17 @@ function PresetsContainer({title, children}) {
 }
 
 function MarkContainer({title, children, setUIState, viewMode}) {
+  const basicOptionsAvailable =
+        shouldIncludeGroup("mark", "basic", viewMode)
+  const advOptionsAvailable =
+        shouldIncludeGroup("mark", "advanced", viewMode)
+
   return (
     <GenericContainer
       title={title}
       expandable={false}
       setUIState={setUIState}
-      advOptionsAvailable={shouldIncludeSection("advanced", viewMode)}
+      advOptionsAvailable={basicOptionsAvailable ? advOptionsAvailable : false}
     >
       {children}
     </GenericContainer>
@@ -187,16 +192,20 @@ function ChannelContainer({
   children,
   groupName,
   setUIState,
-  hasSomethingSet,
   groupHasSomethingSet,
   viewMode,
 }) {
+  const basicOptionsAvailable =
+        shouldIncludeGroup("channelProperties", "basic", viewMode)
+  const advOptionsAvailable = ["data", "aggregation", "axes"].some(g =>
+        shouldIncludeGroup("channelProperties", g, viewMode))
+
   return (
     <GenericContainer
       title={title}
       expandable={!isElementOf(groupName, ["basic", "requiredForSomeMarks"])}
       setUIState={setUIState}
-      advOptionsAvailable={shouldIncludeSection("advanced", viewMode)}
+      advOptionsAvailable={basicOptionsAvailable ? advOptionsAvailable : false}
     >
       {children}
     </GenericContainer>
@@ -302,7 +311,9 @@ function GenericContainer({
   )
 }
 
-function ChannelPropertyGroup({children, groupName, uiState}) {
+function MarkPropertyGroup({children, groupName, uiState, viewMode}) {
+  const basicOptionsAvailable = shouldIncludeGroup("mark", "basic", viewMode)
+
   if (groupName == "basic") {
     return (
       <div className="grid grid-cols-3 gap-1">
@@ -313,7 +324,32 @@ function ChannelPropertyGroup({children, groupName, uiState}) {
   } else {
     const styles = [
       "grid grid-cols-3 gap-1 items-center",
-      uiState == "advShown" ? "" : "hidden",
+      basicOptionsAvailable && uiState != "advShown" ? "hidden" : "",
+    ].join(" ")
+
+    return (
+      <div className={styles}>
+        {children}
+      </div>
+    )
+  }
+}
+
+function ChannelPropertyGroup({children, groupName, uiState, viewMode}) {
+  const basicOptionsAvailable =
+        shouldIncludeGroup("channelProperties", "basic", viewMode)
+
+  if (groupName == "basic") {
+    return (
+      <div className="grid grid-cols-3 gap-1">
+        {children}
+      </div>
+    )
+
+  } else {
+    const styles = [
+      "grid grid-cols-3 gap-1 items-center",
+      basicOptionsAvailable && uiState != "advShown" ? "hidden" : "",
     ].join(" ")
 
     return (
@@ -682,7 +718,7 @@ const UI_COMPONENTS = {
   GenericPickerWidget,
   LayerContainer,
   MarkContainer,
-  MarkPropertyGroup: ChannelPropertyGroup,
+  MarkPropertyGroup,
   PresetsContainer,
   ToolbarContainer,
 }

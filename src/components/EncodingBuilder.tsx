@@ -1,7 +1,7 @@
 import React from "react"
 
 import { UI_EXTRAS } from "../config.ts"
-import { shouldIncludeSection } from "../modeParser.ts"
+import { shouldIncludeGroup } from "../modeParser.ts"
 
 import { ChannelBuilder } from "./ChannelBuilder.tsx"
 
@@ -19,7 +19,7 @@ export function EncodingBuilder({
       .map(c => [c, c]))
   }
 
-  if (!shouldIncludeSection("encoding", viewMode)) {
+  if (!shouldIncludeGroup("encoding", null, viewMode)) {
     return null
   }
 
@@ -28,7 +28,7 @@ export function EncodingBuilder({
 
       {Object.entries(config.encoding)
         .filter(([groupName]) => (
-          shouldIncludeSection(groupName, viewMode)))
+          shouldIncludeGroup("encoding", groupName, viewMode)))
 
         .map(([groupName, groupItems]) => (
           <ui.EncodingGroup

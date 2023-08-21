@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from "react"
 
 import { PRESETS } from "../presets.ts"
 import { updateStateFromPreset } from "../presetParser.ts"
-import { shouldIncludeSection } from "../modeParser.ts"
+import { shouldIncludeGroup } from "../modeParser.ts"
 
 
 export function PresetBuilder({
@@ -26,7 +26,7 @@ export function PresetBuilder({
 
   if (!presets
       || Object.keys(presets).length == 0
-      || !shouldIncludeSection('presets', viewMode)) {
+      || !shouldIncludeGroup('presets', null, viewMode)) {
     return null
   }
 

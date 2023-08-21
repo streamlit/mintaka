@@ -8,10 +8,39 @@ export const RANDOM_FIELD_NAME = "vlcb--random-values"
 export const CONFIG = {
   modes: {
     "Basic": {
-      exclude: ['mark', 'requiredForSomeMarks', 'advanced', 'faceting'],
+      presets: true,
+      //mark: false,
+      encoding: ["basic"],
+      channelProperties: ["basic"],
+      else: false,
+    },
+    "Aggregation": {
+      presets: false,
+      //mark: true,
+      encoding: ["basic"],
+      channelProperties: ["aggregation"],
+      else: false,
+    },
+    "Axis config": {
+      presets: false,
+      //mark: true,
+      encoding: ["basic"],
+      channelProperties: ["axes"],
+      else: false,
+    },
+    "Display": {
+      //presets: false,
+      mark: ["advanced"],
+      //encoding: false,
+      //channelProperties: false,
+      else: false,
     },
     "Advanced": {
-      exclude: ['presets'],
+      presets: false,
+      //mark: true,
+      //encoding: true,
+      //channelProperties: true,
+      else: true,
     },
   },
 
@@ -65,6 +94,7 @@ export const CONFIG = {
       size: { label: "Size" },
       opacity: { label: "Opacity" },
       shape: { label: "Shape" },
+      strokeDash: { label: "Dash" },
       angle: { label: "Angle" },
       x2: { label: "X2" },
       y2: { label: "Y2" },
@@ -75,7 +105,6 @@ export const CONFIG = {
       theta2: { label: "Theta2" },
       xOffset: { label: "X offset" },
       yOffset: { label: "Y offset" },
-      strokeDash: { label: "Dash" },
       // strokeWidth
       // detail
       // tooltip
@@ -104,21 +133,27 @@ export const CONFIG = {
       },
     },
 
-    advanced: {
+    data: {
       datum: { label: "Datum" },
       value: { label: "Value" },
       type: { label: "Type" },
+    },
+
+    aggregation: {
       aggregate: { label: "Aggregate" },
       bin: { label: "Bin" },
       binStep: { label: "Bin size" },
       maxBins: { label: "Max bins" },
-      sort: { label: "Sort" },
       stack: { label: "Stack" },
-      scheme: { label: "Palette" },
+    },
+
+    axes: {
       scaleType: { label: "Scale" },
-      timeUnit: { label: "Time unit" },
+      scheme: { label: "Palette" },
       domain: { label: "Domain" },
       range: { label: "Range" },
+      sort: { label: "Sort" },
+      timeUnit: { label: "Time unit" },
       title: { label: "Title" },
       legend: { label: "Legend" },
     },
@@ -279,7 +314,8 @@ export const CONFIG = {
     },
 
     stack: {
-      "From bottom": null,
+      "Auto": null,
+      "From bottom": true,
       "From center": "center",
       "Normalize": "normalize",
       "Overlap": false,

@@ -1,19 +1,22 @@
 import { isElementOf } from "./array.ts"
 
-export function shouldIncludeSection(sectionName, modeSpec) {
-  const include = modeSpec?.include
+export function shouldIncludeGroup(sectionName, groupName, modeSpec) {
+  const sectionSettings = modeSpec?.[sectionName]
 
-  if (include) {
-    const includeThisSection = isElementOf(sectionName, include)
-    return includeThisSection
+  if (sectionSettings == false) return false
+  if (sectionSettings == true) return true
+
+  if (Array.isArray(sectionSettings)) {
+    if (groupName == null) {
+      // Called is trying to check whether the entire section should be shown.
+      // If the person who configured the modes didn't want to show this section,
+      // they're have set it to false rather than use an array. So we'll return
+      // True instead.
+      return true
+    } else {
+      return isElementOf(groupName, sectionSettings)
+    }
   }
 
-  const exclude = modeSpec?.exclude
-
-  if (exclude) {
-    const excludeThisSection = isElementOf(sectionName, exclude)
-    return !excludeThisSection
-  }
-
-  return true
+  return !!modeSpec?.else
 }

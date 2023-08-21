@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 
-import { shouldIncludeSection } from "../modeParser.ts"
+import { shouldIncludeGroup } from "../modeParser.ts"
 
 export function ChannelBuilder({
   channelName,
@@ -15,14 +15,6 @@ export function ChannelBuilder({
 }): React.Node {
   const channelState = state?.encoding?.[channelName] ?? {}
   const { channelProperties } = config
-
-  // Useful variables for the developer.
-  const hasSomethingSet = Object.values(channelState).some(v => v != null)
-  const groupHasSomethingSet = Object.fromEntries(
-    Object.entries(channelProperties).map(([groupName, groupItems]) =>
-      [groupName, Object.keys(groupItems).some(k => channelState[k] != null)]
-    )
-  )
 
   // Some state for the developer to use however they want.
   const [uiState, setUIState] = useState(null)
@@ -53,21 +45,21 @@ export function ChannelBuilder({
       vlName={channelName}
       title={channelSpec.label}
       groupName={channelGroupName}
-      setUIState={setUIState}
-      hasSomethingSet={hasSomethingSet}
-      groupHasSomethingSet={groupHasSomethingSet}
       viewMode={viewMode}
+      uiState={uiState}
+      setUIState={setUIState}
     >
 
       {Object.entries(channelProperties)
         .filter(([groupName]) => (
-          shouldIncludeSection(groupName, viewMode)))
+          shouldIncludeGroup("channelProperties", groupName, viewMode)))
         .map(([groupName, groupItems]) => (
         <ui.ChannelPropertyGroup
           groupName={groupName}
+          viewMode={viewMode}
           uiState={uiState}
+          setUIState={setUIState}
           key={groupName}
-          hasSomethingSet={groupHasSomethingSet[groupName]}
         >
 
           {Object.entries(groupItems)
@@ -85,7 +77,8 @@ export function ChannelBuilder({
                 setValue={makeSetter(name)}
                 items={uiParams[name]?.validValues ?? validValues?.[name]}
                 placeholder={uiParams[name]?.placeholder ?? "Default"}
-                groupName={groupName}
+                uiState={uiState}
+                setUIState={setUIState}
                 key={name}
               />
             ))

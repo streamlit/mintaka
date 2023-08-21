@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 
-import { shouldIncludeSection } from "../modeParser.ts"
+import { shouldIncludeGroup } from "../modeParser.ts"
 
 export function MarkBuilder({
   config,
@@ -27,7 +27,7 @@ export function MarkBuilder({
     // strokeDash: { label: "strokeDash" },
   }
 
-  if (!shouldIncludeSection("mark", viewMode)) {
+  if (!shouldIncludeGroup("mark", null, viewMode)) {
     return null
   }
 
@@ -36,18 +36,21 @@ export function MarkBuilder({
   return (
     <ui.MarkContainer
       title={"Mark"}
+      uiState={uiState}
       setUIState={setUIState}
+      viewMode={viewMode}
     >
 
       {Object.entries(config.mark)
         .filter(([groupName]) => (
-          shouldIncludeSection(groupName, viewMode)))
+          shouldIncludeGroup("mark", groupName, viewMode)))
         .map(([groupName, groupItems]) => (
         <ui.MarkPropertyGroup
           groupName={groupName}
-          uiState={uiState}
-          key={groupName}
           viewMode={viewMode}
+          uiState={uiState}
+          setUIState={setUIState}
+          key={groupName}
         >
 
           {Object.entries(groupItems)
@@ -66,7 +69,8 @@ export function MarkBuilder({
                 setValue={makeSetter(name)}
                 items={config?.markPropertyValues?.[name]}
                 placeholder={uiParams[name]?.placeholder ?? "Default"}
-                groupName={groupName}
+                uiState={uiState}
+                setUIState={setUIState}
                 key={name}
               />
             )
