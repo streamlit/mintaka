@@ -315,10 +315,10 @@ export const CONFIG = {
 
     stack: {
       "Auto": null,
-      "From bottom": true,
-      "From center": "center",
-      "Normalize": "normalize",
-      "Overlap": false,
+      "Stack": true,
+      "Stack from center": "center",
+      "Normalized": "normalize",
+      "No stacking": false,
     },
 
     legend: {

@@ -1,6 +1,6 @@
 import merge from "lodash/merge"
 
-import { haveAnyElementsInCommon } from "./array.ts"
+import { isElementOf, haveAnyElementsInCommon } from "./array.ts"
 import { RANDOM_FIELD_NAME } from "./config.ts"
 
 export function generateVegaSpec(builderState, columnTypes, config) {
@@ -22,6 +22,8 @@ export function generateVegaSpec(builderState, columnTypes, config) {
         if (channelSpec) return [name, channelSpec]
         return []
       }))
+
+  patchChannelSpec(encoding, builderState)
 
   const builderSpec = {
     mark: {
@@ -64,39 +66,15 @@ export function generateVegaSpec(builderState, columnTypes, config) {
   return outSpec
 }
 
-function buildChannelSpec(channelName, state, columnTypes, config) {
+function buildChannelSpec(channelName, builderState, columnTypes, config) {
   const channelSpec = {}
 
-  const channelState = state?.encoding?.[channelName]
+  const channelState = builderState?.encoding?.[channelName]
 
   const s = Object.fromEntries(Object.entries(channelState)
-    .filter(([name]) => config.selectChannelProperty(name, channelName, state)))
-
-  if (Array.isArray(s.field)) {
-    channelSpec.field = s.field
-    // Guess type based on 0th field.
-    channelSpec.type = getColType(
-      channelName, s.type, s.field[0], columnTypes)
-  } else {
-    channelSpec.field = s.field
-    channelSpec.type = getColType(
-      channelName, s.type, s.field, columnTypes)
-  }
-
-  if (s.value) {
-    channelSpec.value = s.value
-  }
-
-  if (s.sortBy == null) {
-    if (s.sort != null) channelSpec.sort = s.sort
-  } else {
-    const sortSymbol = s.sort == "descending" ? "-" : ""
-    const sortEnc = s.sortBy ?? ""
-    channelSpec.sort = `${sortSymbol}${sortEnc}`
-  }
+    .filter(([name]) => config.selectChannelProperty(name, channelName, builderState)))
 
   if (s.aggregate != null) channelSpec.aggregate = s.aggregate
-  if (s.stack != null) channelSpec.stack = s.stack
 
   if (s.bin) {
     if (s.bin == "binned") {
@@ -110,9 +88,9 @@ function buildChannelSpec(channelName, state, columnTypes, config) {
     }
   }
 
-  if (s.title != null) channelSpec.title = s.title
+  channelSpec.field = s.field
+
   if (s.legend != null) channelSpec.legend = s.legend
-  if (s.type == "temporal") channelSpec.timeUnit = s.timeUnit
 
   if (s.scaleType ?? s.scheme ?? s.domain ?? s.range != null) {
     channelSpec.scale = {}
@@ -123,7 +101,54 @@ function buildChannelSpec(channelName, state, columnTypes, config) {
     if (s.range != null) channelSpec.scale.range = s.range
   }
 
+  if (s.sortBy == null) {
+    if (s.sort != null) channelSpec.sort = s.sort
+  } else {
+    const sortSymbol = s.sort == "descending" ? "-" : ""
+    const sortEnc = s.sortBy ?? ""
+    channelSpec.sort = `${sortSymbol}${sortEnc}`
+  }
+
+  if (s.stack != null) channelSpec.stack = s.stack
+  if (s.type == "temporal") channelSpec.timeUnit = s.timeUnit
+  if (s.title != null) channelSpec.title = s.title
+
+  if (Array.isArray(s.field)) {
+    // Guess type based on 0th field.
+    channelSpec.type = getColType(
+      channelName, s.type, s.field[0], columnTypes)
+  } else {
+    channelSpec.type = getColType(
+      channelName, s.type, s.field, columnTypes)
+  }
+
+  if (s.value != null) channelSpec.value = s.value
+
   return Object.keys(channelSpec).length > 0 ? channelSpec : null
+}
+
+function patchChannelSpec(encoding, builderState) {
+  if (encoding?.color?.field != null) {
+    if (encoding?.x?.stack == false && builderState?.mark?.type == "bar") {
+      if (!isElementOf(encoding.y.type, ["nominal", "ordinal"]))
+        encoding.y.type = "nominal"
+
+      if (encoding.yOffset == null) encoding.yOffset = {}
+
+      if (encoding.yOffset.field == null)
+        encoding.yOffset.field = encoding.color.field
+    }
+
+    if (encoding?.y?.stack == false && builderState?.mark?.type == "bar") {
+      if (!isElementOf(encoding.x.type, ["nominal", "ordinal"]))
+        encoding.x.type = "nominal"
+
+      if (encoding.xOffset == null) encoding.xOffset = {}
+
+      if (encoding.xOffset.field == null)
+        encoding.xOffset.field = encoding.color.field
+    }
+  }
 }
 
 function getColType(channelName, colType, colName, columnTypes) {
