@@ -1,4 +1,6 @@
-# Deneb - a headless React-based chart builder for Vega-Lite
+# Deneb - a chart builder for Vega-Lite
+
+Deneb is a headless React-based chart builder that produces Vega-Lite specs.
 
 This is still very much a work in progress. No tests. No documentation. No promises.
 
