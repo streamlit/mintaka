@@ -7,35 +7,36 @@ export const RANDOM_FIELD_NAME = "vlcb--random-values"
 
 export const CONFIG = {
   modes: {
-    "Basic": {
+    "Base": {
       presets: true,
       //mark: false,
       encoding: ["basic"],
       channelProperties: ["basic"],
       else: false,
+      alwaysShowNonNull: true,
     },
-    "Aggregation": {
+    "Agg": {
       presets: false,
       //mark: true,
       encoding: ["basic"],
       channelProperties: ["aggregation"],
       else: false,
     },
-    "Axis config": {
+    "Axis": {
       presets: false,
       //mark: true,
       encoding: ["basic"],
       channelProperties: ["axes"],
       else: false,
     },
-    "Display": {
+    "Mark": {
       //presets: false,
       mark: ["advanced"],
       //encoding: false,
       //channelProperties: false,
       else: false,
     },
-    "Advanced": {
+    "Adv": {
       presets: false,
       //mark: true,
       //encoding: true,
@@ -138,7 +139,6 @@ export const CONFIG = {
       bin: { label: "Bin" },
       binStep: { label: "Bin size" },
       maxBins: { label: "Max bins" },
-      stack: { label: "Stack" },
     },
 
     axes: {
@@ -146,7 +146,9 @@ export const CONFIG = {
       scheme: { label: "Palette" },
       domain: { label: "Domain" },
       range: { label: "Range" },
+      zero: { label: "Show zero" },
       sort: { label: "Sort" },
+      stack: { label: "Stack" },
       timeUnit: { label: "Time unit" },
       title: { label: "Title" },
       legend: { label: "Legend" },
@@ -166,7 +168,7 @@ export const CONFIG = {
       "Bar": "bar",
       "Arc": "arc",
       "Box plot": "boxplot",
-      "Geo shape": "geoshape",
+      //"Geo shape": "geoshape",
       "Image": "image",
       "Rect": "rect",
       "Rule": "rule",
@@ -240,7 +242,7 @@ export const CONFIG = {
       "Ordinal": "ordinal",
       "Quantitative": "quantitative",
       "Temporal": "temporal",
-      "GeoJSON": "geojson",
+      //"GeoJSON": "geojson",
     },
 
     aggregate: {
@@ -330,6 +332,12 @@ export const CONFIG = {
       "Off": null,
       "On": true,
       "Already binned": "binned",
+    },
+
+    zero: {
+      "Auto": null,
+      "Always": true,
+      "Avoid": false,
     },
 
     scheme: {
@@ -566,6 +574,9 @@ export const CONFIG = {
 
       case "sortBy":
         return fieldIsSet && isElementOf(channelState.type, ["nominal", "ordinal"])
+
+      case "zero":
+        return fieldIsSet && !isElementOf(channelState.scaleType, ["log", "time", "utc"])
 
       default:
         return true

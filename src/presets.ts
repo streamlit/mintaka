@@ -277,11 +277,17 @@ export const PRESETS = {
     findColumns: {
       A: {},
       B: {},
+      C: { type: ["quantitative"] },
     },
     encoding: {
       x: { field: "A", bin: true },
       y: { field: "B" , bin: true },
       color: { field: "A" , aggregate: "count" },
+    },
+    ifColumn: {
+      C: {
+        encoding: { color: { field: "C", aggregate: "sum" } },
+      },
     },
   },
 }

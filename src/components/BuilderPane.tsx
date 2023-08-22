@@ -64,22 +64,17 @@ export function BuilderPane({
         />
 
       <ui.ToolbarContainer>
-        <ui.Button onClick={reset}>
-          Reset
-        </ui.Button>
-
         {config?.modes && (
-          <ui.GenericPickerWidget
-            propType="toolbar-property"
-            propName="mode"
-            widgetHint="select"
-            label="Mode"
+          <ui.ModePicker
             items={config?.modes}
             value={viewMode}
             setValue={setViewMode}
           />
         )}
 
+        <ui.ResetButton onClick={reset}>
+          Reset
+        </ui.ResetButton>
       </ui.ToolbarContainer>
     </ui.BuilderContainer>
   )

@@ -12,9 +12,11 @@ import { isElementOf } from "./array.ts"
 import { shouldIncludeGroup } from "./modeParser.ts"
 import { simpleColumnTypeDetector } from "./simpleColumnTypeDetector.ts"
 
-import irisDataset from "./data/iris.json"
+import barleyDataset from "./data/barley.json"
 import carsDataset from "./data/cars.json"
+import disastersDataset from "./data/disasters.json"
 import drivingDataset from "./data/driving.json"
+import irisDataset from "./data/iris.json"
 import moviesDataset from "./data/movies.json"
 import populationDataset from "./data/population.json"
 
@@ -65,13 +67,15 @@ function App() {
 
         <div className="flex flex-col gap-4 pt-4">
 
-          <div className="self-start w-64">
+          <div className="self-start min-w-64">
             <h3 className="text-slate-500 font-bold text-xs uppercase">Input</h3>
             <SelectBox
                 label="Dataset"
                 items={{
                   iris: irisDataset,
+                  barley: barleyDataset,
                   cars: carsDataset,
+                  disasters: disastersDataset,
                   driving: drivingDataset,
                   movies: moviesDataset,
                   population: populationDataset,
@@ -103,7 +107,7 @@ function BuilderContainer({children}) {
 
 function LayerContainer({children}) {
   return (
-    <div className="flex flex-col order-1 gap-2">
+    <div className="flex flex-col order-1 gap-2 flex-auto">
       {children}
     </div>
   )
@@ -133,13 +137,13 @@ function EncodingGroup({children}) {
 
 function ToolbarContainer({children}) {
   return (
-    <div className="flex-auto flex flex-row flex-wrap items-end justify-center order-1 gap-1">
+    <div className="flex flex-row flex-wrap items-stretch order-1 gap-1">
       {children}
     </div>
   )
 }
 
-function Button({onClick, children}) {
+function ResetButton({onClick, children}) {
   return (
     <button
       className={[
@@ -154,6 +158,56 @@ function Button({onClick, children}) {
     >
       {children}
     </button>
+  )
+}
+
+function ModePicker({items, value, setValue}) {
+  const [ radioValue, setRadioValue ] = useState(
+    Object.entries(items).find(([_, v]) => v == value)?.[0])
+
+  const onClick = useCallback(ev => {
+    const newLabel = ev.currentTarget.value
+    setRadioValue(newLabel)
+
+    const newValue = items[newLabel]
+    setValue(newValue)
+  }, [items, setValue, setRadioValue])
+
+  const labelStyles = [
+    "flex flex-row items-center justify-center",
+    "text-xs text-slate-500 uppercase cursor-pointer",
+    "hover:border-pink-400 hover:text-pink-400",
+    "border-y border-r-[0.5px] border-l-[0.5px] border-slate-200",
+    "px-1",
+    "first:rounded-l-md last:rounded-r-md",
+    "first:border-l last:border-r",
+  ].join(" ")
+
+  const selectedLabelStyles = [
+    labelStyles,
+    "bg-slate-400 text-white border-slate-400",
+    "hover:bg-pink-400 hover:text-white hover:border-pink-400",
+  ].join(" ")
+
+  return (
+    <div className="flex flex-row items-stretch">
+      {Object.keys(items).map((label, i) => (
+        <label
+          className={radioValue == label ? selectedLabelStyles : labelStyles}
+          key={i}
+        >
+          <input
+            type="radio"
+            className="hidden"
+            value={label}
+            onChange={onClick}
+            checked={radioValue == label}
+            name="modePicker"
+          />
+          {label}
+        </label>
+      ))}
+    </div>
   )
 }
 
@@ -710,7 +764,7 @@ function WidgetWrapper({label, className, children}) {
 
 const UI_COMPONENTS = {
   BuilderContainer,
-  Button,
+  ResetButton,
   ChannelContainer,
   ChannelPropertyGroup,
   EncodingContainer,
@@ -719,6 +773,7 @@ const UI_COMPONENTS = {
   LayerContainer,
   MarkContainer,
   MarkPropertyGroup,
+  ModePicker,
   PresetsContainer,
   ToolbarContainer,
 }

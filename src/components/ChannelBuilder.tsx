@@ -38,6 +38,7 @@ export function ChannelBuilder({
       validValues: prepareTypes(channelName, config.channelPropertyValues.type),
     },
     value: { widgetHint: "json" },
+    zero: { widgetHint: "select" },
   }
 
   return (

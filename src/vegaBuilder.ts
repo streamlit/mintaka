@@ -92,13 +92,14 @@ function buildChannelSpec(channelName, builderState, columnTypes, config) {
 
   if (s.legend != null) channelSpec.legend = s.legend
 
-  if (s.scaleType ?? s.scheme ?? s.domain ?? s.range != null) {
+  if (s.scaleType ?? s.scheme ?? s.domain ?? s.range ?? s.zero != null) {
     channelSpec.scale = {}
 
     if (s.scaleType != null) channelSpec.scale.type = s.scaleType
     if (s.scheme != null) channelSpec.scale.scheme = s.scheme
     if (s.domain != null) channelSpec.scale.domain = s.domain
     if (s.range != null) channelSpec.scale.range = s.range
+    if (s.zero != null) channelSpec.scale.zero = s.zero
   }
 
   if (s.sortBy == null) {
