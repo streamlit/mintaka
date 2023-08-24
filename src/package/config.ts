@@ -1,11 +1,14 @@
-import { isElementOf } from "./array.ts"
+import { Config } from "./types/config"
+import { BuilderState } from "./types/state"
+
+import { isElementOf } from "./array"
 
 // For these constants, order matters! This is the order they'll appear in the UI.
 // (string keys in JS Objects are guaranteed to be ordered by insertion order)
 
 export const RANDOM_FIELD_NAME = "vlcb--random-values"
 
-export const CONFIG = {
+export const CONFIG: Config = {
   modes: {
     "Base": {
       presets: true,
@@ -13,8 +16,9 @@ export const CONFIG = {
       encoding: ["basic"],
       channelProperties: ["basic"],
       else: false,
-      alwaysShowNonNull: true,
+      //alwaysShowNonNull: true,
     },
+
     "Agg": {
       presets: false,
       //mark: true,
@@ -22,6 +26,7 @@ export const CONFIG = {
       channelProperties: ["aggregation"],
       else: false,
     },
+
     "Axis": {
       presets: false,
       //mark: true,
@@ -29,6 +34,7 @@ export const CONFIG = {
       channelProperties: ["axes"],
       else: false,
     },
+
     "Mark": {
       //presets: false,
       mark: ["advanced"],
@@ -36,6 +42,7 @@ export const CONFIG = {
       //channelProperties: false,
       else: false,
     },
+
     "Adv": {
       presets: false,
       //mark: true,
@@ -246,7 +253,7 @@ export const CONFIG = {
     },
 
     aggregate: {
-      "": null,
+      "Off": null,
       "Count": "count",
       "Sum": "sum",
       "Mean": "mean",
@@ -263,7 +270,7 @@ export const CONFIG = {
     },
 
     timeUnit: {
-      "": null,
+      "Auto": null,
       "Milliseconds": "milliseconds",
       "Seconds": "seconds",
       "Minutes": "minutes",
@@ -323,7 +330,7 @@ export const CONFIG = {
     },
 
     sort: {
-      "": null,
+      "Auto": null,
       "Ascending": "ascending",
       "Descending": "descending",
     },
@@ -419,13 +426,18 @@ export const CONFIG = {
     },
   },
 
-  selectMarkProperty(name, state) {
+  selectMarkProperty(
+    name: string,
+    state: BuilderState,
+  ): boolean {
     const markType = state?.mark?.type
 
     switch (name) {
       case "shape":
-      case "filled":
         return markType == "point"
+
+      case "filled":
+        return markType == "point" && state?.mark?.shape != "stroke"
 
       case "point":
       case "interpolate":
@@ -456,7 +468,10 @@ export const CONFIG = {
     }
   },
 
-  selectChannel(name, state) {
+  selectChannel(
+    name: string,
+    state: BuilderState,
+  ): boolean {
     const markType = state?.mark?.type
 
     switch (name) {
@@ -514,7 +529,11 @@ export const CONFIG = {
     }
   },
 
-  selectChannelProperty(name, channelName, state): boolean {
+  selectChannelProperty(
+    name: string,
+    channelName: string,
+    state: BuilderState,
+  ): boolean {
     const channelState = state?.encoding?.[channelName] ?? {}
     const fieldIsSet = Array.isArray(channelState.field)
       ? (channelState.field.length > 0 && channelState.field.some(f => f != null))

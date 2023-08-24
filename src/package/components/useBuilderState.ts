@@ -1,9 +1,15 @@
 import { useState, useCallback } from "react"
 
-export function useBuilderState(widgets, columnTypes, initialState) {
+import { Config, ColumnTypes, BuilderState } from "./types.ts"
+
+export function useBuilderState(
+  config: Config,
+  columnTypes: ColumnTypes,
+  initialState: BuilderState,
+): BuilderState {
   const getInitialMark = useCallback(() => {
-    // Flatten widgets.mark
-    const flatMark = Object.values(widgets.mark)
+    // Flatten config.mark
+    const flatMark = Object.values(config.mark)
       .reduce((obj, markGroup) => {
         Object.assign(obj, markGroup)
         return obj
@@ -22,8 +28,8 @@ export function useBuilderState(widgets, columnTypes, initialState) {
   })
 
   const getInitialEncoding = useCallback(() => {
-    // Flatten widgets.encoding
-    const flatEncoding = Object.values(widgets.encoding)
+    // Flatten config.encoding
+    const flatEncoding = Object.values(config.encoding)
       .reduce((obj, channelGroup) => {
         Object.assign(obj, channelGroup)
         return obj
@@ -72,11 +78,11 @@ export function useBuilderState(widgets, columnTypes, initialState) {
   }, [encoding, setEncoding])
 
   return {
+    reset,
     preset,
     setPreset,
     mark,
     encoding,
-    reset,
     setMark,
     setEncoding,
     getMarkSetter,

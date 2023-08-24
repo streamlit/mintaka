@@ -1,9 +1,16 @@
 import merge from "lodash/merge"
 
-import { isElementOf } from "./array.ts"
+import { BuilderState, EncodingState } from "./types/state"
+import { ColumnTypes } from "./types/config"
+import { Preset, FindColumnsSpec, PresetColumnFilter } from "./types/presets"
+import { JsonRecord, PlainRecord } from "./types/util"
+
+import { isElementOf } from "./array"
 
 export function updateStateFromPreset(
-  state, presetSpec, columnTypes
+  state: BuilderState,
+  presetSpec: Preset,
+  columnTypes: ColumnTypes,
 ) {
   if (presetSpec == null) return null
 
@@ -14,10 +21,10 @@ export function updateStateFromPreset(
   const columns = findColumns(spec.findColumns, columnTypes)
   followIfConditions(spec, columns)
 
-  const encodingState = Object.fromEntries(
-    Object.entries(spec.encoding).map(([name, channelSpec]) => [
+  const encodingState: EncodingState = Object.fromEntries(
+    Object.entries(spec.encoding).map(([name, channelSpec]: [string, JsonRecord]) => [
       name,
-      {...channelSpec, field: columns[channelSpec.field]}
+      {...channelSpec, field: columns[channelSpec.field as string]}
     ]))
 
   state.setPreset(presetSpec)
@@ -25,7 +32,10 @@ export function updateStateFromPreset(
   state.setEncoding({ ...encodingState })
 }
 
-function findColumns(findColsSpec, columnTypes) {
+function findColumns(
+  findColsSpec: FindColumnsSpec,
+  columnTypes: ColumnTypes,
+): PlainRecord<string> {
   if (!findColsSpec) return {}
 
   const columns = {}
@@ -40,7 +50,11 @@ function findColumns(findColsSpec, columnTypes) {
   return columns
 }
 
-function findColumn(filterSpec, columnTypes, columnsAlreadyFound) {
+function findColumn(
+  filterSpec: PresetColumnFilter,
+  columnTypes: ColumnTypes,
+  columnsAlreadyFound: string[],
+): string|null {
   if (!filterSpec) return
 
   let candidateColsAndTypes = Object.entries(columnTypes)
@@ -48,13 +62,13 @@ function findColumn(filterSpec, columnTypes, columnsAlreadyFound) {
       .filter(([_, info]) => {
         let keep = true
 
-        if (filterSpec.type) keep &= isElementOf(info.type, filterSpec.type)
-        if (filterSpec.maxUnique) keep &= (info.unique ?? 0) <= filterSpec.maxUnique
+        if (filterSpec.type) keep = keep && isElementOf(info.type, filterSpec.type)
+        if (filterSpec.maxUnique) keep = keep && (info.unique ?? 0) <= filterSpec.maxUnique
 
         return keep
       })
 
-  if (candidateColsAndTypes.lenth == 0 && filterSpec.type?.some(x => x == null)) {
+  if (candidateColsAndTypes.length == 0 && filterSpec.type?.some(x => x == null)) {
     candidateColsAndTypes = Object.entries(columnTypes)
   }
 

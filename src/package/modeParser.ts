@@ -1,6 +1,12 @@
-import { isElementOf } from "./array.ts"
+import { Mode } from "./types/config"
 
-export function shouldIncludeGroup(sectionName, groupName, modeSpec) {
+import { isElementOf } from "./array"
+
+export function shouldIncludeGroup(
+  sectionName: string,
+  groupName: string|null,
+  modeSpec: Mode
+): boolean {
   const sectionSettings = modeSpec?.[sectionName]
 
   if (sectionSettings == false) return false

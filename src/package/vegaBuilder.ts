@@ -1,17 +1,25 @@
 import merge from "lodash/merge"
 
-import { isElementOf, haveAnyElementsInCommon } from "./array.ts"
-import { RANDOM_FIELD_NAME } from "./config.ts"
+import { BuilderState } from "./types/state"
+import { Config, ColumnTypes, VlFieldType } from "./types/config"
+import { PlainRecord, JsonRecord, json } from "./types/util"
 
-export function generateVegaSpec(builderState, columnTypes, config) {
-  const mark = Object.fromEntries(
+import { isElementOf, haveAnyElementsInCommon } from "./array"
+import { RANDOM_FIELD_NAME } from "./config"
+
+export function generateVegaSpec(
+  builderState: BuilderState,
+  columnTypes: ColumnTypes,
+  config: Config,
+): json {
+  const mark: PlainRecord<json> = Object.fromEntries(
     Object.entries(builderState.mark)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
       .filter(([name]) =>
         config.selectMarkProperty(name, builderState)))
 
-  const encoding = Object.fromEntries(
+  const encoding: PlainRecord<PlainRecord<json>> = Object.fromEntries(
     Object.entries(builderState.encoding)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
@@ -25,7 +33,7 @@ export function generateVegaSpec(builderState, columnTypes, config) {
 
   patchChannelSpec(encoding, builderState)
 
-  const builderSpec = {
+  const builderSpec: JsonRecord = {
     mark: {
       clip: true,
       ...mark,
@@ -66,10 +74,15 @@ export function generateVegaSpec(builderState, columnTypes, config) {
   return outSpec
 }
 
-function buildChannelSpec(channelName, builderState, columnTypes, config) {
-  const channelSpec = {}
+function buildChannelSpec(
+  channelName: string,
+  builderState: BuilderState,
+  columnTypes: ColumnTypes,
+  config: Config,
+): json {
+  const channelSpec: JsonRecord = {}
 
-  const channelState = builderState?.encoding?.[channelName]
+  const channelState: JsonRecord = builderState?.encoding?.[channelName] ?? {}
 
   const s = Object.fromEntries(Object.entries(channelState)
     .filter(([name]) => config.selectChannelProperty(name, channelName, builderState)))
@@ -117,10 +130,18 @@ function buildChannelSpec(channelName, builderState, columnTypes, config) {
   if (Array.isArray(s.field)) {
     // Guess type based on 0th field.
     channelSpec.type = getColType(
-      channelName, s.type, s.field[0], columnTypes)
+      channelName,
+      s.type as VlFieldType|null,
+      s.field[0] as string,
+      columnTypes,
+    )
   } else {
     channelSpec.type = getColType(
-      channelName, s.type, s.field, columnTypes)
+      channelName,
+      s.type as VlFieldType|null,
+      s.field as string,
+      columnTypes,
+    )
   }
 
   if (s.value != null) channelSpec.value = s.value
@@ -128,7 +149,10 @@ function buildChannelSpec(channelName, builderState, columnTypes, config) {
   return Object.keys(channelSpec).length > 0 ? channelSpec : null
 }
 
-function patchChannelSpec(encoding, builderState) {
+function patchChannelSpec(
+  encoding: PlainRecord<PlainRecord<json>>,
+  builderState: BuilderState,
+) {
   if (encoding?.color?.field != null) {
     if (encoding?.x?.stack == false && builderState?.mark?.type == "bar") {
       if (!isElementOf(encoding.y.type, ["nominal", "ordinal"]))
@@ -152,7 +176,12 @@ function patchChannelSpec(encoding, builderState) {
   }
 }
 
-function getColType(channelName, colType, colName, columnTypes) {
+function getColType(
+  channelName: string,
+  colType: VlFieldType|null,
+  colName: string,
+  columnTypes: ColumnTypes,
+): VlFieldType {
   if (colType != null) return colType
   if (colName == RANDOM_FIELD_NAME) return "quantitative"
 
@@ -162,7 +191,10 @@ function getColType(channelName, colType, colName, columnTypes) {
 const KEYS = "vlcb--folded-keys-"
 const VALUES = "vlcb--folded-values-"
 
-function convertFieldListToStrAndMaybeFold(encoding, transforms) {
+function convertFieldListToStrAndMaybeFold(
+  encoding: PlainRecord<PlainRecord<json>>,
+  transforms: Array<PlainRecord<json>>,
+) {
   Object.entries(encoding)
     .forEach(([channelName, channelSpec]) => {
       if (!Array.isArray(channelSpec?.field)) return
@@ -195,7 +227,10 @@ function foldChannel(channelName, channelSpec, encoding, transforms) {
   )
 }
 
-function addJitterColumn(encoding, transforms) {
+function addJitterColumn(
+  encoding: PlainRecord<PlainRecord<json>>,
+  transforms: Array<PlainRecord<json>>,
+): void {
   const hasRandomField = Object.values(encoding)
     .some(channelSpec => channelSpec?.field == RANDOM_FIELD_NAME)
 
