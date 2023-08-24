@@ -5,12 +5,14 @@ import {
   ColumnTypes,
   Config,
   Mode,
+  UIComponents,
+  WithCustomState,
 } from "../types"
 
 import { MarkBuilder } from "./MarkBuilder"
 import { EncodingBuilder } from "./EncodingBuilder"
 
-export interface Props {
+export interface Props extends WithCustomState {
   columnTypes: ColumnTypes,
   config: Config,
   state: BuilderState,
@@ -24,6 +26,8 @@ export function LayerBuilder({
   state,
   ui,
   viewMode,
+  customState,
+  setCustomState,
 }: Props): ReactNode {
   return (
     <ui.LayerContainer>
@@ -33,6 +37,8 @@ export function LayerBuilder({
         state={state}
         ui={ui}
         viewMode={viewMode}
+        customState={customState}
+        setCustomState={setCustomState}
       />
 
       <EncodingBuilder
@@ -41,6 +47,8 @@ export function LayerBuilder({
         state={state}
         viewMode={viewMode}
         ui={ui}
+        customState={customState}
+        setCustomState={setCustomState}
       />
     </ui.LayerContainer>
   )

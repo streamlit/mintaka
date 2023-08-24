@@ -140,7 +140,10 @@ function ToolbarContainer({children}) {
   )
 }
 
-function ResetButton({onClick, children}) {
+function ResetButton({
+  onClick,
+  children,
+}) {
   return (
     <button
       className={[
@@ -158,7 +161,11 @@ function ResetButton({onClick, children}) {
   )
 }
 
-function ModePicker({items, value, setValue}) {
+function ModePicker({
+  items,
+  value,
+  setValue,
+}) {
   const [ radioValue, setRadioValue ] = useState(
     Object.entries(items).find(([_, v]) => v == value)?.[0])
 
@@ -208,19 +215,30 @@ function ModePicker({items, value, setValue}) {
   )
 }
 
-function PresetsContainer({title, children}) {
+function PresetsContainer({
+  title,
+  children,
+  statePath,
+}) {
   return (
     <GenericContainer
       title={title}
       expandable={false}
       className="pb-2"
+      statePath={statePath}
     >
       {children}
     </GenericContainer>
   )
 }
 
-function MarkContainer({title, children, setUIState, viewMode}) {
+function MarkContainer({
+  title,
+  children,
+  setCustomState,
+  viewMode,
+  statePath,
+}) {
   const basicOptionsAvailable =
         shouldIncludeGroup("mark", "basic", viewMode)
   const advOptionsAvailable =
@@ -230,8 +248,9 @@ function MarkContainer({title, children, setUIState, viewMode}) {
     <GenericContainer
       title={title}
       expandable={false}
-      setUIState={setUIState}
+      setCustomState={setCustomState}
       advOptionsAvailable={basicOptionsAvailable ? advOptionsAvailable : false}
+      statePath={statePath}
     >
       {children}
     </GenericContainer>
@@ -241,9 +260,10 @@ function MarkContainer({title, children, setUIState, viewMode}) {
 function ChannelContainer({
   title,
   children,
+  statePath,
   groupName,
-  setUIState,
-  groupHasSomethingSet,
+  setCustomState,
+  //groupHasSomethingSet,
   viewMode,
 }) {
   const basicOptionsAvailable =
@@ -255,8 +275,9 @@ function ChannelContainer({
     <GenericContainer
       title={title}
       expandable={!isElementOf(groupName, ["basic", "requiredForSomeMarks"])}
-      setUIState={setUIState}
+      setCustomState={setCustomState}
       advOptionsAvailable={basicOptionsAvailable ? advOptionsAvailable : false}
+      statePath={statePath}
     >
       {children}
     </GenericContainer>
@@ -270,7 +291,9 @@ function GenericContainer({
   expandable,
   advShownByDefault,
   advOptionsAvailable,
-  setUIState,
+  setCustomState,
+  customState,
+  statePath,
 }) {
   const [expanded, setExpanded] = useState(!expandable)
   const [advShown, setAdvShown] = useState(!!advShownByDefault)
@@ -278,7 +301,8 @@ function GenericContainer({
   const showAdvanced = (newValue) => {
     if (newValue == advShown) return
     setAdvShown(newValue)
-    if (setUIState) setUIState(newValue ? "advShown": null)
+    if (setCustomState)
+      setCustomState({ ...customState, [statePath]: newValue })
   }
 
   useEffect(() => {
@@ -289,16 +313,17 @@ function GenericContainer({
   const toggleAdvanced = useCallback(() => {
     showAdvanced(!advShown)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [advShown, setAdvShown, setUIState, showAdvanced])
+  }, [advShown, setAdvShown, setCustomState, showAdvanced])
 
   const toggleExpanded = useCallback(() => {
     setExpanded(!expanded)
 
     if (expanded) {
       setAdvShown(false)
-      if (setUIState) setUIState(null)
+      if (setCustomState)
+        setCustomState({ ...customState, [statePath]: false })
     }
-  }, [expanded, setExpanded, setAdvShown, setUIState])
+  }, [expanded, setExpanded, setAdvShown, setCustomState])
 
   const expandedWrapperStyles = [
     "flex flex-col",
@@ -343,7 +368,7 @@ function GenericContainer({
             {title.toUpperCase()}
           </label>
 
-          {expanded && setUIState && advOptionsAvailable && (
+          {expanded && setCustomState && advOptionsAvailable && (
             <div className={toolbarStyles}>
               <button className={advButtonStyles} onClick={toggleAdvanced}>
                 <img src={tuneIconSvg} alt="Advanced" />
@@ -362,7 +387,13 @@ function GenericContainer({
   )
 }
 
-function MarkPropertyGroup({children, groupName, uiState, viewMode}) {
+function MarkPropertyGroup({
+  children,
+  groupName,
+  statePath,
+  customState,
+  viewMode,
+}) {
   const basicOptionsAvailable = shouldIncludeGroup("mark", "basic", viewMode)
 
   if (groupName == "basic") {
@@ -375,7 +406,7 @@ function MarkPropertyGroup({children, groupName, uiState, viewMode}) {
   } else {
     const styles = [
       "grid grid-cols-3 gap-1 items-center",
-      basicOptionsAvailable && uiState != "advShown" ? "hidden" : "",
+      basicOptionsAvailable && !customState["mark"] ? "hidden" : "",
     ].join(" ")
 
     return (
@@ -386,7 +417,13 @@ function MarkPropertyGroup({children, groupName, uiState, viewMode}) {
   }
 }
 
-function ChannelPropertyGroup({children, groupName, uiState, viewMode}) {
+function ChannelPropertyGroup({
+  children,
+  groupName,
+  statePath,
+  customState,
+  viewMode,
+}) {
   const basicOptionsAvailable =
         shouldIncludeGroup("channelProperties", "basic", viewMode)
 
@@ -400,7 +437,7 @@ function ChannelPropertyGroup({children, groupName, uiState, viewMode}) {
   } else {
     const styles = [
       "grid grid-cols-3 gap-1 items-center",
-      basicOptionsAvailable && uiState != "advShown" ? "hidden" : "",
+      basicOptionsAvailable && !customState[statePath] ? "hidden" : "",
     ].join(" ")
 
     return (
@@ -411,12 +448,23 @@ function ChannelPropertyGroup({children, groupName, uiState, viewMode}) {
   }
 }
 
-function GenericPickerWidget({propType, widgetHint, label, value, setValue, items, placeholder, propName, parentName, groupName}) {
-  if (widgetHint == "multiselect" && propName == "field" && parentName != "y") {
+function GenericPickerWidget({
+  widgetHint,
+  label,
+  value,
+  setValue,
+  items,
+  placeholder,
+  statePath,
+  groupName,
+}) {
+  if (widgetHint == "multiselect"
+    && !statePath.startsWith("encoding.y")
+  ) {
     widgetHint = "select"
   }
 
-  if (isElementOf(propName, ["preset", "mode"])) label = null
+  if (statePath == "preset") label = null
 
   switch (widgetHint) {
     case "multiselect":
@@ -468,7 +516,12 @@ function GenericPickerWidget({propType, widgetHint, label, value, setValue, item
   }
 }
 
-function MultiSelect({label, items, value, setValue}) {
+function MultiSelect({
+  label,
+  items,
+  value,
+  setValue,
+}) {
   const NO_VALUE_LABEL = Object.keys(items)[0]
   const valueArr =
       Array.isArray(value) ? value :
@@ -562,7 +615,12 @@ function MultiSelect({label, items, value, setValue}) {
   )
 }
 
-function SelectBox({label, items, value, setValue}) {
+function SelectBox({
+  label,
+  items,
+  value,
+  setValue,
+}) {
   const getLabelFromValue = useCallback((v) => {
     return Object.entries(items ?? {})
       .find(([_, itemValue]) => itemValue == v)
@@ -616,7 +674,12 @@ function SelectBox({label, items, value, setValue}) {
   )
 }
 
-function TextInput({label, value, placeholder, setValue}) {
+function TextInput({
+  label,
+  value,
+  placeholder,
+  setValue,
+}) {
   const setValueFromString = useCallback((ev) => {
     const newValue = ev.currentTarget.value
     try {
@@ -674,7 +737,12 @@ function TextInput({label, value, placeholder, setValue}) {
   )
 }
 
-function Toggle({label, items, value, setValue}) {
+function Toggle({
+  label,
+  items,
+  value,
+  setValue,
+}) {
   let values
 
   if (Array.isArray(items)) {
@@ -729,7 +797,11 @@ function HtmlLabel(props) {
   return <label {...props} />
 }
 
-function WidgetWrapper({label, className, children}) {
+function WidgetWrapper({
+  label,
+  className,
+  children,
+}) {
   const labelStyles = [
     "col-span-1",
     "flex items-start",

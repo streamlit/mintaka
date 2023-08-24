@@ -5,6 +5,8 @@ import {
   ColumnTypes,
   Config,
   Mode,
+  UIComponents,
+  WithCustomState,
 } from "../types"
 
 import { UI_EXTRAS } from "../config"
@@ -12,7 +14,7 @@ import { shouldIncludeGroup } from "../modeParser"
 
 import { ChannelBuilder } from "./ChannelBuilder"
 
-export interface Props {
+export interface Props extends WithCustomState {
   columnTypes: ColumnTypes,
   config: Config,
   state: BuilderState,
@@ -26,6 +28,8 @@ export function EncodingBuilder({
   state,
   ui,
   viewMode,
+  customState,
+  setCustomState,
 }: Props): ReactNode {
   const columnsLabelsToNames = {
     "": null,
@@ -38,7 +42,14 @@ export function EncodingBuilder({
   }
 
   return (
-    <ui.EncodingContainer>
+    <ui.EncodingContainer
+      title="Encoding"
+      statePath="encoding"
+      groupName={null}
+      viewMode={viewMode}
+      customState={customState}
+      setCustomState={setCustomState}
+    >
 
       {Object.entries(config.encoding)
         .filter(([groupName]) => (
@@ -47,8 +58,10 @@ export function EncodingBuilder({
         .map(([groupName, groupItems]) => (
           <ui.EncodingGroup
             groupName={groupName}
-            key={groupName}
             viewMode={viewMode}
+            customState={customState}
+            setCustomState={setCustomState}
+            key={groupName}
           >
 
             {Object.entries(groupItems)
@@ -69,6 +82,8 @@ export function EncodingBuilder({
                     ...UI_EXTRAS[name]?.extraCols
                   }}
                   viewMode={viewMode}
+                  customState={customState}
+                  setCustomState={setCustomState}
                   key={name}
                 />
               ))

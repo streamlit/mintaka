@@ -1,17 +1,19 @@
 import { useState, ReactNode } from "react"
 
 import {
-  Config,
-  ChannelConfig,
-  Mode,
   BuilderState,
+  ChannelConfig,
+  Config,
   MarkPropertySetter,
+  Mode,
   PlainRecord,
+  UIComponents,
+  WithCustomState,
 } from "../types"
 
 import { shouldIncludeGroup } from "../modeParser"
 
-export interface Props {
+export interface Props extends WithCustomState {
   channelName: string,
   channelSpec: ChannelConfig,
   columns: PlainRecord<string | null>,
@@ -33,12 +35,11 @@ export function ChannelBuilder({
   state,
   ui,
   viewMode,
+  customState,
+  setCustomState,
 }): ReactNode {
   const channelState = state?.encoding?.[channelName] ?? {}
   const { channelProperties } = config
-
-  // Some state for the developer to use however they want.
-  const [uiState, setUIState] = useState(null)
 
   const validValues = config.channelPropertyValues
 
@@ -62,14 +63,16 @@ export function ChannelBuilder({
     zero: { widgetHint: "select" },
   }
 
+  const basePath = `encoding.${channelName}`
+
   return (
     <ui.ChannelContainer
-      vlName={channelName}
       title={channelSpec.label}
+      statePath={basePath}
       groupName={channelGroupName}
       viewMode={viewMode}
-      uiState={uiState}
-      setUIState={setUIState}
+      customState={customState}
+      setCustomState={setCustomState}
     >
 
       {Object.entries(channelProperties)
@@ -77,10 +80,11 @@ export function ChannelBuilder({
           shouldIncludeGroup("channelProperties", groupName, viewMode)))
         .map(([groupName, groupItems]) => (
         <ui.ChannelPropertyGroup
+          statePath={basePath}
           groupName={groupName}
           viewMode={viewMode}
-          uiState={uiState}
-          setUIState={setUIState}
+          customState={customState}
+          setCustomState={setCustomState}
           key={groupName}
         >
 
@@ -89,9 +93,7 @@ export function ChannelBuilder({
               config.selectChannelProperty(name, channelName, state))
             .map(([name, propSpec]) => (
               <ui.GenericPickerWidget
-                propType="channel-property"
-                parentName={channelName}
-                propName={name}
+                statePath={basePath}
                 groupName={groupName}
                 widgetHint={uiParams[name]?.widgetHint ?? "json"}
                 label={propSpec.label}
@@ -99,8 +101,8 @@ export function ChannelBuilder({
                 setValue={makeSetter(name)}
                 items={uiParams[name]?.validValues ?? validValues?.[name]}
                 placeholder={uiParams[name]?.placeholder ?? "Default"}
-                uiState={uiState}
-                setUIState={setUIState}
+                customState={customState}
+                setCustomState={setCustomState}
                 key={name}
               />
             ))

@@ -1,7 +1,10 @@
 import { ReactNode } from "react"
 import { Vega } from "react-vega"
 
-import { VLSpec } from "../types"
+import {
+  VLSpec,
+  UIComponents,
+} from "../types"
 
 interface PreviewProps {
   data: any,

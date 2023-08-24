@@ -5,11 +5,13 @@ import {
   Config,
   MarkPropertySetter,
   Mode,
+  UIComponents,
+  WithCustomState,
 } from "../types"
 
 import { shouldIncludeGroup } from "../modeParser"
 
-export interface Props {
+export interface Props extends WithCustomState {
   config: Config,
   ui: UIComponents,
   state: BuilderState,
@@ -23,10 +25,9 @@ export function MarkBuilder({
   state,
   makeSetter,
   viewMode,
+  customState,
+  setCustomState,
 }: Props): ReactNode {
-  // Some state for the developer to use however they want.
-  const [uiState, setUIState] = useState(null)
-
   const uiParams = {
     align: { widgetHint: "select" },
     baseline: { widgetHint: "select" },
@@ -51,9 +52,11 @@ export function MarkBuilder({
   return (
     <ui.MarkContainer
       title={"Mark"}
-      uiState={uiState}
-      setUIState={setUIState}
+      statePath="mark"
+      groupName={null}
       viewMode={viewMode}
+      customState={customState}
+      setCustomState={setCustomState}
     >
 
       {Object.entries(config.mark)
@@ -63,8 +66,8 @@ export function MarkBuilder({
         <ui.MarkPropertyGroup
           groupName={groupName}
           viewMode={viewMode}
-          uiState={uiState}
-          setUIState={setUIState}
+          customState={customState}
+          setCustomState={setCustomState}
           key={groupName}
         >
 
@@ -74,9 +77,7 @@ export function MarkBuilder({
 
             .map(([name, propSpec]) => (
               <ui.GenericPickerWidget
-                propType="mark-property"
-                parentName={"mark"}
-                propName={name}
+                statePath={`mark.${name}`}
                 groupName={groupName}
                 widgetHint={uiParams[name]?.widgetHint ?? "json"}
                 label={propSpec.label}
@@ -84,8 +85,8 @@ export function MarkBuilder({
                 setValue={makeSetter(name)}
                 items={config?.markPropertyValues?.[name]}
                 placeholder={uiParams[name]?.placeholder ?? "Default"}
-                uiState={uiState}
-                setUIState={setUIState}
+                customState={customState}
+                setCustomState={setCustomState}
                 key={name}
               />
             )

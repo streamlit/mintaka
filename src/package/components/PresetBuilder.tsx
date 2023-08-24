@@ -5,6 +5,7 @@ import {
   ColumnTypes,
   Mode,
   Presets,
+  UIComponents,
 } from "../types"
 
 import { PRESETS } from "../presets"
@@ -45,18 +46,20 @@ export function PresetBuilder({
   }
 
   return (
-    <ui.PresetsContainer title="Chart type">
+    <ui.PresetsContainer
+      title="Chart type"
+      statePath="preset"
+      groupName={null}
+      viewMode={null}
+    >
       <ui.GenericPickerWidget
-        propType="preset-property"
-        parentName={null}
-        propName="preset"
+        statePath="preset"
         groupName={null}
         widgetHint={"select"}
         label={"Preset"}
-        value={null}
+        value={state.preset}
         setValue={setPreset}
         items={presets}
-        advanced={false}
       />
     </ui.PresetsContainer>
   )

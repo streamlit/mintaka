@@ -5,6 +5,7 @@ import {
   ColumnTypes,
   Config,
   Presets,
+  UIComponents,
 } from "../types"
 
 import { CONFIG } from "../config"
@@ -35,6 +36,9 @@ export function BuilderPane({
   if (!config) config = CONFIG
 
   const state = useBuilderState(config, columnTypes, initialState)
+
+  // Some state for the developer to use however they want.
+  const [customState, setCustomState] = useState(null)
 
   const [ advancedMode, setAdvancedMode ] = useState(false)
   const [ viewMode, setViewMode ] =
@@ -74,6 +78,8 @@ export function BuilderPane({
         state={state}
         ui={ui}
         viewMode={viewMode}
+        customState={customState}
+        setCustomState={setCustomState}
         />
 
       <ui.ToolbarContainer>
