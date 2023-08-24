@@ -86,8 +86,8 @@ export interface BuilderState {
   encoding: EncodingState,
   setEncoding: (enc: EncodingState) => void,
 
-  getMarkSetter: (key: string) => MarkPropertySetter,
-  getEncodingSetter: (channel: string) => EncodingSetter,
+  getMarkSetter: MarkPropertySetter,
+  getEncodingSetter: EncodingSetter,
 }
 
 export type PropertyValues = Record<string, json>

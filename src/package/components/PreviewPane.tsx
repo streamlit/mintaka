@@ -1,17 +1,19 @@
-import React from "react"
+import { ReactNode } from "react"
 import { Vega } from "react-vega"
+
+import { VLSpec } from "../types"
 
 interface PreviewProps {
   data: any,
-  spec: any,
-  className: str,
+  spec: VLSpec,
+  className: string,
 }
 
 export function PreviewPane({
   data,
   spec,
   className,
-}: PreviewProps): React.Node {
+}: PreviewProps): ReactNode {
   if (!spec) spec = {}
 
   if (!spec.encoding?.column

@@ -1,8 +1,22 @@
-import React from "react"
+import { ReactNode } from "react"
 
-import { MarkBuilder } from "./MarkBuilder.tsx"
-import { EncodingBuilder } from "./EncodingBuilder.tsx"
+import {
+  BuilderState,
+  ColumnTypes,
+  Config,
+  Mode,
+} from "../types"
 
+import { MarkBuilder } from "./MarkBuilder"
+import { EncodingBuilder } from "./EncodingBuilder"
+
+export interface Props {
+  columnTypes: ColumnTypes,
+  config: Config,
+  state: BuilderState,
+  ui: UIComponents,
+  viewMode: Mode,
+}
 
 export function LayerBuilder({
   columnTypes,
@@ -10,7 +24,7 @@ export function LayerBuilder({
   state,
   ui,
   viewMode,
-}) {
+}: Props): ReactNode {
   return (
     <ui.LayerContainer>
       <MarkBuilder

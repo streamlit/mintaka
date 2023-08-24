@@ -1,5 +1,4 @@
-import { Config } from "./types/config"
-import { BuilderState } from "./types/state"
+import { Config, BuilderState } from "./types"
 
 import { isElementOf } from "./array"
 

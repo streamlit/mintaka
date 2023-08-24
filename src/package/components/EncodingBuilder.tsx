@@ -1,18 +1,32 @@
-import React from "react"
+import { ReactNode } from "react"
 
-import { UI_EXTRAS } from "../config.ts"
-import { shouldIncludeGroup } from "../modeParser.ts"
+import {
+  BuilderState,
+  ColumnTypes,
+  Config,
+  Mode,
+} from "../types"
 
-import { ChannelBuilder } from "./ChannelBuilder.tsx"
+import { UI_EXTRAS } from "../config"
+import { shouldIncludeGroup } from "../modeParser"
 
+import { ChannelBuilder } from "./ChannelBuilder"
+
+export interface Props {
+  columnTypes: ColumnTypes,
+  config: Config,
+  state: BuilderState,
+  ui: UIComponents,
+  viewMode: Mode,
+}
 
 export function EncodingBuilder({
   columnTypes,
+  config,
   state,
   ui,
-  config,
   viewMode,
-}) {
+}: Props): ReactNode {
   const columnsLabelsToNames = {
     "": null,
     ...Object.fromEntries(Object.keys(columnTypes)

@@ -1,9 +1,23 @@
-import React, { useEffect, useCallback } from "react"
+import { ReactNode, useEffect, useCallback } from "react"
 
-import { PRESETS } from "../presets.ts"
-import { updateStateFromPreset } from "../presetParser.ts"
-import { shouldIncludeGroup } from "../modeParser.ts"
+import {
+  BuilderState,
+  ColumnTypes,
+  Mode,
+  Presets,
+} from "../types"
 
+import { PRESETS } from "../presets"
+import { updateStateFromPreset } from "../presetParser"
+import { shouldIncludeGroup } from "../modeParser"
+
+export interface Props {
+  columnTypes: ColumnTypes,
+  presets: Presets,
+  state: BuilderState,
+  ui: UIComponents,
+  viewMode: Mode,
+}
 
 export function PresetBuilder({
   columnTypes,
@@ -11,7 +25,7 @@ export function PresetBuilder({
   state,
   ui,
   viewMode,
-}) {
+}: Props): ReactNode {
   if (!presets) presets = PRESETS
 
   const setPreset = useCallback((preset) => {

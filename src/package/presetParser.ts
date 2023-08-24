@@ -1,9 +1,15 @@
 import merge from "lodash/merge"
 
-import { BuilderState, EncodingState } from "./types/state"
-import { ColumnTypes } from "./types/config"
-import { Preset, FindColumnsSpec, PresetColumnFilter } from "./types/presets"
-import { JsonRecord, PlainRecord } from "./types/util"
+import {
+  BuilderState,
+  EncodingState,
+  ColumnTypes,
+  Preset,
+  FindColumnsSpec,
+  PresetColumnFilter,
+  JsonRecord,
+  PlainRecord,
+} from "./types"
 
 import { isElementOf } from "./array"
 

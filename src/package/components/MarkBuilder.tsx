@@ -1,6 +1,21 @@
-import React, { useState } from "react"
+import { ReactNode, useState } from "react"
 
-import { shouldIncludeGroup } from "../modeParser.ts"
+import {
+  BuilderState,
+  Config,
+  MarkPropertySetter,
+  Mode,
+} from "../types"
+
+import { shouldIncludeGroup } from "../modeParser"
+
+export interface Props {
+  config: Config,
+  ui: UIComponents,
+  state: BuilderState,
+  makeSetter: MarkPropertySetter,
+  viewMode: Mode,
+}
 
 export function MarkBuilder({
   config,
@@ -8,7 +23,7 @@ export function MarkBuilder({
   state,
   makeSetter,
   viewMode,
-}) {
+}: Props): ReactNode {
   // Some state for the developer to use however they want.
   const [uiState, setUIState] = useState(null)
 

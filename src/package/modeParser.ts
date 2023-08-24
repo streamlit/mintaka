@@ -1,4 +1,4 @@
-import { Mode } from "./types/config"
+import { Mode } from "./types"
 
 import { isElementOf } from "./array"
 

@@ -1,6 +1,27 @@
-import React, { useState } from "react"
+import { useState, ReactNode } from "react"
 
-import { shouldIncludeGroup } from "../modeParser.ts"
+import {
+  Config,
+  ChannelConfig,
+  Mode,
+  BuilderState,
+  MarkPropertySetter,
+  PlainRecord,
+} from "../types"
+
+import { shouldIncludeGroup } from "../modeParser"
+
+export interface Props {
+  channelName: string,
+  channelSpec: ChannelConfig,
+  columns: PlainRecord<string | null>,
+  config: Config,
+  groupName: string,
+  makeSetter: MarkPropertySetter,
+  state: BuilderState,
+  ui: UIComponents,
+  viewMode: Mode,
+}
 
 export function ChannelBuilder({
   channelName,
@@ -12,7 +33,7 @@ export function ChannelBuilder({
   state,
   ui,
   viewMode,
-}): React.Node {
+}): ReactNode {
   const channelState = state?.encoding?.[channelName] ?? {}
   const { channelProperties } = config
 

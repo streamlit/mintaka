@@ -6,11 +6,8 @@ import arrow from "vega-loader-arrow"
 import backspaceIconSvg from "./assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 import tuneIconSvg from "./assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
-import { BuilderPane } from "./package/components/BuilderPane.tsx"
-import { PreviewPane } from "./package/components/PreviewPane.tsx"
+import { BuilderPane, PreviewPane, shouldIncludeGroup, simpleColumnTypeDetector } from "./package"
 import { isElementOf } from "./package/array.ts"
-import { shouldIncludeGroup } from "./package/modeParser.ts"
-import { simpleColumnTypeDetector } from "./package/simpleColumnTypeDetector.ts"
 
 import barleyDataset from "./data/barley.json"
 import carsDataset from "./data/cars.json"

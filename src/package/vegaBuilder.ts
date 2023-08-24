@@ -1,8 +1,15 @@
 import merge from "lodash/merge"
 
-import { BuilderState } from "./types/state"
-import { Config, ColumnTypes, VlFieldType } from "./types/config"
-import { PlainRecord, JsonRecord, json } from "./types/util"
+import {
+  BuilderState,
+  ColumnTypes,
+  Config,
+  JsonRecord,
+  PlainRecord,
+  VLSpec,
+  VlFieldType,
+  json,
+} from "./types"
 
 import { isElementOf, haveAnyElementsInCommon } from "./array"
 import { RANDOM_FIELD_NAME } from "./config"
@@ -11,7 +18,7 @@ export function generateVegaSpec(
   builderState: BuilderState,
   columnTypes: ColumnTypes,
   config: Config,
-): json {
+): VLSpec {
   const mark: PlainRecord<json> = Object.fromEntries(
     Object.entries(builderState.mark)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

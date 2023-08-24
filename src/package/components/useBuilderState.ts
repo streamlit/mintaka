@@ -1,6 +1,14 @@
 import { useState, useCallback } from "react"
 
-import { Config, ColumnTypes, BuilderState } from "./types.ts"
+import {
+  BuilderState,
+  ColumnTypes,
+  Config,
+  MarkPropertyValueSetter,
+  ChannelPropertySetter,
+  ChannelPropertyValueSetter,
+  json,
+} from "../types"
 
 export function useBuilderState(
   config: Config,
@@ -25,7 +33,7 @@ export function useBuilderState(
     if (!mark.type) mark.type = "point"
 
     return mark
-  })
+  }, null)
 
   const getInitialEncoding = useCallback(() => {
     // Flatten config.encoding
@@ -40,7 +48,7 @@ export function useBuilderState(
         name, initialState?.encoding?.[name]
       ])
     )
-  })
+  }, null)
 
   const [preset, setPreset] = useState(null)
   const [mark, setMark] = useState(getInitialMark)
@@ -56,26 +64,30 @@ export function useBuilderState(
     setMark,
   ])
 
-  const getMarkSetter = useCallback(key => {
-    return value => {
-      setMark({
-        ...mark,
-        [key]: value,
-      })
-    }
-  }, [mark, setMark])
-
-  const getEncodingSetter = useCallback(channel => {
-    return key => value => {
-      setEncoding({
-        ...encoding,
-        [channel]: {
-          ...encoding[channel],
+  const getMarkSetter = useCallback(
+    (key: string): MarkPropertyValueSetter => (
+      (value: json): void => {
+        setMark({
+          ...mark,
           [key]: value,
+        })
+      }
+    ), [mark, setMark])
+
+  const getEncodingSetter = useCallback(
+    (channel: string): ChannelPropertySetter => (
+      (key: string): ChannelPropertyValueSetter => (
+        (value: json): void => {
+          setEncoding({
+            ...encoding,
+            [channel]: {
+              ...encoding[channel],
+              [key]: value,
+            }
+          })
         }
-      })
-    }
-  }, [encoding, setEncoding])
+      )
+    ), [encoding, setEncoding])
 
   return {
     reset,

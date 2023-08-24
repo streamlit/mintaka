@@ -1,14 +1,28 @@
-import React, { useEffect, useCallback, useState } from "react"
+import { ReactNode, useEffect, useCallback, useState } from "react"
 
-import { CONFIG } from "../config.ts"
-import { generateVegaSpec } from "../vegaBuilder.ts"
-import { updateStateFromPreset } from "../presetParser.ts"
+import {
+  BuilderState,
+  ColumnTypes,
+  Config,
+  Presets,
+} from "../types"
 
-import { useBuilderState } from "./useBuilderState.ts"
-import { BuilderPaneProps } from "./commonTypes.ts"
-import { LayerBuilder } from "./LayerBuilder.tsx"
-import { PresetBuilder } from "./PresetBuilder.tsx"
+import { CONFIG } from "../config"
+import { generateVegaSpec } from "../vegaBuilder"
+import { updateStateFromPreset } from "../presetParser"
 
+import { useBuilderState } from "./useBuilderState"
+import { LayerBuilder } from "./LayerBuilder"
+import { PresetBuilder } from "./PresetBuilder"
+
+export interface Props {
+  columnTypes: ColumnTypes,
+  config: Config,
+  initialState: BuilderState, // TODO: Use VL Spec here.
+  presets: Presets,
+  setGeneratedSpec: (VLSpec) => void,
+  ui: UIComponents,
+}
 
 export function BuilderPane({
   columnTypes,
@@ -17,7 +31,7 @@ export function BuilderPane({
   presets,
   setGeneratedSpec,
   ui,
-}: BuilderPaneProps) {
+}: Props): ReactNode {
   if (!config) config = CONFIG
 
   const state = useBuilderState(config, columnTypes, initialState)
@@ -50,7 +64,6 @@ export function BuilderPane({
         state={state}
         columnTypes={columnTypes}
         ui={ui}
-        preset={state.preset}
         presets={presets}
         viewMode={viewMode}
         />

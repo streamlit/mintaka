@@ -9,11 +9,13 @@ export interface Mode {
   else?: boolean,
 }
 
+export type ChannelConfig = Grouping<PartialRecord<ChannelPropName, { label: string }>>
+
 export interface Config {
   modes: Grouping<Mode>,
   mark: Grouping<PartialRecord<MarkPropName, { label: string }>>,
   encoding: Grouping<PartialRecord<ChannelName, { label: string }>>,
-  channelProperties: Grouping<PartialRecord<ChannelPropName, { label: string }>>,
+  channelProperties: ChannelConfig,
   markPropertyValues: Grouping<PropertyValues>,
   channelPropertyValues: Grouping<PropertyValues>,
   selectMarkProperty: (name: string, state: BuilderState) => boolean,

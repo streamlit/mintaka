@@ -1,4 +1,4 @@
-import { Presets } from "./types/presets"
+import { Presets } from "./types"
 
 export const PRESETS: Presets = {
   "Scatter plot": {
