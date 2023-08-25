@@ -23,7 +23,7 @@ export function generateVegaSpec(
     Object.entries(builderState.mark)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
-      .filter(([_, name]) =>
+      .filter(([name]) =>
         config.selectMarkProperty(name, builderState)))
 
   const encoding: PlainRecord<PlainRecord<json>> = Object.fromEntries(
