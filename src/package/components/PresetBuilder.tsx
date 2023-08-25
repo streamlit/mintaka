@@ -10,7 +10,7 @@ import {
 
 import { PRESETS } from "../presets"
 import { updateStateFromPreset } from "../presetParser"
-import { shouldIncludeGroup } from "../modeParser"
+import { selectGroup } from "../modeParser"
 
 export interface Props {
   columnTypes: ColumnTypes,
@@ -41,13 +41,12 @@ export function PresetBuilder({
 
   if (!presets
       || Object.keys(presets).length == 0
-      || !shouldIncludeGroup('presets', null, viewMode)) {
+      || !selectGroup('presets', null, viewMode)) {
     return null
   }
 
   return (
     <ui.PresetsContainer
-      title="Chart type"
       statePath="preset"
       groupName={null}
       viewMode={null}

@@ -11,7 +11,7 @@ import {
   WithCustomState,
 } from "../types"
 
-import { shouldIncludeGroup } from "../modeParser"
+import { selectGroup } from "../modeParser"
 
 export interface Props extends WithCustomState {
   channelName: string,
@@ -79,7 +79,8 @@ export function ChannelBuilder({
 
       {Object.entries(channelProperties)
         .filter(([groupName]) => (
-          shouldIncludeGroup("channelProperties", groupName, viewMode)))
+          selectGroup("channelProperties", groupName, viewMode)))
+
         .map(([groupName, groupItems]) => (
         <ui.ChannelPropertyGroup
           statePath={basePath}
@@ -91,8 +92,9 @@ export function ChannelBuilder({
         >
 
           {Object.entries(groupItems)
-            .filter(([label, name]) =>
-              config.selectChannelProperty(name, channelName, state))
+            .filter(([label, name]) => (
+              config.selectChannelProperty(name, channelName, state)))
+
             .map(([label, name]) => (
               <ui.GenericPickerWidget
                 statePath={basePath}

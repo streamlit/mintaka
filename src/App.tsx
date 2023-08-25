@@ -6,7 +6,7 @@ import arrow from "vega-loader-arrow"
 import backspaceIconSvg from "./assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 import tuneIconSvg from "./assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
-import { BuilderPane, PreviewPane, shouldIncludeGroup, simpleColumnTypeDetector } from "./package"
+import { BuilderPane, PreviewPane, selectGroup, simpleColumnTypeDetector } from "./package"
 import { isElementOf } from "./package/array.ts"
 
 import barleyDataset from "./data/barley.json"
@@ -216,13 +216,12 @@ function ModePicker({
 }
 
 function PresetsContainer({
-  title,
   children,
   statePath,
 }) {
   return (
     <GenericContainer
-      title={title}
+      title={"Chart type"}
       expandable={false}
       className="pb-2"
       statePath={statePath}
@@ -233,20 +232,19 @@ function PresetsContainer({
 }
 
 function MarkContainer({
-  title,
   children,
   setCustomState,
   viewMode,
   statePath,
 }) {
   const basicOptionsAvailable =
-        shouldIncludeGroup("mark", "basic", viewMode)
+        selectGroup("mark", "basic", viewMode)
   const advOptionsAvailable =
-        shouldIncludeGroup("mark", "advanced", viewMode)
+        selectGroup("mark", "advanced", viewMode)
 
   return (
     <GenericContainer
-      title={title}
+      title={"Mark"}
       expandable={false}
       setCustomState={setCustomState}
       advOptionsAvailable={basicOptionsAvailable ? advOptionsAvailable : false}
@@ -267,9 +265,9 @@ function ChannelContainer({
   viewMode,
 }) {
   const basicOptionsAvailable =
-        shouldIncludeGroup("channelProperties", "basic", viewMode)
+        selectGroup("channelProperties", "basic", viewMode)
   const advOptionsAvailable = ["data", "aggregation", "axes"].some(g =>
-        shouldIncludeGroup("channelProperties", g, viewMode))
+        selectGroup("channelProperties", g, viewMode))
 
   return (
     <GenericContainer
@@ -394,7 +392,7 @@ function MarkPropertyGroup({
   customState,
   viewMode,
 }) {
-  const basicOptionsAvailable = shouldIncludeGroup("mark", "basic", viewMode)
+  const basicOptionsAvailable = selectGroup("mark", "basic", viewMode)
 
   if (groupName == "basic") {
     return (
@@ -425,7 +423,7 @@ function ChannelPropertyGroup({
   viewMode,
 }) {
   const basicOptionsAvailable =
-        shouldIncludeGroup("channelProperties", "basic", viewMode)
+        selectGroup("channelProperties", "basic", viewMode)
 
   if (groupName == "basic") {
     return (

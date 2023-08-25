@@ -7,5 +7,5 @@ export * from "./components/BuilderPane"
 export * from "./components/PreviewPane"
 
 // Utilities
-export { shouldIncludeGroup } from "./modeParser"
+export { selectGroup } from "./modeParser"
 export { simpleColumnTypeDetector } from "./simpleColumnTypeDetector"

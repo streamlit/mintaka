@@ -10,7 +10,7 @@ import {
 } from "../types"
 
 import { UI_EXTRAS } from "../config"
-import { shouldIncludeGroup } from "../modeParser"
+import { selectGroup } from "../modeParser"
 
 import { ChannelBuilder } from "./ChannelBuilder"
 
@@ -37,13 +37,12 @@ export function EncodingBuilder({
       .map(c => [c, c]))
   }
 
-  if (!shouldIncludeGroup("encoding", null, viewMode)) {
+  if (!selectGroup("encoding", null, viewMode)) {
     return null
   }
 
   return (
     <ui.EncodingContainer
-      title="Encoding"
       statePath="encoding"
       groupName={null}
       viewMode={viewMode}
@@ -53,7 +52,7 @@ export function EncodingBuilder({
 
       {Object.entries(config.encoding)
         .filter(([groupName]) => (
-          shouldIncludeGroup("encoding", groupName, viewMode)))
+          selectGroup("encoding", groupName, viewMode)))
 
         .map(([groupName, groupItems]) => (
           <ui.EncodingGroup
@@ -65,8 +64,8 @@ export function EncodingBuilder({
           >
 
             {Object.entries(groupItems)
-              .filter(([label, name]) =>
-                config.selectChannel(name, state))
+              .filter(([label, name]) => (
+                config.selectChannel(name, state)))
 
               .map(([label, name]) => (
                 <ChannelBuilder

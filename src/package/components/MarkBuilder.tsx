@@ -9,7 +9,7 @@ import {
   WithCustomState,
 } from "../types"
 
-import { shouldIncludeGroup } from "../modeParser"
+import { selectGroup } from "../modeParser"
 
 export interface Props extends WithCustomState {
   config: Config,
@@ -41,13 +41,12 @@ export function MarkBuilder({
     tooltip: { widgetHint: "toggle" },
   }
 
-  if (!shouldIncludeGroup("mark", null, viewMode)) {
+  if (!selectGroup("mark", null, viewMode)) {
     return null
   }
 
   return (
     <ui.MarkContainer
-      title={"Mark"}
       statePath="mark"
       groupName={null}
       viewMode={viewMode}
@@ -57,7 +56,8 @@ export function MarkBuilder({
 
       {Object.entries(config.mark)
         .filter(([groupName]) => (
-          shouldIncludeGroup("mark", groupName, viewMode)))
+          selectGroup("mark", groupName, viewMode)))
+
         .map(([groupName, groupItems]) => (
           <ui.MarkPropertyGroup
             groupName={groupName}
@@ -68,8 +68,8 @@ export function MarkBuilder({
           >
 
             {Object.entries(groupItems)
-              .filter(([label, name]) =>
-                config.selectMarkProperty(name, state))
+              .filter(([label, name]) => (
+                config.selectMarkProperty(name, state)))
 
               .map(([label, name]) => (
                 <ui.GenericPickerWidget

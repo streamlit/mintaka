@@ -12,10 +12,6 @@ interface SimpleContainerProps {
   children: Children,
 }
 
-interface TitledContainerProps extends SimpleContainerProps {
-  title: string,
-}
-
 export interface WithCustomState {
   customState?: any,
   setCustomState?: Setter<any>,
@@ -40,7 +36,7 @@ export interface ModePickerProps {
 
 export type ModePicker = FunctionComponent<ModePickerProps>
 
-export interface LevelContainerProps extends TitledContainerProps, WithCustomState {
+export interface LevelContainerProps extends SimpleContainerProps, WithCustomState {
   statePath: string,
   groupName: string|null,
   viewMode: Mode|null,
@@ -48,9 +44,12 @@ export interface LevelContainerProps extends TitledContainerProps, WithCustomSta
 
 type LevelContainer = FunctionComponent<LevelContainerProps>
 export type MarkContainer = LevelContainer
-export type ChannelContainer = LevelContainer
 export type EncodingContainer = LevelContainer
 export type PresetsContainer = LevelContainer
+
+export interface ChannelContainer extends LevelContainer {
+  title: string,
+}
 
 export interface PropertyGroupProps extends SimpleContainerProps, WithCustomState {
   groupName: string,

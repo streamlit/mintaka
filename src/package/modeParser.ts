@@ -2,7 +2,7 @@ import { Mode } from "./types"
 
 import { isElementOf } from "./array"
 
-export function shouldIncludeGroup(
+export function selectGroup(
   sectionName: string,
   groupName: string|null,
   modeSpec: Mode
