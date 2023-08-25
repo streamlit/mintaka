@@ -16,7 +16,7 @@ export function useBuilderState(
   initialState: BuilderState,
 ): BuilderState {
   const getInitialMark = useCallback(() => {
-    // Flatten config.mark
+    // Flatten config.mark groups.
     const flatMark = Object.values(config.mark)
       .reduce((obj, markGroup) => {
         Object.assign(obj, markGroup)
@@ -24,7 +24,7 @@ export function useBuilderState(
       }, {})
 
     const mark = Object.fromEntries(
-      Object.keys(flatMark).map(name => [
+      Object.values(flatMark).map(name => [
         name, initialState?.mark?.[name]
       ])
     )
@@ -36,7 +36,7 @@ export function useBuilderState(
   }, null)
 
   const getInitialEncoding = useCallback(() => {
-    // Flatten config.encoding
+    // Flatten config.encoding groups.
     const flatEncoding = Object.values(config.encoding)
       .reduce((obj, channelGroup) => {
         Object.assign(obj, channelGroup)
@@ -44,7 +44,7 @@ export function useBuilderState(
       }, {})
 
     return Object.fromEntries(
-      Object.keys(flatEncoding).map(name => [
+      Object.values(flatEncoding).map(name => [
         name, initialState?.encoding?.[name]
       ])
     )

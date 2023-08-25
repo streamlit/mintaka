@@ -15,7 +15,7 @@ import { shouldIncludeGroup } from "../modeParser"
 
 export interface Props extends WithCustomState {
   channelName: string,
-  channelSpec: ChannelConfig,
+  channelLabel: string,
   columns: PlainRecord<string | null>,
   config: Config,
   groupName: string,
@@ -27,7 +27,7 @@ export interface Props extends WithCustomState {
 
 export function ChannelBuilder({
   channelName,
-  channelSpec,
+  channelLabel,
   columns,
   config,
   groupName: channelGroupName,
@@ -45,14 +45,16 @@ export function ChannelBuilder({
 
   const uiParams = {
     aggregate: { widgetHint: "select" },
-    binStep: { widgetHint: "number" },
     bin: { widgetHint: "select" },
-    maxBins: { widgetHint: "number" },
+    binStep: { widgetHint: "number" },
+    domain: { widgetHint: "2or3tuple" },
     field: { widgetHint: "multiselect", validValues: columns },
     legend: { widgetHint: "toggle" },
-    sort: { widgetHint: "select" },
-    scheme: { widgetHint: "select" },
+    maxBins: { widgetHint: "number" },
+    range: { widgetHint: "2tuple" },
     scaleType: { widgetHint: "select" },
+    scheme: { widgetHint: "select" },
+    sort: { widgetHint: "select" },
     stack: { widgetHint: "select" },
     timeUnit: { widgetHint: "select" },
     type: {
@@ -67,7 +69,7 @@ export function ChannelBuilder({
 
   return (
     <ui.ChannelContainer
-      title={channelSpec.label}
+      title={channelLabel}
       statePath={basePath}
       groupName={channelGroupName}
       viewMode={viewMode}
@@ -89,18 +91,17 @@ export function ChannelBuilder({
         >
 
           {Object.entries(groupItems)
-            .filter(([name]) =>
+            .filter(([label, name]) =>
               config.selectChannelProperty(name, channelName, state))
-            .map(([name, propSpec]) => (
+            .map(([label, name]) => (
               <ui.GenericPickerWidget
                 statePath={basePath}
                 groupName={groupName}
                 widgetHint={uiParams[name]?.widgetHint ?? "json"}
-                label={propSpec.label}
+                label={label}
                 value={channelState[name]}
                 setValue={makeSetter(name)}
                 items={uiParams[name]?.validValues ?? validValues?.[name]}
-                placeholder={uiParams[name]?.placeholder ?? "Default"}
                 customState={customState}
                 setCustomState={setCustomState}
                 key={name}

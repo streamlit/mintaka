@@ -454,7 +454,6 @@ function GenericPickerWidget({
   value,
   setValue,
   items,
-  placeholder,
   statePath,
   groupName,
 }) {
@@ -507,7 +506,6 @@ function GenericPickerWidget({
       return (
         <TextInput
           label={label}
-          placeholder={placeholder ?? "Default"}
           value={value}
           setValue={setValue}
           groupName={groupName}
@@ -677,7 +675,6 @@ function SelectBox({
 function TextInput({
   label,
   value,
-  placeholder,
   setValue,
 }) {
   const setValueFromString = useCallback((ev) => {
@@ -721,7 +718,6 @@ function TextInput({
         className={styles}
         type="text"
         value={valueString ?? ""}
-        placeholder={placeholder}
         onChange={setValueFromString}
       />
       {hasContent ? (

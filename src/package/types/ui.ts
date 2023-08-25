@@ -69,7 +69,6 @@ export type JsonizedWidgetHint =
   | "number"
   | "json"
   | "2tuple"
-  | "3tuple"
   | "2or3tuple"
 
 export type WidgetHint = ItemizedWidgetHint | JsonizedWidgetHint
@@ -89,12 +88,10 @@ interface GenericPickerWidgetItemizedProps extends GenericPickerWidgetCommonProp
 
 interface GenericPickerWidgetJsonizedProps extends GenericPickerWidgetCommonProps {
   widgetHint: JsonizedWidgetHint,
-  placeholder: string,
 }
 
 interface GenericPickerWidgetAllProps extends GenericPickerWidgetCommonProps {
   widgetHint: WidgetHint,
-  placeholder: string,
   items: PlainRecord<any>,
 }
 

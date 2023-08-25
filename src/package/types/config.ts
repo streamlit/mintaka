@@ -1,4 +1,4 @@
-import { Grouping, PartialRecord } from "./util"
+import { Grouping } from "./util"
 import { MarkPropName, ChannelName, ChannelPropName, PropertyValues, BuilderState } from "./state"
 
 export interface Mode {
@@ -9,12 +9,12 @@ export interface Mode {
   else?: boolean,
 }
 
-export type ChannelConfig = Grouping<PartialRecord<ChannelPropName, { label: string }>>
+export type ChannelConfig = Grouping<Record<string, ChannelPropName>>
 
 export interface Config {
   modes: Grouping<Mode>,
-  mark: Grouping<PartialRecord<MarkPropName, { label: string }>>,
-  encoding: Grouping<PartialRecord<ChannelName, { label: string }>>,
+  mark: Grouping<Record<string, MarkPropName>>,
+  encoding: Grouping<Record<string, ChannelName>>,
   channelProperties: ChannelConfig,
   markPropertyValues: Grouping<PropertyValues>,
   channelPropertyValues: Grouping<PropertyValues>,

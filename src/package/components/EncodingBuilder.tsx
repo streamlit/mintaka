@@ -65,13 +65,13 @@ export function EncodingBuilder({
           >
 
             {Object.entries(groupItems)
-              .filter(([name]) =>
+              .filter(([label, name]) =>
                 config.selectChannel(name, state))
 
-              .map(([name, channelSpec]) => (
+              .map(([label, name]) => (
                 <ChannelBuilder
                   channelName={name}
-                  channelSpec={channelSpec}
+                  channelLabel={label}
                   groupName={groupName}
                   makeSetter={state.getEncodingSetter(name)}
                   config={config}

@@ -39,15 +39,11 @@ export function MarkBuilder({
     shape: { widgetHint: "select" },
     type: { widgetHint: "select" },
     tooltip: { widgetHint: "toggle" },
-    // strokeWidth: { label: "strokeWidth" },
-    // strokeDash: { label: "strokeDash" },
   }
 
   if (!shouldIncludeGroup("mark", null, viewMode)) {
     return null
   }
-
-  // TODO: Only show "show advanced" button if there *are* advanced options!
 
   return (
     <ui.MarkContainer
@@ -63,37 +59,36 @@ export function MarkBuilder({
         .filter(([groupName]) => (
           shouldIncludeGroup("mark", groupName, viewMode)))
         .map(([groupName, groupItems]) => (
-        <ui.MarkPropertyGroup
-          groupName={groupName}
-          viewMode={viewMode}
-          customState={customState}
-          setCustomState={setCustomState}
-          key={groupName}
-        >
+          <ui.MarkPropertyGroup
+            groupName={groupName}
+            viewMode={viewMode}
+            customState={customState}
+            setCustomState={setCustomState}
+            key={groupName}
+          >
 
-          {Object.entries(groupItems)
-            .filter(([name]) =>
-              config.selectMarkProperty(name, state))
+            {Object.entries(groupItems)
+              .filter(([label, name]) =>
+                config.selectMarkProperty(name, state))
 
-            .map(([name, propSpec]) => (
-              <ui.GenericPickerWidget
-                statePath={`mark.${name}`}
-                groupName={groupName}
-                widgetHint={uiParams[name]?.widgetHint ?? "json"}
-                label={propSpec.label}
-                value={state.mark[name]}
-                setValue={makeSetter(name)}
-                items={config?.markPropertyValues?.[name]}
-                placeholder={uiParams[name]?.placeholder ?? "Default"}
-                customState={customState}
-                setCustomState={setCustomState}
-                key={name}
-              />
-            )
-          )}
+              .map(([label, name]) => (
+                <ui.GenericPickerWidget
+                  statePath={`mark.${name}`}
+                  groupName={groupName}
+                  widgetHint={uiParams[name]?.widgetHint ?? "json"}
+                  label={label}
+                  value={state.mark[name]}
+                  setValue={makeSetter(name)}
+                  items={config?.markPropertyValues?.[name]}
+                  customState={customState}
+                  setCustomState={setCustomState}
+                  key={name}
+                />
+              )
+            )}
 
-        </ui.MarkPropertyGroup>
-      ))
+          </ui.MarkPropertyGroup>
+        ))
       }
 
     </ui.MarkContainer>

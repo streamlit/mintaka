@@ -30,7 +30,7 @@ export const PRESETS: Presets = {
           color: { field: "C2" },
         }
       },
-    }
+    },
   },
 
   "Line chart": {

@@ -23,7 +23,7 @@ export function generateVegaSpec(
     Object.entries(builderState.mark)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
-      .filter(([name]) =>
+      .filter(([_, name]) =>
         config.selectMarkProperty(name, builderState)))
 
   const encoding: PlainRecord<PlainRecord<json>> = Object.fromEntries(
@@ -92,7 +92,7 @@ function buildChannelSpec(
   const channelState: JsonRecord = builderState?.encoding?.[channelName] ?? {}
 
   const s = Object.fromEntries(Object.entries(channelState)
-    .filter(([name]) => config.selectChannelProperty(name, channelName, builderState)))
+    .filter(([_, name]) => config.selectChannelProperty(name, channelName, builderState)))
 
   if (s.aggregate != null) channelSpec.aggregate = s.aggregate
 
