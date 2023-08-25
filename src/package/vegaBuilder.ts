@@ -92,7 +92,7 @@ function buildChannelSpec(
   const channelState: JsonRecord = builderState?.encoding?.[channelName] ?? {}
 
   const s = Object.fromEntries(Object.entries(channelState)
-    .filter(([_, name]) => config.selectChannelProperty(name, channelName, builderState)))
+    .filter(([name]) => config.selectChannelProperty(name, channelName, builderState)))
 
   if (s.aggregate != null) channelSpec.aggregate = s.aggregate
 
