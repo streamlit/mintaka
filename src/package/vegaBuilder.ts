@@ -108,8 +108,7 @@ function buildChannelSpec(
     }
   }
 
-  channelSpec.field = s.field
-
+  if (s.field != null) channelSpec.field = s.field
   if (s.legend != null) channelSpec.legend = s.legend
 
   if (s.scaleType ?? s.scheme ?? s.domain ?? s.range ?? s.zero != null) {
@@ -142,7 +141,7 @@ function buildChannelSpec(
       s.field[0] as string,
       columnTypes,
     )
-  } else {
+  } else if (s.field) {
     channelSpec.type = getColType(
       channelName,
       s.type as VlFieldType|null,
