@@ -125,3 +125,94 @@ npm run demo
           },
         }}
         ```
+
+## UI Structure
+
+Below are the custom containers you should pass into `<BuilderPane>`'s `ui` prop, and how they
+get structured in the DOM:
+
+* `<BuilderContainer>`
+  * `<PresetsContainer>` _(if exists in current viewMode)_
+    * title: "Chart type"
+    * statePath: "preset"
+    * groupName: null
+    * viewMode: null
+
+    * `<GenericPickerWidget>`
+
+  * `<LayerContainer>`
+
+    * `<MarkContainer>` _(if exists in current viewMode)_
+      * title: "Mark"
+      * statePath: "mark"
+      * groupName: null
+      * viewMode: Mode
+      * customState: any
+      * setCustomState: (any) => void
+
+      * `<MarkPropertyGroup>` x N _(if exists in current viewMode)_
+        * groupName: string
+        * viewMode: Mode
+        * customState: any
+        * setCustomState: (any) => void
+
+        * `<GenericPickerWidget>` x N
+          * statePath: mark.${propertyName}
+          * groupName: string
+          * widgetHint: string
+          * label: string
+          * value: any
+          * setValue: (any) => void
+          * items: Record<string, any>
+          * customState: any
+          * setCustomState: (any) => void
+
+    * `<EncodingContainer>` _(if exists in current viewMode)_
+      * title: "Encoding"
+      * statePath: "encoding"
+      * groupName: null
+      * viewMode: Mode
+      * customState: any
+      * setCustomState: (any) => void
+
+      * `<EncodingGroup>` x N _(if exists in current viewMode)_
+        * groupName: string
+        * viewMode: Mode
+        * customState: any
+        * setCustomState: (any) => void
+
+        * `<ChannelContainer>` x N _(if exists in current viewMode)_
+          * title: "Encoding"
+          * statePath: "encoding"
+          * groupName: null
+          * viewMode: Mode
+          * customState: any
+          * setCustomState: (any) => void
+
+          * `<ChannelPropertyGroup>` x N _(if exists in current viewMode)_
+            * statePath: encoding.${channelName}
+            * groupName: string
+            * viewMode: Mode
+            * customState: any
+            * setCustomState: (any) => void
+
+            * `<GenericPickerWidget>` x N
+              * statePath: encoding.${channelName}.${propertyName}
+              * groupName: string
+              * widgetHint: string
+              * label: string
+              * value: any
+              * setValue: (any) => void
+              * items: Record<string, any>
+              * customState: any
+              * setCustomState: (any) => void
+
+  * `<ToolbarContainer>`
+
+    * `<ModePicker>`
+        * items: Record<string, any>
+        * value: any
+        * setValue: (any) => void
+
+    * `<ResetButton>`
+        * onClick: () => void

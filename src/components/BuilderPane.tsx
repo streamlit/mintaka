@@ -91,9 +91,7 @@ export function BuilderPane({
           />
         )}
 
-        <ui.ResetButton onClick={reset}>
-          Reset
-        </ui.ResetButton>
+        <ui.ResetButton onClick={reset} />
       </ui.ToolbarContainer>
     </ui.BuilderContainer>
   )

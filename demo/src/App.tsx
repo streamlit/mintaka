@@ -141,7 +141,6 @@ function ToolbarContainer({children}) {
 
 function ResetButton({
   onClick,
-  children,
 }) {
   return (
     <button
@@ -155,7 +154,7 @@ function ResetButton({
       ].join(" ")}
       onClick={onClick}
     >
-      {children}
+      Reset
     </button>
   )
 }
