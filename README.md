@@ -6,9 +6,11 @@ This is still very much a work in progress. No tests. No documentation. No promi
 
 ## Trying it out
 
+You can run the demo app with:
+
 ```sh
 npm install
-npm run dev
+npm run demo
 ```
 
 ## More info

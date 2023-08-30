@@ -3,19 +3,19 @@ import { useState, useEffect, useCallback } from "react"
 import { formats } from "vega"
 import arrow from "vega-loader-arrow"
 
-import backspaceIconSvg from "./assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
-import tuneIconSvg from "./assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
+import backspaceIconSvg from "../assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
+import tuneIconSvg from "../assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
-import { BuilderPane, PreviewPane, selectGroup, simpleColumnTypeDetector } from "./package"
-import { isElementOf } from "./package/array.ts"
+import { BuilderPane, PreviewPane, selectGroup, simpleColumnTypeDetector } from "../../src"
+import { isElementOf } from "../../src/array.ts"
 
-import barleyDataset from "./data/barley.json"
-import carsDataset from "./data/cars.json"
-import disastersDataset from "./data/disasters.json"
-import drivingDataset from "./data/driving.json"
-import irisDataset from "./data/iris.json"
-import moviesDataset from "./data/movies.json"
-import populationDataset from "./data/population.json"
+import barleyDataset from "../data/barley.json"
+import carsDataset from "../data/cars.json"
+import disastersDataset from "../data/disasters.json"
+import drivingDataset from "../data/driving.json"
+import irisDataset from "../data/iris.json"
+import moviesDataset from "../data/movies.json"
+import populationDataset from "../data/population.json"
 
 import "./App.css"
 
@@ -44,7 +44,7 @@ function App() {
 
   return (
     <div className="flex flex-col gap-32">
-      <div className="flex min-h-[800px] flex-row gap-4">
+      <div className="flex flex-none h-[500px] flex-row gap-4">
         <BuilderPane
           key={key}
           columnTypes={columnTypes}
@@ -96,7 +96,7 @@ function App() {
 
 function BuilderContainer({children}) {
   return (
-    <div className="flex flex-col w-64 p-1 overflow-y-auto">
+    <div className="flex flex-col flex-none w-64 p-1">
       {children}
     </div>
   )
@@ -104,7 +104,7 @@ function BuilderContainer({children}) {
 
 function LayerContainer({children}) {
   return (
-    <div className="flex flex-col order-1 gap-2 flex-auto">
+    <div className="flex flex-col order-1 gap-2 flex-auto pb-8 overflow-y-auto">
       {children}
     </div>
   )
@@ -112,7 +112,7 @@ function LayerContainer({children}) {
 
 function EncodingContainer({children}) {
   return (
-    <div className="flex flex-col order-1 gap-2">
+    <div className="flex flex-col order-1">
       {children}
     </div>
   )
@@ -120,8 +120,7 @@ function EncodingContainer({children}) {
 
 function EncodingGroup({children}) {
   const styles = [
-    "flex flex-row flex-wrap items-start order-1",
-    "gap-2 pt-2",
+    "flex flex-col order-1",
     "empty:hidden",
   ].join(" ")
 
@@ -134,7 +133,7 @@ function EncodingGroup({children}) {
 
 function ToolbarContainer({children}) {
   return (
-    <div className="flex flex-row flex-wrap items-stretch order-1 gap-1">
+    <div className="flex flex-row flex-wrap items-stretch order-1 gap-1 z-10 shadow-[0_0_1rem_0.5rem_rgba(255,255,255,1.0)]">
       {children}
     </div>
   )
@@ -261,7 +260,6 @@ function ChannelContainer({
   statePath,
   groupName,
   setCustomState,
-  //groupHasSomethingSet,
   viewMode,
 }) {
   const basicOptionsAvailable =
@@ -272,7 +270,8 @@ function ChannelContainer({
   return (
     <GenericContainer
       title={title}
-      expandable={!isElementOf(groupName, ["basic", "requiredForSomeMarks"])}
+      expandable={true}
+      startsExpanded={isElementOf(groupName, ["basic", "requiredForSomeMarks"])}
       setCustomState={setCustomState}
       advOptionsAvailable={basicOptionsAvailable ? advOptionsAvailable : false}
       statePath={statePath}
@@ -287,13 +286,14 @@ function GenericContainer({
   children,
   className,
   expandable,
+  startsExpanded,
   advShownByDefault,
   advOptionsAvailable,
   setCustomState,
   customState,
   statePath,
 }) {
-  const [expanded, setExpanded] = useState(!expandable)
+  const [expanded, setExpanded] = useState(startsExpanded ?? !expandable)
   const [advShown, setAdvShown] = useState(!!advShownByDefault)
 
   const showAdvanced = (newValue) => {
@@ -326,29 +326,41 @@ function GenericContainer({
   const expandedWrapperStyles = [
     "flex flex-col",
     "w-full",
-    "order-1",
+    "pb-4",
     className,
   ].join(" ")
 
   const collapsedWrapperStyles = [
-    "inline-flex pr-2 last:pr-0",
-    "order-2",
+    "flex",
+    "border-y border-slate-200",
+    "cursor-pointer",
+    "-mb-[1px]",
     className,
   ].join(" ")
 
-  const wrapperStyles = [
-    expanded ? expandedWrapperStyles : collapsedWrapperStyles,
-  ].join(" ")
+  const wrapperStyles =
+    expanded ? expandedWrapperStyles : collapsedWrapperStyles
 
   const labelWrapperStyles = [
     "flex flex-row items-center",
-    "w-full h-8",
+    "w-full",
+    expanded ? "h-8" : "h-5",
+  ].join(" ")
+
+  const collapsedLabelStyles = [
+    "py-1",
+    "hover:text-pink-400",
+  ].join(" ")
+
+  const expandedLabelStyles = [
+    "font-bold",
+    expandable ? "hover:text-pink-400 cursor-pointer" : null,
   ].join(" ")
 
   const labelStyles = [
-    "text-xs font-bold",
-    "text-slate-500",
-    expandable ? "hover:border-pink-400 hover:text-pink-400 cursor-pointer" : null,
+    "flex-1",
+    "text-xs text-slate-500",
+    expanded ? expandedLabelStyles : collapsedLabelStyles,
   ].join(" ")
 
   const childrenWrapperStyles = [
@@ -356,7 +368,7 @@ function GenericContainer({
   ].join(" ")
 
   const advButtonStyles = "flex items-center w-4 opacity-50 hover:opacity-100"
-  const toolbarStyles = "flex items-center justify-end flex-[1_0]"
+  const toolbarStyles = "flex items-center justify-end flex-0"
 
   return (
     <div className={wrapperStyles}>
@@ -425,7 +437,10 @@ function ChannelPropertyGroup({
   const basicOptionsAvailable =
         selectGroup("channelProperties", "basic", viewMode)
 
-  if (groupName == "basic") {
+  if (!children || children.length == 0) {
+    return null
+
+  } else if (groupName == "basic") {
     return (
       <div className="grid grid-cols-3 gap-1">
         {children}
@@ -434,7 +449,7 @@ function ChannelPropertyGroup({
 
   } else {
     const styles = [
-      "grid grid-cols-3 gap-1 items-center",
+      "grid grid-cols-3 items-center gap-1",
       basicOptionsAvailable && !customState[statePath] ? "hidden" : "",
     ].join(" ")
 
@@ -798,7 +813,7 @@ function WidgetWrapper({
 }) {
   const labelStyles = [
     "col-span-1",
-    "flex items-start",
+    "flex",
     "text-sm",
     "text-slate-500",
     "text-sm",
