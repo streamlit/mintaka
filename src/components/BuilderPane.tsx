@@ -57,9 +57,10 @@ export function BuilderPane({
       config,
       columnTypes,
       setGeneratedSpec,
-      // state,
       state.mark,
       state.encoding,
+      // Not including:
+      // state,
   ])
 
   return (

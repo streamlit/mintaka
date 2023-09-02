@@ -32,7 +32,12 @@ function App() {
   useEffect(() => {
     setKey(key + 1)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataset, /* key, setKey */])
+  }, [
+    dataset,
+    // Not including:
+    // key,
+    // setKey,
+  ])
 
   useEffect(() => {
     setcolumnTypes(Object.fromEntries(
