@@ -17,7 +17,8 @@ import irisDataset from "../data/iris.json"
 import moviesDataset from "../data/movies.json"
 import populationDataset from "../data/population.json"
 
-import "./App.css"
+import styles from "./app.module.css"
+import uiStyles from "./components.module.css"
 
 // Register arrow reader under type "arrow"
 formats("arrow", arrow);
@@ -48,8 +49,8 @@ function App() {
   }, [dataset])
 
   return (
-    <div className="flex flex-col gap-32">
-      <div className="flex flex-none h-[500px] flex-row gap-4">
+    <div className={styles.DemoWrapper}>
+      <div className={styles.BuilderWrapper}>
         <BuilderPane
           key={key}
           columnTypes={columnTypes}
@@ -58,19 +59,21 @@ function App() {
         />
 
         <PreviewPane
-          className="flex-auto align-self-stretch"
+          className={styles.PreviewPane}
           spec={generatedSpec}
           data={dataset}
         />
       </div>
 
       <details>
-        <summary className="text-slate-500 border-t border-slate-200 pt-2 hover:text-pink-400 cursor-pointer text-sm">Demo input / output</summary>
+        <summary className={styles.DetailsSummary}>
+          Demo input / output
+        </summary>
 
-        <div className="flex flex-col gap-4 pt-4">
+        <div className={styles.DetailsChild}>
 
-          <div className="self-start min-w-64">
-            <h3 className="text-slate-500 font-bold text-xs uppercase">Input</h3>
+          <div className={styles.DatasetPickerWrapper}>
+            <h3 className={styles.DatasetPickerLabel}>Input</h3>
             <SelectBox
                 label="Dataset"
                 items={{
@@ -87,12 +90,12 @@ function App() {
             />
           </div>
 
-          <h3 className="text-slate-500 font-bold text-xs uppercase">Output</h3>
-          <pre className="text-slate-800 bg-slate-100 text-sm p-4 rounded-lg">
-            <code>
+          <div className={styles.OutputWrapper}>
+            <h3 className={styles.OutputLabel}>Output</h3>
+            <code className={styles.OutputCode}>
               { JSON.stringify(generatedSpec, undefined, 4) }
             </code>
-          </pre>
+          </div>
         </div>
       </details>
     </div>
@@ -101,7 +104,7 @@ function App() {
 
 function BuilderContainer({children}) {
   return (
-    <div className="flex flex-col flex-none w-64 p-1">
+    <div className={uiStyles.BuilderContainer}>
       {children}
     </div>
   )
@@ -109,7 +112,7 @@ function BuilderContainer({children}) {
 
 function LayerContainer({children}) {
   return (
-    <div className="flex flex-col order-1 gap-2 flex-auto pb-8 overflow-y-auto">
+    <div className={uiStyles.LayerContainer}>
       {children}
     </div>
   )
@@ -117,20 +120,15 @@ function LayerContainer({children}) {
 
 function EncodingContainer({children}) {
   return (
-    <div className="flex flex-col order-1">
+    <div className={uiStyles.EncodingContainer}>
       {children}
     </div>
   )
 }
 
 function EncodingGroup({children}) {
-  const styles = [
-    "flex flex-col order-1",
-    "empty:hidden",
-  ].join(" ")
-
   return (
-    <div className={styles}>
+    <div className={uiStyles.EncodingGroup}>
       {children}
     </div>
   )
@@ -138,7 +136,7 @@ function EncodingGroup({children}) {
 
 function ToolbarContainer({children}) {
   return (
-    <div className="flex flex-row flex-wrap items-stretch order-1 gap-1 z-10 shadow-[0_0_1rem_0.5rem_rgba(255,255,255,1.0)]">
+    <div className={uiStyles.ToolbarContainer}>
       {children}
     </div>
   )
@@ -148,17 +146,7 @@ function ResetButton({
   onClick,
 }) {
   return (
-    <button
-      className={[
-        "px-2 py-0.5",
-        "text-sm text-slate-500",
-        "border border-slate-200 rounded-md",
-        "hover:border-pink-400 hover:text-pink-400",
-        "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
-        "select-none",
-      ].join(" ")}
-      onClick={onClick}
-    >
+    <button className={uiStyles.ResetButton} onClick={onClick}>
       Reset
     </button>
   )
@@ -180,32 +168,19 @@ function ModePicker({
     setValue(newValue)
   }, [items, setValue, setRadioValue])
 
-  const labelStyles = [
-    "flex flex-row items-center justify-center",
-    "text-xs text-slate-500 uppercase cursor-pointer",
-    "hover:border-pink-400 hover:text-pink-400",
-    "border-y border-r-[0.5px] border-l-[0.5px] border-slate-200",
-    "px-1",
-    "first:rounded-l-md last:rounded-r-md",
-    "first:border-l last:border-r",
-  ].join(" ")
-
-  const selectedLabelStyles = [
-    labelStyles,
-    "bg-slate-400 text-white border-slate-400",
-    "hover:bg-pink-400 hover:text-white hover:border-pink-400",
-  ].join(" ")
-
   return (
-    <div className="flex flex-row items-stretch">
+    <div className={uiStyles.ModePicker}>
       {Object.keys(items).map((label, i) => (
         <label
-          className={radioValue == label ? selectedLabelStyles : labelStyles}
+          className={radioValue == label
+            ? uiStyles.ModePickerSelectedLabel
+            : uiStyles.ModePickerLabel
+          }
           key={i}
         >
           <input
             type="radio"
-            className="hidden"
+            className={uiStyles.HiddenInput}
             value={label}
             onChange={onClick}
             checked={radioValue == label}
@@ -226,7 +201,7 @@ function PresetsContainer({
     <GenericContainer
       title={"Chart type"}
       expandable={false}
-      className="pb-2"
+      className={uiStyles.PresetsContainer}
       statePath={statePath}
     >
       {children}
@@ -248,7 +223,8 @@ function MarkContainer({
   return (
     <GenericContainer
       title={"Mark"}
-      expandable={false}
+      expandable={true}
+      startsExpanded={true}
       setCustomState={setCustomState}
       advOptionsAvailable={basicOptionsAvailable ? advOptionsAvailable : false}
       statePath={statePath}
@@ -300,22 +276,32 @@ function GenericContainer({
   const [expanded, setExpanded] = useState(startsExpanded ?? !expandable)
   const [advShown, setAdvShown] = useState(!!advShownByDefault)
 
-  const showAdvanced = (newValue) => {
-    if (newValue == advShown) return
+  const showAdvanced = useCallback((newValue) => {
     setAdvShown(newValue)
     if (setCustomState)
       setCustomState({ ...customState, [statePath]: newValue })
-  }
+  }, [
+    setAdvShown,
+    setCustomState,
+    statePath,
+    customState,
+  ])
 
   useEffect(() => {
     showAdvanced(advShownByDefault)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [advShownByDefault, /* showAdvanced */])
+  }, [
+    showAdvanced,
+    advShownByDefault,
+  ])
 
   const toggleAdvanced = useCallback(() => {
     showAdvanced(!advShown)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [advShown, setAdvShown, setCustomState, showAdvanced])
+  }, [
+    showAdvanced,
+    advShown,
+  ])
 
   const toggleExpanded = useCallback(() => {
     setExpanded(!expanded)
@@ -327,64 +313,23 @@ function GenericContainer({
     }
   }, [expanded, setExpanded, setAdvShown, setCustomState])
 
-  const expandedWrapperStyles = [
-    "flex flex-col",
-    "w-full",
-    "pb-4",
+  const wrapperStyles = [
+    expanded ? uiStyles.GenericContainer : uiStyles.GenericContainerCollapsed,
+    expandable ? uiStyles.GenericContainerExpandable : null,
     className,
   ].join(" ")
-
-  const collapsedWrapperStyles = [
-    "flex",
-    "border-y border-slate-200",
-    "cursor-pointer",
-    "-mb-[1px]",
-    className,
-  ].join(" ")
-
-  const wrapperStyles =
-    expanded ? expandedWrapperStyles : collapsedWrapperStyles
-
-  const labelWrapperStyles = [
-    "flex flex-row items-center",
-    "w-full",
-    expanded ? "h-8" : "h-5",
-  ].join(" ")
-
-  const collapsedLabelStyles = [
-    "py-1",
-    "hover:text-pink-400",
-  ].join(" ")
-
-  const expandedLabelStyles = [
-    "font-bold",
-    expandable ? "hover:text-pink-400 cursor-pointer" : null,
-  ].join(" ")
-
-  const labelStyles = [
-    "flex-1",
-    "text-xs text-slate-500",
-    expanded ? expandedLabelStyles : collapsedLabelStyles,
-  ].join(" ")
-
-  const childrenWrapperStyles = [
-    "flex flex-col gap-1",
-  ].join(" ")
-
-  const advButtonStyles = "flex items-center w-4 opacity-50 hover:opacity-100"
-  const toolbarStyles = "flex items-center justify-end flex-0"
 
   return (
     <div className={wrapperStyles}>
       {title && (
-        <div className={labelWrapperStyles}>
-          <label className={labelStyles} onClick={expandable ? toggleExpanded : null}>
+        <div className={uiStyles.GenericContainerTitle}>
+          <label className={uiStyles.GenericContainerLabel} onClick={expandable ? toggleExpanded : null}>
             {title.toUpperCase()}
           </label>
 
           {expanded && setCustomState && advOptionsAvailable && (
-            <div className={toolbarStyles}>
-              <button className={advButtonStyles} onClick={toggleAdvanced}>
+            <div className={uiStyles.GenericContainerToolbar}>
+              <button className={uiStyles.GenericContainerAdvButton} onClick={toggleAdvanced}>
                 <img src={tuneIconSvg} alt="Advanced" />
               </button>
             </div>
@@ -393,7 +338,7 @@ function GenericContainer({
       )}
 
       {(expanded || !title) && (
-        <div className={childrenWrapperStyles}>
+        <div className={uiStyles.GenericContainerChildrenWrapper}>
           {children}
         </div>
       )}
@@ -412,15 +357,17 @@ function MarkPropertyGroup({
 
   if (groupName == "basic") {
     return (
-      <div className="grid grid-cols-3 gap-1">
+      <div className={uiStyles.MarkPropertyGroup}>
         {children}
       </div>
     )
 
   } else {
     const styles = [
-      "grid grid-cols-3 gap-1 items-center",
-      basicOptionsAvailable && !customState["mark"] ? "hidden" : "",
+      uiStyles.MarkPropertyGroup,
+      basicOptionsAvailable && !customState["mark"]
+        ? uiStyles.hidden
+        : "",
     ].join(" ")
 
     return (
@@ -446,15 +393,17 @@ function ChannelPropertyGroup({
 
   } else if (groupName == "basic") {
     return (
-      <div className="grid grid-cols-3 gap-1">
+      <div className={uiStyles.ChannelPropertyGroup}>
         {children}
       </div>
     )
 
   } else {
     const styles = [
-      "grid grid-cols-3 items-center gap-1",
-      basicOptionsAvailable && !customState[statePath] ? "hidden" : "",
+      uiStyles.ChannelPropertyGroup,
+      basicOptionsAvailable && !customState[statePath]
+        ? uiStyles.hidden
+        : "",
     ].join(" ")
 
     return (
@@ -587,31 +536,13 @@ function MultiSelect({
     setMultiselectValue([ ...multiselectValue, NO_VALUE_LABEL ])
   }, [multiselectValue, setMultiselectValue])
 
-  const selectStyles=[
-    "py-0.5 flex-auto",
-    "border hover:bg-slate-200 border-transparent rounded-md",
-    "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
-    "text-slate-500",
-    "cursor-pointer",
-    "bg-slate-100",
-    "text-sm",
-  ].join(" ")
-
-  const buttonStyles=[
-    "text-xs",
-    "text-slate-500 hover:text-pink-500",
-    "cursor-pointer",
-    "flex items-center justify-start",
-    "h-6",
-  ].join(" ")
-
   return (
     <WidgetWrapper label={label}>
       {multiselectValue.map((selectboxValue, i) => (
         <select
           key={i}
           data-index={i}
-          className={selectStyles}
+          className={uiStyles.MultiSelect}
           value={selectboxValue}
           onChange={setValueFromLabel}
         >
@@ -623,7 +554,7 @@ function MultiSelect({
         </select>
       ))}
 
-      <a className={buttonStyles} onClick={addSeries}>
+      <a className={uiStyles.MultiSelectAddSeries} onClick={addSeries}>
         + Add series
       </a>
     </WidgetWrapper>
@@ -662,20 +593,10 @@ function SelectBox({
     setValue(newValue)
   }, [setValue, setSelectboxValue])
 
-  const styles=[
-    "py-0.5 flex-auto",
-    "border hover:bg-slate-200 border-transparent rounded-md",
-    "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
-    "text-slate-500",
-    "cursor-pointer",
-    "bg-slate-100",
-    "text-sm",
-  ].join(" ")
-
   return (
     <WidgetWrapper label={label}>
       <select
-        className={styles}
+        className={uiStyles.SelectBox}
         value={selectboxValue}
         onChange={setValueFromLabel}
       >
@@ -707,15 +628,6 @@ function TextInput({
     () => setValue(null),
   [setValue])
 
-  const styles=[
-    "py-0.5 pl-1 flex-auto",
-    "border hover:bg-slate-200 border-transparent rounded-md",
-    "focus:outline-0 focus:border-pink-400 focus:ring ring-pink-200",
-    "text-slate-500",
-    "bg-slate-100",
-    "text-sm",
-  ].join(" ")
-
   const hasContent = value != null && value != ""
 
   const valueString = value == null
@@ -724,22 +636,17 @@ function TextInput({
       ? value
       : JSON.stringify(value)
 
-  const buttonStyles=[
-    "absolute top-0 bottom-0 right-0 w-6",
-    "flex items-center w-6 opacity-50 hover:opacity-100",
-  ].join(" ")
-
   return (
-    <WidgetWrapper label={label} className="relative">
+    <WidgetWrapper label={label} className={uiStyles.TextInput}>
       <input
-        className={styles}
+        className={uiStyles.TextInputInput}
         type="text"
         value={valueString ?? ""}
         onChange={setValueFromString}
       />
       {hasContent ? (
         <button
-          className={buttonStyles}
+          className={uiStyles.TextInputOverlayButton}
           onClick={clearValue}
           disabled={!hasContent}
         >
@@ -768,39 +675,17 @@ function Toggle({
     setValue(ev.currentTarget.checked ? values[1] : values[0])
   }, [setValue, values])
 
-  const troughClasses = [
-    "w-7 h-4",
-    "peer",
-    "border border-transparent",
-    "peer-focus:outline-none peer-focus:ring peer-focus:ring-pink-200 peer-focus:border-pink-400",
-    "peer-checked:bg-slate-400",
-    "bg-slate-200",
-    "hover:bg-slate-300 hover:peer-checked:bg-pink-500",
-    "rounded-full"
-  ].join(" ")
-
-  const thumbClasses = [
-    "peer-checked:after:translate-x-full peer-checked:after:border-white",
-    "after:content-[''] after:absolute after:top-0.5 after:left-0.5",
-    "after:bg-white after:border-slate-400",
-    "after:border after:rounded-full",
-    "after:h-3 after:w-3",
-    "after:transition-all",
-  ].join(" ")
-
-  const toggleClasses = [troughClasses, thumbClasses].join(" ")
-
   return (
     <WidgetWrapper label={label}>
-      <HtmlLabel className="relative inline-flex items-center cursor-pointer">
+      <HtmlLabel className={uiStyles.ToggleLabel}>
         <input
           type="checkbox"
           key={/* This is a hack so presets work */ value}
           defaultChecked={value == values[1]}
-          className="sr-only peer"
+          className={[uiStyles.ToggleInput, uiStyles.HiddenInput].join(" ")}
           onClick={toggle}
         />
-        <div className={toggleClasses}></div>
+        <div className={uiStyles.ToggleElement}></div>
       </HtmlLabel>
     </WidgetWrapper>
   )
@@ -815,29 +700,13 @@ function WidgetWrapper({
   className,
   children,
 }) {
-  const labelStyles = [
-    "col-span-1",
-    "flex",
-    "text-sm",
-    "text-slate-500",
-    "text-sm",
-  ].join(" ")
-
-  const childrenStyles = [
-    "col-span-2",
-    "flex-auto",
-    "flex flex-col justify-start items-stretch gap-1",
-    "min-h-6",
-    className,
-  ].join(" ")
-
   return (
     <>
-      <HtmlLabel className={labelStyles}>
+      <HtmlLabel className={[uiStyles.WidgetWrapperLabel, className].join(" ")}>
         {label}
       </HtmlLabel>
 
-      <div className={childrenStyles}>
+      <div className={uiStyles.WidgetWrapperWidget}>
         {children}
       </div>
     </>

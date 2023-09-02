@@ -1,0 +1,400 @@
+:root {
+  --title-size: var(--font-sm);
+  --label-size: var(--font-sm);
+  --label-size-tiny: var(--font-xs);
+  --value-size: var(--font-sm);
+  --text-color: var(--color-slate-500);
+  --border-color: var(--color-slate-200);
+  --text-color-hover: var(--color-pink-400);
+  --border-color-hover: var(--color-pink-400);
+  --input-bg-color: var(--color-slate-100);
+  --input-bg-color-hover: var(--color-slate-200);
+  --mode-bg-color: var(--color-slate-400);
+  --focus-ring: 0 0 0 3px var(--color-pink-200);
+  --scrollbar-width: 1rem;
+}
+
+.BuilderContainer {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  width: 300px;
+  padding: 0.25rem;
+}
+
+.LayerContainer {
+  display: flex;
+  flex-direction: column;
+  order: 1;
+  flex: auto;
+  padding-bottom: 2rem;
+  padding-right: var(--scrollbar-width);
+  scrollbar-width: var(--scrollbar-width);
+  overflow-y: auto;
+  overflow-y: overlay;
+}
+
+.EncodingContainer {
+  display: flex;
+  flex-direction: column;
+  order: 1;
+}
+
+.EncodingGroup {
+  display: flex;
+  flex-direction: column;
+  order: 1;
+}
+
+.EncodingGroup:empty {
+  display: none;
+}
+
+.ToolbarContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: stretch;
+  order: 1;
+  gap: 0.25rem;
+  z-index: 10;
+  box-shadow: 0 0 1rem 0.5rem var(--color-white);
+  padding-right: var(--scrollbar-width);
+}
+
+.ResetButton {
+  padding: 0.125rem 0.5rem;
+  font-size: var(--label-size);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  user-select: none;
+}
+
+.ResetButton:hover,
+.ResetButton:focus,
+.ModePickerLabel:hover,
+.ModePickerSelectedLabel:hover {
+  border-color: var(--border-color-hover);
+  color: var(--text-color-hover);
+}
+
+.ResetButton:focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.PresetsContainer {
+  padding-bottom: 0.5rem;
+  padding-right: var(--scrollbar-width);
+}
+
+.ModePicker {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  flex: 1;
+}
+
+.ModePickerLabel,
+.ModePickerSelectedLabel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--label-size-tiny);
+  color: var(--text-color);
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  border-left-width: 0.5px;
+  border-right-width: 0.5px;
+  padding: 0 0.25rem;
+  user-select: none;
+}
+
+.ModePickerLabel:first-child,
+.ModePickerSelectedLabel:first-child {
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+  border-left-width: 1px;
+}
+
+.ModePickerLabel:last-child,
+.ModePickerSelectedLabel:last-child {
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+  border-right-width: 1px;
+}
+
+.ModePickerSelectedLabel {
+  background-color: var(--mode-bg-color);
+  border-color: var(--mode-bg-color);
+  color: var(--color-white);
+}
+
+.ModePickerSelectedLabel:hover {
+  background-color: var(--border-color-hover);
+  border-color: var(--border-color-hover);
+  color: var(--color-white);
+}
+
+.MarkPropertyGroup,
+.ChannelPropertyGroup {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.25rem;
+  align-items: flex-start;
+}
+
+.hidden {
+  display: none;
+}
+
+.SelectBox,
+.MultiSelect,
+.TextInputInput {
+  padding: 0.125rem 0;
+  flex: auto;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-color);
+  cursor: pointer;
+  background-color: var(--input-bg-color);
+  font-size: var(--value-size);
+}
+
+.SelectBox,
+.MultiSelect {
+  user-select: none;
+}
+
+.SelectBox:hover,
+.MultiSelect:hover,
+.TextInputInput:hover {
+  background-color: var(--input-bg-color-hover);
+}
+
+.SelectBox:focus,
+.MultiSelect:focus,
+.TextInputInput:focus {
+  border-color: var(--border-color-hover);
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.MultiSelectAddSeries {
+  font-size: var(--label-size-tiny);
+  color: var(--text-color);
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 1.5rem;
+  border-radius: var(--radius-md);
+  padding-left: 0.25rem;
+  user-select: none;
+}
+
+.MultiSelectAddSeries:hover {
+  color: var(--text-color-hover);
+  background-color: var(--input-bg-color);
+}
+
+.TextInput {
+  position: relative;
+}
+
+.TextInputInput {
+  cursor: unset;
+  padding-left: 0.25rem;
+}
+
+.TextInputOverlayButton {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 1.5rem;
+  display: flex;
+  align-items: center;
+  opacity: 0.5;
+  user-select: none;
+}
+
+.TextInputOverlayButton:hover {
+  opacity: 1.0;
+}
+
+.ToggleLabel {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.HiddenInput {
+  /* Hide for everyone except screen readers */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.ToggleElement {
+  width: 1.75rem;
+  height: 1rem;
+  border: 1px solid transparent;
+  background-color: var(--color-slate-200);
+  border-radius: var(--radius-full);
+}
+
+.ToggleElement:hover {
+  border-color: var(--color-pink-500);
+  background-color: var(--color-pink-400);
+}
+
+.ToggleInput:focus ~ .ToggleElement {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.ToggleInput:checked ~ .ToggleElement {
+  background-color: var(--color-slate-400);
+}
+
+.ToggleElement::after {
+  content: '';
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  background: white;
+  border: 1px solid var(--color-slate-400);
+  border-radius: var(--radius-full);
+  height: 0.75rem;
+  width: 0.75rem;
+  transition: transform 150ms;
+}
+
+.ToggleInput:checked ~ .ToggleElement::after {
+  transform: translateX(100%);
+  border-color: white;
+}
+
+.WidgetWrapperLabel {
+  grid-column: span 1 / span 1;
+  display: flex;
+  font-size: var(--label-size);
+  color: var(--text-color);
+  padding-left: 0.25rem;
+  user-select: none;
+}
+
+.WidgetWrapperWidget {
+  grid-column: span 2 / span 2;
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 0.25rem;
+  min-height: 1.5rem;
+  position: relative;
+}
+
+.GenericContainer {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0.5rem;
+}
+
+.GenericContainerCollapsed {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  margin-top: -1px;
+}
+
+.LayerContainer > .GenericContainerCollapsed:first-child,
+.EncodingContainer:first-child > .EncodingGroup:first-child > .GenericContainerCollapsed:first-child {
+  margin-top: 0;
+}
+
+.GenericContainerExpandable {
+  /* Used for more complex selectors below */
+}
+
+.GenericContainerTitle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 2rem;
+}
+
+.GenericContainerCollapsed .GenericContainerTitle {
+  height: 1.25rem;
+  align-items: stretch;
+}
+
+.GenericContainerLabel {
+  flex: 1;
+  font-size: var(--font-xs);
+  font-weight: bold;
+  color: var(--color-slate-500);
+  padding-left: 0.25rem;
+  user-select: none;
+}
+
+.GenericContainerExpandable .GenericContainerLabel {
+  cursor: pointer;
+}
+
+.GenericContainerExpandable .GenericContainerLabel:hover {
+  color: var(--text-color-hover);
+  background-color: var(--input-bg-color);
+  border-radius: var(--radius-md);
+}
+
+.GenericContainerCollapsed .GenericContainerLabel {
+  padding: 0 0.25rem;
+  font-weight: normal;
+}
+
+.GenericContainerCollapsed .GenericContainerLabel:hover {
+  color: var(--text-color-hover);
+}
+
+.GenericContainerChildrenWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.GenericContainerToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0;
+}
+
+.GenericContainerAdvButton {
+  display: flex;
+  align-items: center;
+  width: 1rem;
+  opacity: 0.5;
+  border-radius: var(--radius-md);
+  user-select: none;
+}
+
+.GenericContainerAdvButton:hover {
+  opacity: 1.0;
+  background-color: var(--input-bg-color);
+}

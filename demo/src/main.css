@@ -1,0 +1,83 @@
+@import "./reset.css";
+
+:root {
+  /* Font sizes */
+  --font-xs: 0.75rem;
+  --font-sm: 0.875rem;
+  --font-md: 1rem;
+  --font-lg: 1.125rem;
+  --font-xl: 1.25rem;
+  --font-2xl: 1.5rem;
+  --font-3xl: 1.875rem;
+  --font-4xl: 2.25rem;
+  --font-5xl: 3rem;
+  --font-6xl: 3.75rem;
+
+  /* Radius */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.75rem;
+  --radius-3xl: 1rem;
+  --radius-4xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Full colors palette (raw) */
+  --raw-color-black: 0 0 0;
+  --raw-color-white: 255 255 255;
+  --raw-color-slate-50: 248 250 252;
+  --raw-color-slate-100: 241 245 249;
+  --raw-color-slate-200: 226 232 240;
+  --raw-color-slate-300: 203 213 225;
+  --raw-color-slate-400: 148 163 184;
+  --raw-color-slate-500: 100 116 139;
+  --raw-color-slate-600: 71 85 105;
+  --raw-color-slate-700: 51 65 85;
+  --raw-color-slate-800: 30 41 59;
+  --raw-color-slate-900: 15 23 42;
+  --raw-color-slate-950: 2 6 23;
+  --raw-color-pink-50: 253 242 248;
+  --raw-color-pink-100: 252 231 243;
+  --raw-color-pink-200: 251 207 232;
+  --raw-color-pink-300: 249 168 212;
+  --raw-color-pink-400: 244 114 182;
+  --raw-color-pink-500: 236 72 153;
+  --raw-color-pink-600: 219 39 119;
+  --raw-color-pink-700: 190 24 93;
+  --raw-color-pink-800: 157 23 77;
+  --raw-color-pink-900: 131 24 67;
+  --raw-color-pink-950: 80 7 36;
+
+  /* Full colors palette (ready to use) */
+  --color-black: rgb(var(--raw-color-black));
+  --color-white: rgb(var(--raw-color-white));
+  --color-slate-50: rgb(var(--raw-color-slate-50));
+  --color-slate-100: rgb(var(--raw-color-slate-100));
+  --color-slate-200: rgb(var(--raw-color-slate-200));
+  --color-slate-300: rgb(var(--raw-color-slate-300));
+  --color-slate-400: rgb(var(--raw-color-slate-400));
+  --color-slate-500: rgb(var(--raw-color-slate-500));
+  --color-slate-600: rgb(var(--raw-color-slate-600));
+  --color-slate-700: rgb(var(--raw-color-slate-700));
+  --color-slate-800: rgb(var(--raw-color-slate-800));
+  --color-slate-900: rgb(var(--raw-color-slate-900));
+  --color-slate-950: rgb(var(--raw-color-slate-950));
+  --color-pink-50: rgb(var(--raw-color-pink-50));
+  --color-pink-100: rgb(var(--raw-color-pink-100));
+  --color-pink-200: rgb(var(--raw-color-pink-200));
+  --color-pink-300: rgb(var(--raw-color-pink-300));
+  --color-pink-400: rgb(var(--raw-color-pink-400));
+  --color-pink-500: rgb(var(--raw-color-pink-500));
+  --color-pink-600: rgb(var(--raw-color-pink-600));
+  --color-pink-700: rgb(var(--raw-color-pink-700));
+  --color-pink-800: rgb(var(--raw-color-pink-800));
+  --color-pink-900: rgb(var(--raw-color-pink-900));
+  --color-pink-950: rgb(var(--raw-color-pink-950));
+}
+
+#root {
+  margin: 0 auto;
+  padding: 2rem;
+  max-width: 1280px;
+}
