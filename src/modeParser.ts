@@ -1,6 +1,6 @@
 import { Mode } from "./types"
 
-import { isElementOf } from "./array"
+import { isElementOf } from "./collectionUtils"
 
 export function selectGroup(
   sectionName: string,

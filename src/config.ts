@@ -1,6 +1,6 @@
 import { Config, BuilderState } from "./types"
 
-import { isElementOf } from "./array"
+import { isElementOf } from "./collectionUtils"
 
 // For these constants, order matters! This is the order they'll appear in the UI.
 // (string keys in JS Objects are guaranteed to be ordered by insertion order)

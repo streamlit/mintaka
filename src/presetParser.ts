@@ -11,7 +11,7 @@ import {
   PlainRecord,
 } from "./types"
 
-import { isElementOf } from "./array"
+import { objectFrom, isElementOf } from "./collectionUtils"
 
 export function updateStateFromPreset(
   state: BuilderState,
@@ -22,7 +22,7 @@ export function updateStateFromPreset(
 
   // Using fromEntries/entries rather than the spread operator to
   // keep the ordering intact.
-  const spec = Object.fromEntries(Object.entries(presetSpec))
+  const spec = objectFrom(presetSpec)
 
   const columns = findColumns(spec.findColumns, columnTypes)
   followIfConditions(spec, columns)

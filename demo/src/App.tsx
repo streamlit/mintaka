@@ -7,7 +7,7 @@ import backspaceIconSvg from "../assets/backspace_FILL0_wght300_GRAD0_opsz48.svg
 import tuneIconSvg from "../assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
 import { BuilderPane, PreviewPane, selectGroup, simpleColumnTypeDetector } from "../../src"
-import { isElementOf } from "../../src/array.ts"
+import { isElementOf } from "../../src/collectionUtils.ts"
 
 import barleyDataset from "../data/barley.json"
 import carsDataset from "../data/cars.json"

@@ -11,6 +11,7 @@ import {
   WithCustomState,
 } from "../types"
 
+import { objectFrom, objectFilter, objectIsEmpty } from "../collectionUtils"
 import { selectGroup } from "../modeParser"
 
 export interface Props extends WithCustomState {
@@ -67,6 +68,18 @@ export function ChannelBuilder({
 
   const basePath = `encoding.${channelName}`
 
+  const cleanedGroups = objectFrom(channelProperties, ([groupName, groupItems]) => {
+    // Select groups according to current view mode.
+    if (!selectGroup("channelProperties", groupName, viewMode)) return null
+
+    // In each group, select channels according to current state.
+    const filtered = objectFilter(groupItems,
+      ([label, name]) => config.selectChannelProperty(name, channelName, state))
+
+    if (objectIsEmpty(filtered)) return null
+    return [groupName, filtered]
+  })
+
   return (
     <ui.ChannelContainer
       title={channelLabel}
@@ -77,11 +90,7 @@ export function ChannelBuilder({
       setCustomState={setCustomState}
     >
 
-      {Object.entries(channelProperties)
-        .filter(([groupName]) => (
-          selectGroup("channelProperties", groupName, viewMode)))
-
-        .map(([groupName, groupItems]) => (
+      {Object.entries(cleanedGroups).map(([groupName, groupItems]) => (
         <ui.ChannelPropertyGroup
           statePath={basePath}
           groupName={groupName}
@@ -92,9 +101,6 @@ export function ChannelBuilder({
         >
 
           {Object.entries(groupItems)
-            .filter(([label, name]) => (
-              config.selectChannelProperty(name, channelName, state)))
-
             .map(([label, name]) => (
               <ui.GenericPickerWidget
                 statePath={basePath}
@@ -113,7 +119,6 @@ export function ChannelBuilder({
 
         </ui.ChannelPropertyGroup>
       ))}
-
     </ui.ChannelContainer>
   )
 }

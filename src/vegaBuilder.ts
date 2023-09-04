@@ -11,7 +11,7 @@ import {
   json,
 } from "./types"
 
-import { isElementOf, haveAnyElementsInCommon } from "./array"
+import { isElementOf, haveAnyElementsInCommon } from "./collectionUtils"
 import { RANDOM_FIELD_NAME } from "./config"
 
 export function generateVegaSpec(

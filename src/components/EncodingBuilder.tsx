@@ -9,6 +9,7 @@ import {
   WithCustomState,
 } from "../types"
 
+import { objectFrom, objectFilter, objectIsEmpty } from "../collectionUtils"
 import { UI_EXTRAS } from "../config"
 import { selectGroup } from "../modeParser"
 
@@ -41,6 +42,18 @@ export function EncodingBuilder({
     return null
   }
 
+  const cleanedGroups = objectFrom(config.encoding, ([groupName, groupItems]) => {
+    // Select groups according to current view mode.
+    if (!selectGroup("encoding", groupName, viewMode)) return null
+
+    // In each group, select channels according to current state.
+    const filtered = objectFilter(groupItems,
+      ([label, name]) => config.selectChannel(name, state))
+
+    if (objectIsEmpty(filtered)) return null
+    return [groupName, filtered]
+  })
+
   return (
     <ui.EncodingContainer
       statePath="encoding"
@@ -50,47 +63,37 @@ export function EncodingBuilder({
       setCustomState={setCustomState}
     >
 
-      {Object.entries(config.encoding)
-        .filter(([groupName]) => (
-          selectGroup("encoding", groupName, viewMode)))
+      {Object.entries(cleanedGroups).map(([groupName, groupItems]) => (
+        <ui.EncodingGroup
+          groupName={groupName}
+          viewMode={viewMode}
+          customState={customState}
+          setCustomState={setCustomState}
+          key={groupName}
+        >
 
-        .map(([groupName, groupItems]) => (
-          <ui.EncodingGroup
-            groupName={groupName}
-            viewMode={viewMode}
-            customState={customState}
-            setCustomState={setCustomState}
-            key={groupName}
-          >
+          {Object.entries(groupItems).map(([label, name]) => (
+            <ChannelBuilder
+              channelName={name}
+              channelLabel={label}
+              groupName={groupName}
+              makeSetter={state.getEncodingSetter(name)}
+              config={config}
+              state={state}
+              ui={ui}
+              columns={{
+                ...columnsLabelsToNames,
+                ...UI_EXTRAS[name]?.extraCols
+              }}
+              viewMode={viewMode}
+              customState={customState}
+              setCustomState={setCustomState}
+              key={name}
+            />
+          ))}
 
-            {Object.entries(groupItems)
-              .filter(([label, name]) => (
-                config.selectChannel(name, state)))
-
-              .map(([label, name]) => (
-                <ChannelBuilder
-                  channelName={name}
-                  channelLabel={label}
-                  groupName={groupName}
-                  makeSetter={state.getEncodingSetter(name)}
-                  config={config}
-                  state={state}
-                  ui={ui}
-                  columns={{
-                    ...columnsLabelsToNames,
-                    ...UI_EXTRAS[name]?.extraCols
-                  }}
-                  viewMode={viewMode}
-                  customState={customState}
-                  setCustomState={setCustomState}
-                  key={name}
-                />
-              ))
-            }
-
-          </ui.EncodingGroup>
-        ))
-      }
+        </ui.EncodingGroup>
+      ))}
     </ui.EncodingContainer>
   )
 }
