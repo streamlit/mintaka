@@ -40,8 +40,6 @@ export function ChannelBuilder({
   setCustomState,
 }): ReactNode {
   const channelState = state?.encoding?.[channelName] ?? {}
-  const { channelProperties } = config
-
   const validValues = config.channelPropertyValues
 
   const uiParams = {
@@ -60,25 +58,14 @@ export function ChannelBuilder({
     timeUnit: { widgetHint: "select" },
     type: {
       widgetHint: "select",
-      validValues: prepareTypes(channelName, config.channelPropertyValues.type),
+      validValues: prepTypes(channelName, config.channelPropertyValues.type),
     },
     value: { widgetHint: "json" },
     zero: { widgetHint: "select" },
   }
 
+  const cleanedGroups = prepChannelGroups(channelName, config, viewMode, state)
   const basePath = `encoding.${channelName}`
-
-  const cleanedGroups = objectFrom(channelProperties, ([groupName, groupItems]) => {
-    // Select groups according to current view mode.
-    if (!selectGroup("channelProperties", groupName, viewMode)) return null
-
-    // In each group, select channels according to current state.
-    const filtered = objectFilter(groupItems,
-      ([label, name]) => config.selectChannelProperty(name, channelName, state))
-
-    if (objectIsEmpty(filtered)) return null
-    return [groupName, filtered]
-  })
 
   return (
     <ui.ChannelContainer
@@ -124,7 +111,7 @@ export function ChannelBuilder({
 }
 
 
-function prepareTypes(channelName, fieldTypes) {
+function prepTypes(channelName, fieldTypes) {
   if (channelName != "geoshape") {
     return Object.fromEntries(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -133,4 +120,18 @@ function prepareTypes(channelName, fieldTypes) {
   }
 
   return fieldTypes
+}
+
+export function prepChannelGroups(channelName, config, viewMode, state) {
+  return objectFrom(config.channelProperties, ([groupName, groupItems]) => {
+    // Select groups according to current view mode.
+    if (!selectGroup("channelProperties", groupName, viewMode)) return null
+
+    // In each group, select channels according to current state.
+    const filtered = objectFilter(groupItems,
+      ([label, name]) => config.selectChannelProperty(name, channelName, state))
+
+    if (objectIsEmpty(filtered)) return null
+    return [groupName, filtered]
+  })
 }

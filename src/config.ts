@@ -411,7 +411,8 @@ export const CONFIG: Config = {
         return isElementOf(markType, ["line", "area"])
 
       case "angle":
-        return isElementOf(markType, ["text", "image", "point"])
+        return isElementOf(markType, ["text", "image"]) ||
+            (markType == "point" && !isElementOf(state?.mark?.shape, ["circle", null, undefined]))
 
       case "size":
         return isElementOf(markType, ["point", "text", "image"])

@@ -42,17 +42,7 @@ export function EncodingBuilder({
     return null
   }
 
-  const cleanedGroups = objectFrom(config.encoding, ([groupName, groupItems]) => {
-    // Select groups according to current view mode.
-    if (!selectGroup("encoding", groupName, viewMode)) return null
-
-    // In each group, select channels according to current state.
-    const filtered = objectFilter(groupItems,
-      ([label, name]) => config.selectChannel(name, state))
-
-    if (objectIsEmpty(filtered)) return null
-    return [groupName, filtered]
-  })
+  const cleanedGroups = prepEncodingGroups(config, viewMode, state)
 
   return (
     <ui.EncodingContainer
@@ -98,3 +88,16 @@ export function EncodingBuilder({
   )
 }
 
+export function prepEncodingGroups(config, viewMode, state) {
+  return objectFrom(config.encoding, ([groupName, groupItems]) => {
+    // Select groups according to current view mode.
+    if (!selectGroup("encoding", groupName, viewMode)) return null
+
+    // In each group, select channels according to current state.
+    const filtered = objectFilter(groupItems,
+      ([label, name]) => config.selectChannel(name, state))
+
+    if (objectIsEmpty(filtered)) return null
+    return [groupName, filtered]
+  })
+}
