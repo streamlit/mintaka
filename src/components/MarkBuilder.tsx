@@ -88,7 +88,7 @@ export function MarkBuilder({
   )
 }
 
-export function prepMarkGroups(config, viewMode, state) {
+export function prepMarkGroups(config: Config, viewMode: Mode, state: BuilderState) {
   return objectFrom(config.mark, ([groupName, groupItems]) => {
     // Select groups according to current view mode.
     if (!selectGroup("mark", groupName, viewMode)) return null

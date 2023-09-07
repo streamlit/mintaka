@@ -2,13 +2,15 @@ import merge from "lodash/merge"
 
 import {
   BuilderState,
-  EncodingState,
   ColumnTypes,
-  Preset,
+  EncodingState,
   FindColumnsSpec,
-  PresetColumnFilter,
+  Grouping,
   JsonRecord,
+  MarkPropName,
   PlainRecord,
+  Preset,
+  PresetColumnFilter,
 } from "./types"
 
 import { objectFrom, isElementOf } from "./collectionUtils"
@@ -22,7 +24,9 @@ export function updateStateFromPreset(
 
   // Using fromEntries/entries rather than the spread operator to
   // keep the ordering intact.
-  const spec = objectFrom(presetSpec)
+  const spec = objectFrom(presetSpec as PlainRecord<any>)
+
+  const mark = spec.mark as Grouping<Record<string, MarkPropName>>
 
   const columns = findColumns(spec.findColumns, columnTypes)
   followIfConditions(spec, columns)
@@ -34,7 +38,7 @@ export function updateStateFromPreset(
     ]))
 
   state.setPreset(presetSpec)
-  state.setMark({ ...spec.mark })
+  state.setMark({ ...mark })
   state.setEncoding({ ...encodingState })
 }
 

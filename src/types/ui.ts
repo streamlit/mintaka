@@ -22,7 +22,7 @@ export type BuilderContainer = FunctionComponent<SimpleContainerProps>
 export type LayerContainer = FunctionComponent<SimpleContainerProps>
 export type ToolbarContainer = FunctionComponent<SimpleContainerProps>
 
-export interface ResetButtonProps extends SimpleContainerProps {
+export interface ResetButtonProps {
   onClick: MouseEventHandler,
 }
 

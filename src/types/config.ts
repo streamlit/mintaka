@@ -1,4 +1,4 @@
-import { Grouping } from "./util"
+import { Grouping, PlainRecord } from "./util"
 import { MarkPropName, ChannelName, ChannelPropName, PropertyValues, BuilderState } from "./state"
 
 export interface Mode {
@@ -9,12 +9,12 @@ export interface Mode {
   else?: boolean,
 }
 
-export type ChannelConfig = Grouping<Record<string, ChannelPropName>>
+export type ChannelConfig = Grouping<PlainRecord<ChannelPropName>>
 
 export interface Config {
   modes: Grouping<Mode>,
-  mark: Grouping<Record<string, MarkPropName>>,
-  encoding: Grouping<Record<string, ChannelName>>,
+  mark: Grouping<PlainRecord<MarkPropName>>,
+  encoding: Grouping<PlainRecord<ChannelName>>,
   channelProperties: ChannelConfig,
   markPropertyValues: Grouping<PropertyValues>,
   channelPropertyValues: Grouping<PropertyValues>,
@@ -35,4 +35,4 @@ export interface ColumnType {
   unique?: number|null,
 }
 
-export type ColumnTypes = Record<string, ColumnType>
+export type ColumnTypes = PlainRecord<ColumnType>

@@ -88,7 +88,7 @@ export function EncodingBuilder({
   )
 }
 
-export function prepEncodingGroups(config, viewMode, state) {
+export function prepEncodingGroups(config: Config, viewMode: Mode, state: BuilderState) {
   return objectFrom(config.encoding, ([groupName, groupItems]) => {
     // Select groups according to current view mode.
     if (!selectGroup("encoding", groupName, viewMode)) return null

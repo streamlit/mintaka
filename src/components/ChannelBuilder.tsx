@@ -122,7 +122,9 @@ function prepTypes(channelName, fieldTypes) {
   return fieldTypes
 }
 
-export function prepChannelGroups(channelName, config, viewMode, state) {
+export function prepChannelGroups(
+  channelName: string, config: Config, viewMode: Mode, state: BuilderState,
+): ChannelConfig {
   return objectFrom(config.channelProperties, ([groupName, groupItems]) => {
     // Select groups according to current view mode.
     if (!selectGroup("channelProperties", groupName, viewMode)) return null
