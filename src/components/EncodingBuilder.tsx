@@ -1,4 +1,5 @@
 import { ReactNode } from "react"
+import isEmpty from "lodash/isEmpty"
 
 import {
   BuilderState,
@@ -9,7 +10,7 @@ import {
   WithCustomState,
 } from "../types"
 
-import { objectFrom, objectFilter, objectIsEmpty } from "../collectionUtils"
+import { objectFrom, objectFilter } from "../collectionUtils"
 import { UI_EXTRAS } from "../config"
 import { selectGroup } from "../modeParser"
 
@@ -97,7 +98,7 @@ export function prepEncodingGroups(config: Config, viewMode: Mode, state: Builde
     const filtered = objectFilter(groupItems,
       ([label, name]) => config.selectChannel(name, state))
 
-    if (objectIsEmpty(filtered)) return null
+    if (isEmpty(filtered)) return null
     return [groupName, filtered]
   })
 }

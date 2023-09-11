@@ -1,3 +1,4 @@
+import includes from "lodash/includes"
 import merge from "lodash/merge"
 
 import {
@@ -13,7 +14,7 @@ import {
   PresetColumnFilter,
 } from "./types"
 
-import { objectFrom, isElementOf } from "./collectionUtils"
+import { objectFrom } from "./collectionUtils"
 
 export function updateStateFromPreset(
   state: BuilderState,
@@ -72,7 +73,7 @@ function findColumn(
       .filter(([_, info]) => {
         let keep = true
 
-        if (filterSpec.type) keep = keep && isElementOf(info.type, filterSpec.type)
+        if (filterSpec.type) keep = keep && includes(filterSpec.type, info.type)
         if (filterSpec.maxUnique) keep = keep && (info.unique ?? 0) <= filterSpec.maxUnique
 
         return keep
@@ -84,7 +85,7 @@ function findColumn(
 
   const candidateCols = candidateColsAndTypes.map(([name]) => name)
 
-  return candidateCols.find(name => !isElementOf(name, columnsAlreadyFound))
+  return candidateCols.find(name => !includes(columnsAlreadyFound, name))
 }
 
 function followIfConditions(spec, columns) {

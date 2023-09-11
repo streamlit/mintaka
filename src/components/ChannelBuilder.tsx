@@ -1,4 +1,5 @@
 import { useState, ReactNode } from "react"
+import isEmpty from "lodash/isEmpty"
 
 import {
   BuilderState,
@@ -11,7 +12,7 @@ import {
   WithCustomState,
 } from "../types"
 
-import { objectFrom, objectFilter, objectIsEmpty } from "../collectionUtils"
+import { objectFrom, objectFilter } from "../collectionUtils"
 import { selectGroup } from "../modeParser"
 
 export interface Props extends WithCustomState {
@@ -133,7 +134,7 @@ export function prepChannelGroups(
     const filtered = objectFilter(groupItems,
       ([label, name]) => config.selectChannelProperty(name, channelName, state))
 
-    if (objectIsEmpty(filtered)) return null
+    if (isEmpty(filtered)) return null
     return [groupName, filtered]
   })
 }

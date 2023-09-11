@@ -1,6 +1,6 @@
-import { Mode } from "./types"
+import includes from "lodash/includes"
 
-import { isElementOf } from "./collectionUtils"
+import { Mode } from "./types"
 
 export function selectGroup(
   sectionName: string,
@@ -20,7 +20,7 @@ export function selectGroup(
       // True instead.
       return true
     } else {
-      return isElementOf(groupName, sectionSettings)
+      return includes(sectionSettings, groupName)
     }
   }
 

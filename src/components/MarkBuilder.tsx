@@ -1,4 +1,5 @@
 import { ReactNode, useState } from "react"
+import isEmpty from "lodash/isEmpty"
 
 import {
   BuilderState,
@@ -9,7 +10,7 @@ import {
   WithCustomState,
 } from "../types"
 
-import { objectFrom, objectFilter, objectIsEmpty } from "../collectionUtils"
+import { objectFrom, objectFilter } from "../collectionUtils"
 import { selectGroup } from "../modeParser"
 
 export interface Props extends WithCustomState {
@@ -97,7 +98,7 @@ export function prepMarkGroups(config: Config, viewMode: Mode, state: BuilderSta
     const filtered = objectFilter(groupItems,
       ([label, name]) => config.selectMarkProperty(name, state))
 
-    if (objectIsEmpty(filtered)) return null
+    if (isEmpty(filtered)) return null
     return [groupName, filtered]
   })
 }

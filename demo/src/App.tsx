@@ -1,13 +1,18 @@
 import { useState, useEffect, useCallback } from "react"
 
 import { formats } from "vega"
-import arrow from "vega-loader-arrow"
+import includes from "lodash/includes"
 
 import backspaceIconSvg from "../assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 import tuneIconSvg from "../assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
-import { BuilderPane, PreviewPane, selectGroup, simpleColumnTypeDetector } from "../../src"
-import { isElementOf } from "../../src/collectionUtils.ts"
+import {
+  BuilderPane,
+  PreviewPane,
+  selectGroup,
+  simpleColumnTypeDetector,
+  CONFIG,
+} from "../../src"
 
 import barleyDataset from "../data/barley.json"
 import carsDataset from "../data/cars.json"
@@ -19,9 +24,6 @@ import populationDataset from "../data/population.json"
 
 import styles from "./app.module.css"
 import uiStyles from "./components.module.css"
-
-// Register arrow reader under type "arrow"
-formats("arrow", arrow);
 
 function App() {
   const [dataset, setDataset] = useState(irisDataset)
@@ -53,6 +55,7 @@ function App() {
       <div className={styles.BuilderWrapper}>
         <BuilderPane
           key={key}
+          config={CONFIG}
           columnTypes={columnTypes}
           setGeneratedSpec={setGeneratedSpec}
           ui={UI_COMPONENTS}
@@ -251,7 +254,7 @@ function ChannelContainer({
     <GenericContainer
       title={title}
       expandable={true}
-      startsExpanded={isElementOf(groupName, ["basic", "requiredForSomeMarks"])}
+      startsExpanded={includes(["basic", "requiredForSomeMarks"], groupName)}
       setCustomState={setCustomState}
       advOptionsAvailable={basicOptionsAvailable ? advOptionsAvailable : false}
       statePath={statePath}

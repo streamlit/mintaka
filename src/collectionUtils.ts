@@ -1,11 +1,9 @@
+import includes from "lodash/includes"
+
 import { PlainRecord } from "./types"
 
-export function isElementOf<T>(el: T, arr: T[]): boolean {
-  return arr.indexOf(el) != -1
-}
-
 export function haveAnyElementsInCommon(arr1: any[], arr2: any[]): boolean {
-  return arr1.some(el1 => isElementOf(el1, arr2))
+  return arr1.some(el1 => includes(arr2, el1))
 }
 
 type mapFn<T> = ([string, T]) => T
@@ -34,8 +32,4 @@ export function objectFilter<T>(
   return Object.fromEntries(
     Object.entries(obj).filter(fn)
   )
-}
-
-export function objectIsEmpty<T>(obj: PlainRecord<T>): boolean {
-  return Object.keys(obj).length == 0
 }

@@ -1,6 +1,6 @@
-import { Config, BuilderState } from "./types"
+import includes from "lodash/includes"
 
-import { isElementOf } from "./collectionUtils"
+import { Config, BuilderState } from "./types"
 
 // For these constants, order matters! This is the order they'll appear in the UI.
 // (string keys in JS Objects are guaranteed to be ordered by insertion order)
@@ -31,10 +31,7 @@ export const CONFIG: Config = {
     },
 
     "Mark": {
-      //presets: false,
       mark: ["advanced"],
-      //encoding: false,
-      //channelProperties: false,
       else: false,
     },
 
@@ -408,14 +405,14 @@ export const CONFIG: Config = {
 
       case "point":
       case "interpolate":
-        return isElementOf(markType, ["line", "area"])
+        return includes(["line", "area"], markType)
 
       case "angle":
-        return isElementOf(markType, ["text", "image"]) ||
-            (markType == "point" && !isElementOf(state?.mark?.shape, ["circle", null, undefined]))
+        return includes(["text", "image"], markType) ||
+            (markType == "point" && !includes(["circle", null, undefined], state?.mark?.shape))
 
       case "size":
-        return isElementOf(markType, ["point", "text", "image"])
+        return includes(["point", "text", "image"], markType)
 
       case "radius":
       case "radius2":
@@ -429,7 +426,7 @@ export const CONFIG: Config = {
         return markType == "area"
 
       case "orient":
-        return isElementOf(markType, ["bar", "line", "area", "boxPlot"])
+        return includes(["bar", "line", "area", "boxPlot"], markType)
 
       default:
         return true
@@ -445,19 +442,19 @@ export const CONFIG: Config = {
     switch (name) {
       case "x":
       case "y":
-        return !isElementOf(markType, ["arc", "geoshape"])
+        return !includes(["arc", "geoshape"], markType)
 
       case "xOffset":
-        return isElementOf(markType, ["bar", "point"])
-          && isElementOf(state?.encoding?.x?.type, ["ordinal", "nominal"])
+        return includes(["bar", "point"], markType)
+          && includes(["ordinal", "nominal"], state?.encoding?.x?.type)
 
       case "yOffset":
-        return isElementOf(markType, ["bar", "point"])
-          && isElementOf(state?.encoding?.y?.type, ["ordinal", "nominal"])
+        return includes(["bar", "point"], markType)
+          && includes(["ordinal", "nominal"], state?.encoding?.y?.type)
 
       case "x2":
       case "y2":
-        return isElementOf(markType, ["area", "bar", "rect", "rule"])
+        return includes(["area", "bar", "rect", "rule"], markType)
 
       case "latitude":
       case "latitude2":
@@ -478,19 +475,19 @@ export const CONFIG: Config = {
         return markType == "image"
 
       case "size":
-        return !isElementOf(markType, ["image", "arc"])
+        return !includes(["image", "arc"], markType)
 
       case "geojson":
         return markType == "geoshape"
 
       case "shape":
-        return isElementOf(markType, ["point", "line", "area"])
+        return includes(["point", "line", "area"], markType)
 
       case "strokeDash":
-        return isElementOf(markType, ["line", "area"])
+        return includes(["line", "area"], markType)
 
       case "angle":
-        return isElementOf(markType, ["text", "image", "point"])
+        return includes(["text", "image", "point"], markType)
 
       default:
         return true
@@ -533,7 +530,7 @@ export const CONFIG: Config = {
         return fieldIsSet
 
       case "title":
-        return fieldIsSet && !isElementOf(channelName, ["theta", "theta2", "radius", "radius2"])
+        return fieldIsSet && !includes(["theta", "theta2", "radius", "radius2"], channelName)
 
       case "aggregate":
         return fieldIsSet && !channelState.bin && !is_color_channel_in_folded_dataset
@@ -551,19 +548,19 @@ export const CONFIG: Config = {
         return channelName == "color"
 
       case "stack":
-        return fieldIsSet && isElementOf(channelName, ["x", "y", "theta", "radius"])
+        return fieldIsSet && includes(["x", "y", "theta", "radius"], channelName)
 
       case "legend":
-        return fieldIsSet && isElementOf(channelName, ["color", "size", "opacity", "shape", "strokeDash"])
+        return fieldIsSet && includes(["color", "size", "opacity", "shape", "strokeDash"], channelName)
 
       case "timeUnit":
         return fieldIsSet && channelState.type == "temporal"
 
       case "sortBy":
-        return fieldIsSet && isElementOf(channelState.type, ["nominal", "ordinal"])
+        return fieldIsSet && includes(["nominal", "ordinal"], channelState.type)
 
       case "zero":
-        return fieldIsSet && !isElementOf(channelState.scaleType, ["log", "time", "utc"])
+        return fieldIsSet && !includes(["log", "time", "utc"], channelState.scaleType)
 
       default:
         return true

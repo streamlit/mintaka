@@ -1,3 +1,4 @@
+import includes from "lodash/includes"
 import merge from "lodash/merge"
 
 import {
@@ -11,7 +12,7 @@ import {
   json,
 } from "./types"
 
-import { isElementOf, haveAnyElementsInCommon } from "./collectionUtils"
+import { haveAnyElementsInCommon } from "./collectionUtils"
 import { RANDOM_FIELD_NAME } from "./config"
 
 export function generateVegaSpec(
@@ -161,7 +162,7 @@ function patchChannelSpec(
 ) {
   if (encoding?.color?.field != null) {
     if (encoding?.x?.stack == false && builderState?.mark?.type == "bar") {
-      if (!isElementOf(encoding.y.type, ["nominal", "ordinal"]))
+      if (!includes(["nominal", "ordinal"], encoding.y.type))
         encoding.y.type = "nominal"
 
       if (encoding.yOffset == null) encoding.yOffset = {}
@@ -171,7 +172,7 @@ function patchChannelSpec(
     }
 
     if (encoding?.y?.stack == false && builderState?.mark?.type == "bar") {
-      if (!isElementOf(encoding.x.type, ["nominal", "ordinal"]))
+      if (!includes(["nominal", "ordinal"], encoding.x.type))
         encoding.x.type = "nominal"
 
       if (encoding.xOffset == null) encoding.xOffset = {}
