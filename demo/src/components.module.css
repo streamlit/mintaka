@@ -25,7 +25,6 @@
 .LayerContainer {
   display: flex;
   flex-direction: column;
-  order: 1;
   flex: auto;
   padding-bottom: 2rem;
   padding-right: var(--scrollbar-width);
@@ -37,17 +36,6 @@
 .EncodingContainer {
   display: flex;
   flex-direction: column;
-  order: 1;
-}
-
-.EncodingGroup {
-  display: flex;
-  flex-direction: column;
-  order: 1;
-}
-
-.EncodingGroup:empty {
-  display: none;
 }
 
 .ToolbarContainer {
@@ -55,7 +43,6 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-items: stretch;
-  order: 1;
   gap: 0.25rem;
   z-index: 10;
   box-shadow: 0 0 1rem 0.5rem var(--color-white);
@@ -87,6 +74,13 @@
 .PresetsContainer {
   padding-bottom: 0.5rem;
   padding-right: var(--scrollbar-width);
+}
+
+.PresetsContainer .GenericContainerChildrenWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
 }
 
 .ModePicker {
@@ -137,14 +131,6 @@
   background-color: var(--border-color-hover);
   border-color: var(--border-color-hover);
   color: var(--color-white);
-}
-
-.MarkPropertyGroup,
-.ChannelPropertyGroup {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.25rem;
-  align-items: flex-start;
 }
 
 .hidden {
@@ -311,7 +297,7 @@
 .GenericContainer {
   display: flex;
   flex-direction: column;
-  padding-bottom: 0.5rem;
+  padding-bottom: 1rem;
 }
 
 .GenericContainerCollapsed {
@@ -323,8 +309,7 @@
   margin-top: -1px;
 }
 
-.LayerContainer > .GenericContainerCollapsed:first-child,
-.EncodingContainer:first-child > .EncodingGroup:first-child > .GenericContainerCollapsed:first-child {
+.LayerContainer > .GenericContainerCollapsed:first-child {
   margin-top: 0;
 }
 
@@ -373,9 +358,10 @@
 }
 
 .GenericContainerChildrenWrapper {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.25rem;
+  align-items: flex-start;
 }
 
 .GenericContainerToolbar {

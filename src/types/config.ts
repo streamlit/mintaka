@@ -3,18 +3,22 @@ import { MarkPropName, ChannelName, ChannelPropName, PropertyValues, BuilderStat
 
 export interface Mode {
   presets?: boolean,
-  mark?: boolean|string[],
-  encoding?: boolean|string[],
-  channelProperties?: boolean|string[],
+  mark?: boolean|Set<string>,
+  encoding?: boolean|Set<string>,
+  channelProperties?: boolean|Set<string>,
   else?: boolean,
 }
 
-export type ChannelConfig = Grouping<PlainRecord<ChannelPropName>>
+export type NamedMode = [string, Mode]
+
+export type MarkConfig = PlainRecord<MarkPropName>
+export type EncodingConfig = PlainRecord<ChannelName>
+export type ChannelConfig = PlainRecord<ChannelPropName>
 
 export interface Config {
   modes: Grouping<Mode>,
-  mark: Grouping<PlainRecord<MarkPropName>>,
-  encoding: Grouping<PlainRecord<ChannelName>>,
+  mark: MarkConfig,
+  encoding: EncodingConfig,
   channelProperties: ChannelConfig,
   markPropertyValues: Grouping<PropertyValues>,
   channelPropertyValues: Grouping<PropertyValues>,

@@ -41,6 +41,7 @@ export function generateVegaSpec(
 
   patchChannelSpec(encoding, builderState)
 
+  // TODO: Make this a config param, and set zero=false there.
   const builderSpec: JsonRecord = {
     mark: {
       clip: true,

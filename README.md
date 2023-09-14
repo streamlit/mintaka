@@ -76,10 +76,6 @@ npm run demo
 
         For example: Don’t want to show the `aggregate` option? You can just omit it from the `config` object!
 
-    - **Group VL properties,** so users can toggle which ones are visible based on a mode selector UI
-
-        For example: you could group the VL properties into 3 groups named “data”, “appearance”, “advanced”, and provide a selector that toggles among those three.
-
 
 - **For complete noobs, you can specify presets** via a `presets` prop.
 
@@ -134,9 +130,11 @@ get structured in the DOM:
 * `<BuilderContainer>`
   * `<PresetsContainer>` _(if exists in current viewMode)_
     * title: "Chart type"
-    * statePath: "preset"
+    * statePath: ["preset"]
     * groupName: null
     * viewMode: null
+    * customState: any
+    * setCustomState: (any) => void
 
     * `<GenericPickerWidget>`
 
@@ -144,20 +142,41 @@ get structured in the DOM:
 
     * `<MarkContainer>` _(if exists in current viewMode)_
       * title: "Mark"
-      * statePath: "mark"
+      * statePath: ["mark"]
       * groupName: null
-      * viewMode: Mode
+      * viewMode: string
       * customState: any
       * setCustomState: (any) => void
 
-      * `<MarkPropertyGroup>` x N _(if exists in current viewMode)_
+      * `<GenericPickerWidget>` x N
+        * statePath: ["mark", propertyName]
         * groupName: string
-        * viewMode: Mode
+        * widgetHint: string
+        * label: string
+        * value: any
+        * setValue: (any) => void
+        * items: Record<string, any>
+        * customState: any
+        * setCustomState: (any) => void
+
+    * `<EncodingContainer>` _(if exists in current viewMode)_
+      * title: "Encoding"
+      * statePath: ["encoding"]
+      * groupName: null
+      * viewMode: string
+      * customState: any
+      * setCustomState: (any) => void
+
+      * `<ChannelContainer>` x N _(if exists in current viewMode)_
+        * title: "Encoding"
+        * statePath: ["encoding", channelName]
+        * groupName: null
+        * viewMode: string
         * customState: any
         * setCustomState: (any) => void
 
         * `<GenericPickerWidget>` x N
-          * statePath: mark.${propertyName}
+          * statePath: ["encoding", channelName, propertyName]
           * groupName: string
           * widgetHint: string
           * label: string
@@ -166,46 +185,6 @@ get structured in the DOM:
           * items: Record<string, any>
           * customState: any
           * setCustomState: (any) => void
-
-    * `<EncodingContainer>` _(if exists in current viewMode)_
-      * title: "Encoding"
-      * statePath: "encoding"
-      * groupName: null
-      * viewMode: Mode
-      * customState: any
-      * setCustomState: (any) => void
-
-      * `<EncodingGroup>` x N _(if exists in current viewMode)_
-        * groupName: string
-        * viewMode: Mode
-        * customState: any
-        * setCustomState: (any) => void
-
-        * `<ChannelContainer>` x N _(if exists in current viewMode)_
-          * title: "Encoding"
-          * statePath: "encoding"
-          * groupName: null
-          * viewMode: Mode
-          * customState: any
-          * setCustomState: (any) => void
-
-          * `<ChannelPropertyGroup>` x N _(if exists in current viewMode)_
-            * statePath: encoding.${channelName}
-            * groupName: string
-            * viewMode: Mode
-            * customState: any
-            * setCustomState: (any) => void
-
-            * `<GenericPickerWidget>` x N
-              * statePath: encoding.${channelName}.${propertyName}
-              * groupName: string
-              * widgetHint: string
-              * label: string
-              * value: any
-              * setValue: (any) => void
-              * items: Record<string, any>
-              * customState: any
-              * setCustomState: (any) => void
 
   * `<ToolbarContainer>`
 

@@ -1,28 +1,44 @@
 import includes from "lodash/includes"
 
-import { Mode } from "./types"
+import { Config, NamedMode, PlainRecord } from "./types"
+import { objectFilter } from "./collectionUtils"
 
-export function selectGroup(
+export function showSection(
   sectionName: string,
-  groupName: string|null,
-  modeSpec: Mode
+  namedMode: NamedMode
 ): boolean {
-  const sectionSettings = modeSpec?.[sectionName]
+  if (!namedMode) return true
 
-  if (sectionSettings === false) return false
-  if (sectionSettings === true) return true
+  const modeSpec = namedMode[1]
+  const sectionMode = modeSpec[sectionName] ?? modeSpec.else != false
 
-  if (Array.isArray(sectionSettings)) {
-    if (groupName == null) {
-      // Called if trying to check whether the entire section should be shown.
-      // If the person who configured the modes didn't want to show this section,
-      // they're have set it to false rather than use an array. So we'll return
-      // True instead.
-      return true
-    } else {
-      return includes(sectionSettings, groupName)
-    }
+  return !!sectionMode
+}
+
+type FilterFn = (string) => boolean
+
+export function filterSection(
+  sectionName: string,
+  configSpec: Config,
+  namedMode: NamedMode,
+  filterFn: FilterFn,
+): PlainRecord<any> {
+  let sectionItems
+  const currConfig = configSpec[sectionName]
+
+  if (namedMode) {
+    const modeSpec = namedMode[1]
+    const sectionMode = modeSpec[sectionName] ?? modeSpec.else != false
+
+    if (!sectionMode) return null
+
+    sectionItems = sectionMode instanceof Set
+      ? sectionMode
+      : new Set(Object.values(currConfig))
+  } else {
+    sectionItems = new Set(Object.values(currConfig))
   }
 
-  return !!modeSpec?.else
+  return objectFilter(currConfig, ([label, name]) =>
+    sectionItems.has(name) && filterFn(name))
 }

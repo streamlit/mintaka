@@ -16,8 +16,8 @@ export const PRESETS: Presets = {
       C2: { type: ["quantitative", null] },
     },
     encoding: {
-      x: { field: "A", scale: { zero: false } },
-      y: { field: "B", scale: { zero: false } },
+      x: { field: "A", zero: false },
+      y: { field: "B", zero: false },
     },
     ifColumn: {
       C1: {

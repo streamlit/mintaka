@@ -38,11 +38,15 @@ export function BuilderPane({
   const state = useBuilderState(config, columnTypes, initialState)
 
   // Some state for the developer to use however they want.
-  const [customState, setCustomState] = useState(null)
+  const [customState, setCustomState] = useState({})
 
   const [ advancedMode, setAdvancedMode ] = useState(false)
-  const [ viewMode, setViewMode ] =
-    useState(Object.values(config?.modes)?.[0])
+  const [ namedViewMode, setNamedViewMode ] =
+    useState(Object.entries(config?.modes ?? {})?.[0])
+
+  const setViewMode = useCallback((name) => {
+    setNamedViewMode([name, config?.modes?.[name]])
+  }, [ config?.modes ])
 
   const reset = useCallback(() => {
     state.reset()
@@ -70,7 +74,9 @@ export function BuilderPane({
         columnTypes={columnTypes}
         ui={ui}
         presets={presets}
-        viewMode={viewMode}
+        namedViewMode={namedViewMode}
+        customState={customState}
+        setCustomState={setCustomState}
         />
 
       <LayerBuilder
@@ -78,7 +84,7 @@ export function BuilderPane({
         config={config}
         state={state}
         ui={ui}
-        viewMode={viewMode}
+        namedViewMode={namedViewMode}
         customState={customState}
         setCustomState={setCustomState}
         />
@@ -86,8 +92,8 @@ export function BuilderPane({
       <ui.ToolbarContainer>
         {config?.modes && (
           <ui.ModePicker
-            items={config?.modes}
-            value={viewMode}
+            items={Object.keys(config?.modes)}
+            value={namedViewMode[0]}
             setValue={setViewMode}
           />
         )}

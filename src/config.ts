@@ -11,129 +11,113 @@ export const CONFIG: Config = {
   modes: {
     "Base": {
       presets: true,
-      encoding: ["basic"],
-      channelProperties: ["basic"],
+      encoding: new Set(["x", "y", "theta", "latitude", "longitude", "color"]),
+      channelProperties: new Set(["field"]),
       else: false,
     },
 
     "Agg": {
-      presets: false,
-      encoding: ["basic"],
-      channelProperties: ["aggregation"],
+      encoding: new Set(["x", "y", "theta", "latitude", "longitude", "color"]),
+      channelProperties: new Set(["aggregate", "bin", "binStep", "maxBins"]),
       else: false,
     },
 
     "Axis": {
-      presets: false,
-      encoding: ["basic"],
-      channelProperties: ["axes"],
+      encoding: new Set(["x", "y", "theta", "latitude", "longitude", "color"]),
+      channelProperties: new Set(["scaleType", "scheme", "domain", "range", "zero", "sort", "stack", "timeUnit", "title", "legend"]),
       else: false,
     },
 
     "Mark": {
-      mark: ["advanced"],
+      mark: true,
       else: false,
     },
 
     "Adv": {
       presets: false,
-      else: true,
     },
   },
 
   mark: {
-    basic: {
-      "Type": "type",
-    },
-
-    advanced: {
-      "Shape": "shape",
-      "Filled": "filled",
-      "Line": "line",
-      "Point": "point",
-      "Interpolate": "interpolate",
-      "Angle": "angle",
-      "Orient": "orient",
-      "Radius": "radius",
-      "Inner radius": "radius2",
-      "Size": "size",
-      "Opacity": "opacity",
-      "Tooltip": "tooltip",
-    },
+    "Type": "type",
+    "Shape": "shape",
+    "Filled": "filled",
+    "Line": "line",
+    "Point": "point",
+    "Interpolate": "interpolate",
+    "Angle": "angle",
+    "Orient": "orient",
+    "Radius": "radius",
+    "Inner radius": "radius2",
+    "Size": "size",
+    "Opacity": "opacity",
+    "Tooltip": "tooltip",
   },
 
   encoding: {
-    requiredForSomeMarks: {
-      "Text": "text",
-      "URL": "url",
-    },
+    // Important for some marks
+    "Text": "text",
+    "URL": "url",
 
-    basic: {
-      "X": "x",
-      "Y": "y",
-      "Arc angle": "theta",
-      "Latitude": "latitude",
-      "Longitude": "longitude",
-      "Color": "color",
-    },
+    // Basic
+    "X": "x",
+    "Y": "y",
+    "Arc angle": "theta",
+    "Latitude": "latitude",
+    "Longitude": "longitude",
+    "Color": "color",
 
-    advanced: {
-      "Size": "size",
-      "Opacity": "opacity",
-      "Shape": "shape",
-      "Dash": "strokeDash",
-      "Angle": "angle",
-      "X 2": "x2",
-      "Y 2": "y2",
-      "Latitude 2": "latitude2",
-      "Longitude 2": "longitude2",
-      "Radius": "radius",
-      "Radius 2": "radius2",
-      "Arc angle 2": "theta2",
-      "X offset": "xOffset",
-      "Y offset": "yOffset",
-      // strokeWidth
-      // detail
-      // tooltip
-    },
+    // Advanced
+    "Size": "size",
+    "Opacity": "opacity",
+    "Shape": "shape",
+    "Dash": "strokeDash",
+    "Angle": "angle",
+    "X 2": "x2",
+    "Y 2": "y2",
+    "Latitude 2": "latitude2",
+    "Longitude 2": "longitude2",
+    "Radius": "radius",
+    "Radius 2": "radius2",
+    "Arc angle 2": "theta2",
+    "X offset": "xOffset",
+    "Y offset": "yOffset",
+    // strokeWidth
+    // detail
+    // tooltip
 
-    faceting: {
-      "Facet": "facet",
-      "Column": "column",
-      "Row": "row",
-    },
+    // Faceting
+    "Facet": "facet",
+    "Column": "column",
+    "Row": "row",
   },
 
   channelProperties: {
-    basic: {
-      "Field": "field",
-    },
+    // Basic
+    "Field": "field",
 
-    data: {
-      "Datum": "datum",
-      "Value": "value",
-      "Type": "type",
-    },
+    // Data
+    "Datum": "datum",
+    "Value": "value",
+    "Type": "type",
 
-    aggregation: {
-      "Aggregate": "aggregate",
-      "Bin": "bin",
-      "Bin size": "binStep",
-      "Max bins": "maxBins",
-    },
+    // Aggregation
+    "Aggregate": "aggregate",
+    "Bin": "bin",
+    "Bin size": "binStep",
+    "Max bins": "maxBins",
 
-    axes: {
-      "Scale": "scaleType",
-      "Palette": "scheme",
-      "Domain": "domain",
-      "Range": "range",
-      "Show zero": "zero",
-      "Sort": "sort",
-      "Stack": "stack",
-      "Time unit": "timeUnit",
-      "Title": "title",
-      "Legend": "legend",
-    },
+    // Axis
+    "Scale": "scaleType",
+    "Palette": "scheme",
+    "Domain": "domain",
+    "Range": "range",
+    "Zero": "zero",
+    "Sort": "sort",
+    "Stack": "stack",
+    "Time unit": "timeUnit",
+    "Title": "title",
+    "Legend": "legend",
   },
 
   markPropertyValues: {
@@ -307,8 +291,8 @@ export const CONFIG: Config = {
 
     zero: {
       "Auto": null,
-      "Always": true,
-      "Avoid": false,
+      "Always visible": true,
+      "Not always visible": false,
     },
 
     scheme: {

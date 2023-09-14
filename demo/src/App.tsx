@@ -9,7 +9,6 @@ import tuneIconSvg from "../assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 import {
   BuilderPane,
   PreviewPane,
-  selectGroup,
   simpleColumnTypeDetector,
   CONFIG,
 } from "../../src"
@@ -24,6 +23,25 @@ import populationDataset from "../data/population.json"
 
 import styles from "./app.module.css"
 import uiStyles from "./components.module.css"
+
+const AUTO_EXPANDED_CHANNELS = new Set([
+  "text",
+  "url",
+  "x",
+  "y",
+  "theta",
+  "latitude",
+  "longitude",
+  "color",
+])
+
+const ALWAYS_EXPANDED_MARK_PROPS = new Set([
+  "type",
+])
+
+const ALWAYS_EXPANDED_CHANNEL_PROPS = new Set([
+  "field",
+])
 
 function App() {
   const [dataset, setDataset] = useState(irisDataset)
@@ -129,14 +147,6 @@ function EncodingContainer({children}) {
   )
 }
 
-function EncodingGroup({children}) {
-  return (
-    <div className={uiStyles.EncodingGroup}>
-      {children}
-    </div>
-  )
-}
-
 function ToolbarContainer({children}) {
   return (
     <div className={uiStyles.ToolbarContainer}>
@@ -160,20 +170,17 @@ function ModePicker({
   value,
   setValue,
 }) {
-  const [ radioValue, setRadioValue ] = useState(
-    Object.entries(items).find(([_, v]) => v == value)?.[0])
+  const [ radioValue, setRadioValue ] = useState(value)
 
   const onClick = useCallback(ev => {
-    const newLabel = ev.currentTarget.value
-    setRadioValue(newLabel)
-
-    const newValue = items[newLabel]
+    const newValue = ev.currentTarget.value
+    setRadioValue(newValue)
     setValue(newValue)
   }, [items, setValue, setRadioValue])
 
   return (
     <div className={uiStyles.ModePicker}>
-      {Object.keys(items).map((label, i) => (
+      {items.map((label, i) => (
         <label
           className={radioValue == label
             ? uiStyles.ModePickerSelectedLabel
@@ -218,18 +225,13 @@ function MarkContainer({
   viewMode,
   statePath,
 }) {
-  const basicOptionsAvailable =
-        selectGroup("mark", "basic", viewMode)
-  const advOptionsAvailable =
-        selectGroup("mark", "advanced", viewMode)
-
   return (
     <GenericContainer
       title={"Mark"}
-      expandable={true}
+      expandable={viewMode == "Adv"}
       startsExpanded={true}
       setCustomState={setCustomState}
-      advOptionsAvailable={basicOptionsAvailable ? advOptionsAvailable : false}
+      advOptionsAvailable={viewMode == "Adv"}
       statePath={statePath}
     >
       {children}
@@ -241,22 +243,16 @@ function ChannelContainer({
   title,
   children,
   statePath,
-  groupName,
   setCustomState,
   viewMode,
 }) {
-  const basicOptionsAvailable =
-        selectGroup("channelProperties", "basic", viewMode)
-  const advOptionsAvailable = ["data", "aggregation", "axes"].some(g =>
-        selectGroup("channelProperties", g, viewMode))
-
   return (
     <GenericContainer
       title={title}
-      expandable={true}
-      startsExpanded={includes(["basic", "requiredForSomeMarks"], groupName)}
+      expandable={viewMode == "Adv"}
+      startsExpanded={AUTO_EXPANDED_CHANNELS.has(statePath[1])}
       setCustomState={setCustomState}
-      advOptionsAvailable={basicOptionsAvailable ? advOptionsAvailable : false}
+      advOptionsAvailable={viewMode == "Adv"}
       statePath={statePath}
     >
       {children}
@@ -282,17 +278,18 @@ function GenericContainer({
   const showAdvanced = useCallback((newValue) => {
     setAdvShown(newValue)
     if (setCustomState)
-      setCustomState({ ...customState, [statePath]: newValue })
+      setCustomState({ ...customState, [statePath.join(".")]: newValue })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     setAdvShown,
     setCustomState,
-    statePath,
     customState,
+    // Not including:
+    // statePath
   ])
 
   useEffect(() => {
     showAdvanced(advShownByDefault)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     showAdvanced,
     advShownByDefault,
@@ -300,7 +297,6 @@ function GenericContainer({
 
   const toggleAdvanced = useCallback(() => {
     showAdvanced(!advShown)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     showAdvanced,
     advShown,
@@ -312,7 +308,7 @@ function GenericContainer({
     if (expanded) {
       setAdvShown(false)
       if (setCustomState)
-        setCustomState({ ...customState, [statePath]: false })
+        setCustomState({ ...customState, [statePath.join(".")]: false })
     }
   }, [expanded, setExpanded, setAdvShown, setCustomState])
 
@@ -349,14 +345,15 @@ function GenericContainer({
   )
 }
 
-function MarkPropertyGroup({
+function MarkPropertyGroupOLD_XXX({
   children,
   groupName,
   statePath,
   customState,
   viewMode,
 }) {
-  const basicOptionsAvailable = selectGroup("mark", "basic", viewMode)
+  const basicOptionsAvailable = true
+      //selectGroup("mark", "basic", viewMode)
 
   if (groupName == "basic") {
     return (
@@ -381,15 +378,14 @@ function MarkPropertyGroup({
   }
 }
 
-function ChannelPropertyGroup({
+function ChannelPropertyGroup_OLD_XXX({
   children,
-  groupName,
   statePath,
   customState,
   viewMode,
 }) {
-  const basicOptionsAvailable =
-        selectGroup("channelProperties", "basic", viewMode)
+  const basicOptionsAvailable = true
+        //selectGroup("channelProperties", "basic", viewMode)
 
   if (!children || children.length == 0) {
     return null
@@ -404,7 +400,7 @@ function ChannelPropertyGroup({
   } else {
     const styles = [
       uiStyles.ChannelPropertyGroup,
-      basicOptionsAvailable && !customState[statePath]
+      basicOptionsAvailable && !customState[statePath.join(".")]
         ? uiStyles.hidden
         : "",
     ].join(" ")
@@ -424,15 +420,31 @@ function GenericPickerWidget({
   setValue,
   items,
   statePath,
-  groupName,
+  customState,
+  viewMode,
 }) {
+  const parentPath = statePath.slice(0, -1)
+  const isCollapsed = viewMode == "Adv" && !customState[parentPath.join(".")]
+
+  const isPermanentChannelProp =
+    statePath[0] == "encoding"
+    && !ALWAYS_EXPANDED_CHANNEL_PROPS.has(statePath[2])
+  const isPermanentMarkProp =
+    statePath[0] == "mark"
+    && !ALWAYS_EXPANDED_MARK_PROPS.has(statePath[1])
+
+  if (isCollapsed && (isPermanentMarkProp || isPermanentChannelProp))
+    return null
+
   if (widgetHint == "multiselect"
-    && !statePath.startsWith("encoding.y")
+    && statePath.length == 3
+    && statePath[0] == "encoding"
+    && statePath[1] != "y"
   ) {
     widgetHint = "select"
   }
 
-  if (statePath == "preset") label = null
+  if (statePath[0] == "presets") label = null
 
   switch (widgetHint) {
     case "multiselect":
@@ -442,7 +454,6 @@ function GenericPickerWidget({
           items={items}
           value={value}
           setValue={setValue}
-          groupName={groupName}
         />
       )
 
@@ -453,7 +464,6 @@ function GenericPickerWidget({
           items={items}
           value={value}
           setValue={setValue}
-          groupName={groupName}
         />
       )
 
@@ -464,7 +474,6 @@ function GenericPickerWidget({
           items={items}
           value={value}
           setValue={setValue}
-          groupName={groupName}
         />
       )
 
@@ -477,7 +486,6 @@ function GenericPickerWidget({
           label={label}
           value={value}
           setValue={setValue}
-          groupName={groupName}
         />
       )
   }
@@ -705,9 +713,11 @@ function WidgetWrapper({
 }) {
   return (
     <>
-      <HtmlLabel className={[uiStyles.WidgetWrapperLabel, className].join(" ")}>
-        {label}
-      </HtmlLabel>
+      { label &&
+        <HtmlLabel className={[uiStyles.WidgetWrapperLabel, className].join(" ")}>
+          {label}
+        </HtmlLabel>
+      }
 
       <div className={uiStyles.WidgetWrapperWidget}>
         {children}
@@ -720,13 +730,10 @@ const UI_COMPONENTS = {
   BuilderContainer,
   ResetButton,
   ChannelContainer,
-  ChannelPropertyGroup,
   EncodingContainer,
-  EncodingGroup,
   GenericPickerWidget,
   LayerContainer,
   MarkContainer,
-  MarkPropertyGroup,
   ModePicker,
   PresetsContainer,
   ToolbarContainer,

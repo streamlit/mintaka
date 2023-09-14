@@ -4,7 +4,7 @@ import {
   BuilderState,
   ColumnTypes,
   Config,
-  Mode,
+  NamedMode,
   UIComponents,
   WithCustomState,
 } from "../types"
@@ -17,7 +17,7 @@ export interface Props extends WithCustomState {
   config: Config,
   state: BuilderState,
   ui: UIComponents,
-  viewMode: Mode,
+  namedViewMode: NamedMode,
 }
 
 export function LayerBuilder({
@@ -25,7 +25,7 @@ export function LayerBuilder({
   config,
   state,
   ui,
-  viewMode,
+  namedViewMode,
   customState,
   setCustomState,
 }: Props): ReactNode {
@@ -36,7 +36,7 @@ export function LayerBuilder({
         makeSetter={state.getMarkSetter}
         state={state}
         ui={ui}
-        viewMode={viewMode}
+        namedViewMode={namedViewMode}
         customState={customState}
         setCustomState={setCustomState}
       />
@@ -45,7 +45,7 @@ export function LayerBuilder({
         columnTypes={columnTypes}
         config={config}
         state={state}
-        viewMode={viewMode}
+        namedViewMode={namedViewMode}
         ui={ui}
         customState={customState}
         setCustomState={setCustomState}

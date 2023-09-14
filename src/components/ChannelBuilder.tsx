@@ -3,28 +3,28 @@ import isEmpty from "lodash/isEmpty"
 
 import {
   BuilderState,
-  ChannelConfig,
   Config,
   MarkPropertySetter,
-  Mode,
+  NamedMode,
   PlainRecord,
+  StatePath,
   UIComponents,
   WithCustomState,
 } from "../types"
 
-import { objectFrom, objectFilter } from "../collectionUtils"
-import { selectGroup } from "../modeParser"
+import { objectFilter } from "../collectionUtils"
+import { filterSection } from "../modeParser"
 
 export interface Props extends WithCustomState {
   channelName: string,
   channelLabel: string,
   columns: PlainRecord<string | null>,
   config: Config,
-  groupName: string,
   makeSetter: MarkPropertySetter,
   state: BuilderState,
+  statePath: StatePath,
   ui: UIComponents,
-  viewMode: Mode,
+  namedViewMode: NamedMode,
 }
 
 export function ChannelBuilder({
@@ -32,11 +32,11 @@ export function ChannelBuilder({
   channelLabel,
   columns,
   config,
-  groupName: channelGroupName,
   makeSetter,
   state,
+  statePath,
   ui,
-  viewMode,
+  namedViewMode,
   customState,
   setCustomState,
 }): ReactNode {
@@ -65,76 +65,44 @@ export function ChannelBuilder({
     zero: { widgetHint: "select" },
   }
 
-  const cleanedGroups = prepChannelGroups(channelName, config, viewMode, state)
-  const basePath = `encoding.${channelName}`
+  const cleanedProps = filterSection(
+    "channelProperties", config, namedViewMode,
+    (name) => config.selectChannelProperty(name, channelName, state))
+
+  if (!cleanedProps) return null
 
   return (
     <ui.ChannelContainer
       title={channelLabel}
-      statePath={basePath}
-      groupName={channelGroupName}
-      viewMode={viewMode}
+      statePath={[...statePath, channelName]}
+      viewMode={namedViewMode?.[0]}
       customState={customState}
       setCustomState={setCustomState}
     >
 
-      {Object.entries(cleanedGroups).map(([groupName, groupItems]) => (
-        <ui.ChannelPropertyGroup
-          statePath={basePath}
-          groupName={groupName}
-          viewMode={viewMode}
+      {Object.entries(cleanedProps).map(([label, name]) => (
+        <ui.GenericPickerWidget
+          statePath={[...statePath, channelName, name]}
+          widgetHint={uiParams[name]?.widgetHint ?? "json"}
+          label={label}
+          value={channelState[name]}
+          setValue={makeSetter(name)}
+          items={uiParams[name]?.validValues ?? validValues?.[name]}
+          viewMode={namedViewMode?.[0]}
           customState={customState}
           setCustomState={setCustomState}
-          key={groupName}
-        >
-
-          {Object.entries(groupItems)
-            .map(([label, name]) => (
-              <ui.GenericPickerWidget
-                statePath={basePath}
-                groupName={groupName}
-                widgetHint={uiParams[name]?.widgetHint ?? "json"}
-                label={label}
-                value={channelState[name]}
-                setValue={makeSetter(name)}
-                items={uiParams[name]?.validValues ?? validValues?.[name]}
-                customState={customState}
-                setCustomState={setCustomState}
-                key={name}
-              />
-            ))
-          }
-
-        </ui.ChannelPropertyGroup>
+          key={name}
+        />
       ))}
+
     </ui.ChannelContainer>
   )
 }
 
-
 function prepTypes(channelName, fieldTypes) {
-  if (channelName != "geoshape") {
-    return Object.fromEntries(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Object.entries(fieldTypes).filter(([_, n]) => n != "geojson")
-    )
-  }
+  if (channelName != "geoshape")
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return objectFilter(fieldTypes, ([k, n]) => n != "geojson")
 
   return fieldTypes
-}
-
-export function prepChannelGroups(
-  channelName: string, config: Config, viewMode: Mode, state: BuilderState,
-): ChannelConfig {
-  return objectFrom(config.channelProperties, ([groupName, groupItems]) => {
-    // Select groups according to current view mode.
-    if (!selectGroup("channelProperties", groupName, viewMode)) return null
-
-    // In each group, select channels according to current state.
-    const filtered = objectFilter(groupItems,
-      ([label, name]) => config.selectChannelProperty(name, channelName, state))
-
-    if (isEmpty(filtered)) return null
-    return [groupName, filtered]
-  })
 }

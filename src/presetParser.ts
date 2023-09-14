@@ -14,7 +14,7 @@ import {
   PresetColumnFilter,
 } from "./types"
 
-import { objectFrom } from "./collectionUtils"
+import { objectFrom, deepClone } from "./collectionUtils"
 
 export function updateStateFromPreset(
   state: BuilderState,
@@ -23,20 +23,15 @@ export function updateStateFromPreset(
 ) {
   if (presetSpec == null) return null
 
-  // Using fromEntries/entries rather than the spread operator to
-  // keep the ordering intact.
-  const spec = objectFrom(presetSpec as PlainRecord<any>)
-
-  const mark = spec.mark as Grouping<Record<string, MarkPropName>>
+  const spec = deepClone(presetSpec as PlainRecord<any>)
 
   const columns = findColumns(spec.findColumns, columnTypes)
   followIfConditions(spec, columns)
 
-  const encodingState: EncodingState = Object.fromEntries(
-    Object.entries(spec.encoding).map(([name, channelSpec]: [string, JsonRecord]) => [
-      name,
-      {...channelSpec, field: columns[channelSpec.field as string]}
-    ]))
+  const mark = spec.mark as Grouping<Record<string, MarkPropName>>
+  const encodingState = objectFrom(spec.encoding, ([name, channelSpec]) =>
+    [name, {...channelSpec, field: columns[channelSpec.field as string]}]
+  )
 
   state.setPreset(presetSpec)
   state.setMark({ ...mark })

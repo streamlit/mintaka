@@ -1,7 +1,6 @@
 import { FunctionComponent, ReactNode, MouseEventHandler } from "react"
 
 import {
-  Mode,
   PlainRecord,
   json,
 } from "./index"
@@ -29,17 +28,17 @@ export interface ResetButtonProps {
 export type ResetButton = FunctionComponent<ResetButtonProps>
 
 export interface ModePickerProps {
-  items: PlainRecord<Mode>,
-  value: Mode,
-  setValue: Setter<Mode>,
+  items: string[],
+  value: string,
+  setValue: Setter<string>,
 }
 
 export type ModePicker = FunctionComponent<ModePickerProps>
+export type StatePath = Array<string>
 
 export interface LevelContainerProps extends SimpleContainerProps, WithCustomState {
-  statePath: string,
-  groupName: string|null,
-  viewMode: Mode|null,
+  statePath: StatePath,
+  viewMode: string,
 }
 
 type LevelContainer = FunctionComponent<LevelContainerProps>
@@ -50,13 +49,6 @@ export type PresetsContainer = LevelContainer
 export interface ChannelContainer extends LevelContainer {
   title: string,
 }
-
-export interface PropertyGroupProps extends SimpleContainerProps, WithCustomState {
-  groupName: string,
-  viewMode: Mode,
-}
-
-export type PropertyGroup = FunctionComponent<PropertyGroupProps>
 
 export type ItemizedWidgetHint =
   | "multiselect"
@@ -73,11 +65,11 @@ export type JsonizedWidgetHint =
 export type WidgetHint = ItemizedWidgetHint | JsonizedWidgetHint
 
 interface GenericPickerWidgetCommonProps extends WithCustomState {
-  statePath: string,
-  groupName: string,
+  statePath: StatePath,
   label: string,
   value: any,
   setValue: Setter<any>,
+  viewMode: string,
 }
 
 interface GenericPickerWidgetItemizedProps extends GenericPickerWidgetCommonProps {
@@ -105,13 +97,10 @@ export interface UIComponents {
   BuilderContainer: BuilderContainer,
   ResetButton: ResetButton,
   ChannelContainer: ChannelContainer,
-  ChannelPropertyGroup: PropertyGroup,
   EncodingContainer: EncodingContainer,
-  EncodingGroup: PropertyGroup,
   GenericPickerWidget: GenericPickerWidget,
   LayerContainer: LayerContainer,
   MarkContainer: MarkContainer,
-  MarkPropertyGroup: PropertyGroup,
   ModePicker: ModePicker,
   PresetsContainer: PresetsContainer,
   ToolbarContainer: ToolbarContainer,

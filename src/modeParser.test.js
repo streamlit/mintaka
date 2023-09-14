@@ -1,296 +1,625 @@
 import { describe, expect, test } from 'vitest'
 
-import { selectGroup } from "./modeParser"
+import { showSection, filterSection } from "./modeParser"
 
-describe('selectGroup', () => {
-  describe('empty modeSpec', () => {
-    test('section not present', () => {
-      const out = selectGroup(
-        'foo',
-        null,
-        {},
-      )
+describe('showSection', () => {
+  test('null namedMode', () => {
+    const out = showSection(
+      'foo',
+      null,
+    )
 
-      expect(out).toBeFalsy()
-    })
-
-    test('section not present, with else=false', () => {
-      const out = selectGroup(
-        'foo',
-        null,
-        { else: false },
-      )
-
-      expect(out).toBeFalsy()
-    })
-
-    test('section not present, with else=true', () => {
-      const out = selectGroup(
-        'foo',
-        null,
-        { else: true },
-      )
-
-      expect(out).toBeTruthy()
-    })
+    expect(out).toBeTruthy()
   })
 
-  describe('section not present', () => {
-    test('without else', () => {
-      const out = selectGroup(
-        'foo',
-        null,
-        {},
-      )
+  test('empty namedMode', () => {
+    const out = showSection(
+      'foo',
+      ['name', {}],
+    )
 
-      expect(out).toBeFalsy()
-    })
-
-    test('with else=false', () => {
-      const out = selectGroup(
-        'foo',
-        null,
-        { else: false },
-      )
-
-      expect(out).toBeFalsy()
-    })
-
-    test('with else=true', () => {
-      const out = selectGroup(
-        'foo',
-        null,
-        { else: true },
-      )
-
-      expect(out).toBeTruthy()
-    })
+    expect(out).toBeTruthy()
   })
 
-  describe('section present and false', () => {
+  describe('section not in namedMode', () => {
     test('no else', () => {
-      const out = selectGroup(
+      const out = showSection(
         'foo',
-        null,
-        { foo: false },
+        ['name', {
+          bar: true,
+        }],
       )
 
-      expect(out).toBeFalsy()
+      expect(out).toBeTruthy()
     })
 
-    test('with else=false', () => {
-      const out = selectGroup(
+    test('else null', () => {
+      const out = showSection(
         'foo',
-        null,
-        { foo: false, else: false },
+        ['name', {
+          bar: true,
+          else: null,
+        }],
       )
 
-      expect(out).toBeFalsy()
+      expect(out).toBeTruthy()
     })
 
-    test('with else=true', () => {
-      const out = selectGroup(
+    test('else true', () => {
+      const out = showSection(
         'foo',
-        null,
-        { foo: false, else: true },
+        ['name', {
+          bar: true,
+          else: true,
+        }],
+      )
+
+      expect(out).toBeTruthy()
+    })
+
+    test('else false', () => {
+      const out = showSection(
+        'foo',
+        ['name', {
+          bar: true,
+          else: false,
+        }],
       )
 
       expect(out).toBeFalsy()
     })
   })
 
-  describe('section present and true', () => {
+  describe('section true in namedMode', () => {
     test('no else', () => {
-      const out = selectGroup(
+      const out = showSection(
         'foo',
-        null,
-        { foo: true },
+        ['name', {
+          foo: true,
+          bar: false,
+        }],
       )
 
       expect(out).toBeTruthy()
     })
 
-    test('with else=false', () => {
-      const out = selectGroup(
+    test('else null', () => {
+      const out = showSection(
         'foo',
-        null,
-        { foo: true, else: false },
+        ['name', {
+          foo: true,
+          bar: false,
+          else: null,
+        }],
       )
 
       expect(out).toBeTruthy()
     })
 
-    test('with else=true', () => {
-      const out = selectGroup(
+    test('else true', () => {
+      const out = showSection(
         'foo',
-        null,
-        { foo: true, else: true },
+        ['name', {
+          foo: true,
+          bar: false,
+          else: true,
+        }],
+      )
+
+      expect(out).toBeTruthy()
+    })
+
+    test('else false', () => {
+      const out = showSection(
+        'foo',
+        ['name', {
+          foo: true,
+          bar: false,
+          else: false,
+        }],
       )
 
       expect(out).toBeTruthy()
     })
   })
 
-  describe('section is empty array', () => {
-    describe('with no groupName', () => {
-      test('no else', () => {
-        const out = selectGroup(
-          'foo',
-          null,
-          { foo: [] },
-        )
+  describe('section false in namedMode', () => {
+    test('no else', () => {
+      const out = showSection(
+        'foo',
+        ['name', {
+          foo: false,
+          bar: true,
+        }],
+      )
 
-        expect(out).toBeTruthy()
-      })
+      expect(out).toBeFalsy()
+    })
 
-      test('with else=false', () => {
-        const out = selectGroup(
-          'foo',
-          null,
-          { foo: [], else: false },
-        )
+    test('else null', () => {
+      const out = showSection(
+        'foo',
+        ['name', {
+          foo: false,
+          bar: true,
+          else: null,
+        }],
+      )
 
-        expect(out).toBeTruthy()
-      })
+      expect(out).toBeFalsy()
+    })
 
-      test('with else=true', () => {
-        const out = selectGroup(
-          'foo',
-          null,
-          { foo: [], else: true },
-        )
+    test('else true', () => {
+      const out = showSection(
+        'foo',
+        ['name', {
+          foo: false,
+          bar: true,
+          else: true,
+        }],
+      )
 
-        expect(out).toBeTruthy()
+      expect(out).toBeFalsy()
+    })
+
+    test('else false', () => {
+      const out = showSection(
+        'foo',
+        ['name', {
+          foo: false,
+          bar: true,
+          else: false,
+        }],
+      )
+
+      expect(out).toBeFalsy()
+    })
+  })
+
+  describe('section=Set in namedMode', () => {
+    test('no else', () => {
+      const out = showSection(
+        'foo',
+        ['name', {
+          foo: new Set(['value1', 'value2']),
+          bar: false,
+        }],
+      )
+
+      expect(out).toBeTruthy()
+    })
+
+    test('else null', () => {
+      const out = showSection(
+        'foo',
+        ['name', {
+          foo: new Set(['value1', 'value2']),
+          bar: false,
+          else: null,
+        }],
+      )
+
+      expect(out).toBeTruthy()
+    })
+
+    test('else true', () => {
+      const out = showSection(
+        'foo',
+        ['name', {
+          foo: new Set(['value1', 'value2']),
+          bar: false,
+          else: true,
+        }],
+      )
+
+      expect(out).toBeTruthy()
+    })
+
+    test('else false', () => {
+      const out = showSection(
+        'foo',
+        ['name', {
+          foo: new Set(['value1', 'value2']),
+          bar: false,
+          else: false,
+        }],
+      )
+
+      expect(out).toBeTruthy()
+    })
+  })
+
+})
+
+
+describe('filterSection', () => {
+  const configSpec = {
+    foo: { key1: 'value1', key2: 'value2', key3: 'value3' }
+  }
+
+  test('null namedMode', () => {
+    const out = filterSection(
+      'foo',
+      configSpec,
+      null,
+      x => true,
+    )
+
+    expect(out).toEqual({
+      key1: 'value1', key2: 'value2', key3: 'value3',
+    })
+  })
+
+  test('empty namedMode', () => {
+    const out = filterSection(
+      'foo',
+      configSpec,
+      ['name', {}],
+      x => true,
+    )
+
+    expect(out).toEqual({
+      key1: 'value1', key2: 'value2', key3: 'value3',
+    })
+  })
+
+  describe('section not in namedMode', () => {
+    test('no else', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { bar: true, }],
+        x => true,
+      )
+
+      expect(out).toEqual({
+        key1: 'value1', key2: 'value2', key3: 'value3',
       })
     })
 
-    describe('with groupName set', () => {
-      test('no else', () => {
-        const out = selectGroup(
-          'foo',
-          'baz',
-          { foo: [] },
-        )
+    test('else null', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { bar: true, else: null }],
+        x => true,
+      )
 
-        expect(out).toBeFalsy()
+      expect(out).toEqual({
+        key1: 'value1', key2: 'value2', key3: 'value3',
       })
+    })
 
-      test('with else=false', () => {
-        const out = selectGroup(
-          'foo',
-          'baz',
-          { foo: [], else: false },
-        )
+    test('else true', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { bar: true, else: true}],
+        x => true,
+      )
 
-        expect(out).toBeFalsy()
+      expect(out).toEqual({
+        key1: 'value1', key2: 'value2', key3: 'value3',
       })
+    })
 
-      test('with else=true', () => {
-        const out = selectGroup(
-          'foo',
-          'baz',
-          { foo: [], else: true },
-        )
+    test('else false', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { bar: true, else: false}],
+        x => true,
+      )
 
-        expect(out).toBeFalsy()
+      expect(out).toEqual(null)
+    })
+  })
+
+  describe('section true in namedMode', () => {
+    test('no else', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { foo: true, bar: false, }],
+        x => true,
+      )
+
+      expect(out).toEqual({
+        key1: 'value1', key2: 'value2', key3: 'value3',
+      })
+    })
+
+    test('else null', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { foo: true, bar: false, else: null }],
+        x => true,
+      )
+
+      expect(out).toEqual({
+        key1: 'value1', key2: 'value2', key3: 'value3',
+      })
+    })
+
+    test('else true', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { foo: true, bar: false, else: true }],
+        x => true,
+      )
+
+      expect(out).toEqual({
+        key1: 'value1', key2: 'value2', key3: 'value3',
+      })
+    })
+
+    test('else false', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { foo: true, bar: false, else: false }],
+        x => true,
+      )
+
+      expect(out).toEqual({
+        key1: 'value1', key2: 'value2', key3: 'value3',
       })
     })
   })
 
-  describe('section is array', () => {
-    describe('with no groupName', () => {
+  describe('section false in namedMode', () => {
+    test('no else', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { foo: false, bar: false, }],
+        x => true,
+      )
+
+      expect(out).toEqual(null)
+    })
+
+    test('else null', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { foo: false, bar: false, else: null }],
+        x => true,
+      )
+
+      expect(out).toEqual(null)
+    })
+
+    test('else true', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { foo: false, bar: false, else: true }],
+        x => true,
+      )
+
+      expect(out).toEqual(null)
+    })
+
+    test('else false', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', { foo: false, bar: false, else: false }],
+        x => true,
+      )
+
+      expect(out).toEqual(null)
+    })
+  })
+
+  describe('section=Set in namedMode, no intersection', () => {
+    test('no else', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', {
+          foo: new Set(['notValue1', 'notValue2']),
+          bar: false,
+        }],
+        x => true,
+      )
+
+      expect(out).toEqual({})
+    })
+
+    test('else null', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', {
+          foo: new Set(['notValue1', 'notValue2']),
+          bar: false,
+          else: null,
+        }],
+        x => true,
+      )
+
+      expect(out).toEqual({})
+    })
+
+    test('else true', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', {
+          foo: new Set(['notValue1', 'notValue2']),
+          bar: false,
+          else: true,
+        }],
+        x => true,
+      )
+
+      expect(out).toEqual({})
+    })
+
+    test('else false', () => {
+      const out = filterSection(
+        'foo',
+        configSpec,
+        ['name', {
+          foo: new Set(['notValue1', 'notValue2']),
+          bar: false,
+          else: false,
+        }],
+        x => true,
+      )
+
+      expect(out).toEqual({})
+    })
+  })
+
+  describe('section=Set in namedMode, with intersection', () => {
+    describe('filter true', () => {
+      const filter = x => true
+
       test('no else', () => {
-        const out = selectGroup(
+        const out = filterSection(
           'foo',
-          null,
-          { foo: [] },
+          configSpec,
+          ['name', {
+            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+            bar: false,
+          }],
+          filter,
         )
 
-        expect(out).toBeTruthy()
+        expect(out).toEqual({
+          key1: 'value1',
+          key3: 'value3',
+        })
       })
 
-      test('with else=false', () => {
-        const out = selectGroup(
+      test('else null', () => {
+        const out = filterSection(
           'foo',
-          null,
-          { foo: [], else: false },
+          configSpec,
+          ['name', {
+            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+            bar: false,
+            else: null,
+          }],
+          filter,
         )
 
-        expect(out).toBeTruthy()
+        expect(out).toEqual({
+          key1: 'value1',
+          key3: 'value3',
+        })
       })
 
-      test('with else=true', () => {
-        const out = selectGroup(
+      test('else true', () => {
+        const out = filterSection(
           'foo',
-          null,
-          { foo: [], else: true },
+          configSpec,
+          ['name', {
+            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+            bar: false,
+            else: true,
+          }],
+          filter,
         )
 
-        expect(out).toBeTruthy()
+        expect(out).toEqual({
+          key1: 'value1',
+          key3: 'value3',
+        })
+      })
+
+      test('else false', () => {
+        const out = filterSection(
+          'foo',
+          configSpec,
+          ['name', {
+            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+            bar: false,
+            else: false,
+          }],
+          filter,
+        )
+
+        expect(out).toEqual({
+          key1: 'value1',
+          key3: 'value3',
+        })
       })
     })
 
-    describe('with matching groupName', () => {
+    describe('filter out one value', () => {
+      const filter = x => x == 'value3'
+
       test('no else', () => {
-        const out = selectGroup(
+        const out = filterSection(
           'foo',
-          'baz',
-          { foo: ['baz', 'buzz'] },
+          configSpec,
+          ['name', {
+            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+            bar: false,
+          }],
+          filter,
         )
 
-        expect(out).toBeTruthy()
+        expect(out).toEqual({
+          key3: 'value3',
+        })
       })
 
-      test('with else=false', () => {
-        const out = selectGroup(
+      test('else null', () => {
+        const out = filterSection(
           'foo',
-          'baz',
-          { foo: ['baz', 'buzz'], else: false },
+          configSpec,
+          ['name', {
+            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+            bar: false,
+            else: null,
+          }],
+          filter,
         )
 
-        expect(out).toBeTruthy()
+        expect(out).toEqual({
+          key3: 'value3',
+        })
       })
 
-      test('with else=true', () => {
-        const out = selectGroup(
+      test('else true', () => {
+        const out = filterSection(
           'foo',
-          'baz',
-          { foo: ['baz', 'buzz'], else: true },
+          configSpec,
+          ['name', {
+            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+            bar: false,
+            else: true,
+          }],
+          filter,
         )
 
-        expect(out).toBeTruthy()
-      })
-    })
-
-    describe('with non-matching groupName', () => {
-      test('no else', () => {
-        const out = selectGroup(
-          'foo',
-          'baz',
-          { foo: ['boz', 'buzz'] },
-        )
-
-        expect(out).toBeFalsy()
+        expect(out).toEqual({
+          key3: 'value3',
+        })
       })
 
-      test('with else=false', () => {
-        const out = selectGroup(
+      test('else false', () => {
+        const out = filterSection(
           'foo',
-          'baz',
-          { foo: ['boz', 'buzz'], else: false },
+          configSpec,
+          ['name', {
+            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+            bar: false,
+            else: false,
+          }],
+          filter,
         )
 
-        expect(out).toBeFalsy()
-      })
-
-      test('with else=true', () => {
-        const out = selectGroup(
-          'foo',
-          'baz',
-          { foo: ['boz', 'buzz'], else: true },
-        )
-
-        expect(out).toBeFalsy()
+        expect(out).toEqual({
+          key3: 'value3',
+        })
       })
     })
   })

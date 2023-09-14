@@ -10,44 +10,28 @@ import {
   json,
 } from "../types"
 
+import { objectFrom } from "../collectionUtils"
+
 export function useBuilderState(
   config: Config,
   columnTypes: ColumnTypes,
   initialState: BuilderState,
 ): BuilderState {
   const getInitialMark = useCallback(() => {
-    // Flatten config.mark groups.
-    const flatMark = Object.values(config.mark)
-      .reduce((obj, markGroup) => {
-        Object.assign(obj, markGroup)
-        return obj
-      }, {})
+    const mark = objectFrom(config?.mark, ([label, name]) => [
+      name, initialState?.mark?.[name]
+    ])
 
-    const mark = Object.fromEntries(
-      Object.values(flatMark).map(name => [
-        name, initialState?.mark?.[name]
-      ])
-    )
-
-    // Vega requirest a type in order to even draw.
+    // Vega requires a type in order to even draw.
     if (!mark.type) mark.type = "point"
 
     return mark
   }, null)
 
   const getInitialEncoding = useCallback(() => {
-    // Flatten config.encoding groups.
-    const flatEncoding = Object.values(config.encoding)
-      .reduce((obj, channelGroup) => {
-        Object.assign(obj, channelGroup)
-        return obj
-      }, {})
-
-    return Object.fromEntries(
-      Object.values(flatEncoding).map(name => [
-        name, initialState?.encoding?.[name]
-      ])
-    )
+    return objectFrom(config?.encoding, ([label, name]) => [
+      name, initialState?.encoding?.[name]
+    ])
   }, null)
 
   const [preset, setPreset] = useState(null)

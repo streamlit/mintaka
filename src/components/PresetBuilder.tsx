@@ -3,21 +3,22 @@ import { ReactNode, useEffect, useCallback } from "react"
 import {
   BuilderState,
   ColumnTypes,
-  Mode,
+  NamedMode,
   Presets,
   UIComponents,
+  WithCustomState,
 } from "../types"
 
 import { PRESETS } from "../presets"
 import { updateStateFromPreset } from "../presetParser"
-import { selectGroup } from "../modeParser"
+import { showSection } from "../modeParser"
 
-export interface Props {
+export interface Props extends WithCustomState {
   columnTypes: ColumnTypes,
   presets: Presets,
   state: BuilderState,
   ui: UIComponents,
-  viewMode: Mode,
+  namedViewMode: NamedMode,
 }
 
 export function PresetBuilder({
@@ -25,7 +26,9 @@ export function PresetBuilder({
   presets,
   state,
   ui,
-  viewMode,
+  namedViewMode,
+  customState,
+  setCustomState,
 }: Props): ReactNode {
   if (!presets) presets = PRESETS
 
@@ -41,24 +44,29 @@ export function PresetBuilder({
 
   if (!presets
       || Object.keys(presets).length == 0
-      || !selectGroup('presets', null, viewMode)) {
+      || !showSection('presets', namedViewMode)) {
     return null
   }
 
+  const statePath = ["presets"]
+
   return (
     <ui.PresetsContainer
-      statePath="preset"
-      groupName={null}
-      viewMode={null}
+      statePath={statePath}
+      viewMode={namedViewMode?.[0]}
+      customState={customState}
+      setCustomState={setCustomState}
     >
       <ui.GenericPickerWidget
-        statePath="preset"
-        groupName={null}
+        statePath={statePath}
         widgetHint={"select"}
         label={"Preset"}
         value={state.preset}
         setValue={setPreset}
         items={presets}
+        viewMode={namedViewMode?.[0]}
+        customState={customState}
+        setCustomState={setCustomState}
       />
     </ui.PresetsContainer>
   )
