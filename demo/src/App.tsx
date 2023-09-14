@@ -10,7 +10,6 @@ import {
   BuilderPane,
   PreviewPane,
   simpleColumnTypeDetector,
-  CONFIG,
 } from "../../src"
 
 import barleyDataset from "../data/barley.json"
@@ -73,7 +72,6 @@ function App() {
       <div className={styles.BuilderWrapper}>
         <BuilderPane
           key={key}
-          config={CONFIG}
           columnTypes={columnTypes}
           setGeneratedSpec={setGeneratedSpec}
           ui={UI_COMPONENTS}

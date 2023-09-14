@@ -69,7 +69,7 @@ export function EncodingBuilder({
           ui={ui}
           columns={{
             ...columnsLabelsToNames,
-            ...UI_EXTRAS[name]?.extraCols
+            ...UI_EXTRAS[name]?.extraCols,
           }}
           namedViewMode={namedViewMode}
           customState={customState}

@@ -1,14 +1,24 @@
-import { ReactNode, useEffect, useCallback, useState } from "react"
+import { ReactNode, useEffect, useCallback, useState, useMemo } from "react"
 
 import {
   BuilderState,
+  ChannelPropertiesConfig,
+  ChannelPropertyValuesConfig,
   ColumnTypes,
   Config,
+  EncodingConfig,
+  Grouping,
+  MarkConfig,
+  MarkPropertyValuesConfig,
+  ModeConfig,
   Presets,
+  SelectChannelFunc,
+  SelectChannelPropertyFunc,
+  SelectMarkPropertyFunc,
   UIComponents,
 } from "../types"
 
-import { CONFIG } from "../config"
+import * as configDefaults from "../config"
 import { generateVegaSpec } from "../vegaBuilder"
 import { updateStateFromPreset } from "../presetParser"
 
@@ -18,22 +28,50 @@ import { PresetBuilder } from "./PresetBuilder"
 
 export interface Props {
   columnTypes: ColumnTypes,
-  config: Config,
   initialState: BuilderState, // TODO: Use VL Spec here.
   presets: Presets,
   setGeneratedSpec: (VLSpec) => void,
   ui: UIComponents,
+
+  // Customization
+  modes?: ModeConfig,
+  mark?: MarkConfig,
+  encoding?: EncodingConfig,
+  channelProperties?: ChannelPropertiesConfig,
+  markPropertyValues?: MarkPropertyValuesConfig,
+  channelPropertyValues?: ChannelPropertyValuesConfig,
+  selectMarkProperty?: SelectMarkPropertyFunc,
+  selectChannel?: SelectChannelFunc,
+  selectChannelProperty?: SelectChannelPropertyFunc,
 }
 
 export function BuilderPane({
   columnTypes,
-  config,
   initialState,
   presets,
   setGeneratedSpec,
   ui,
+  modes,
+  mark,
+  encoding,
+  channelProperties,
+  markPropertyValues,
+  channelPropertyValues,
+  selectMarkProperty,
+  selectChannel,
+  selectChannelProperty,
 }: Props): ReactNode {
-  if (!config) config = CONFIG
+  const config = useMemo<Config>(() => ({
+    modes: modes ?? configDefaults.modes,
+    mark: mark ?? configDefaults.mark,
+    encoding: encoding ?? configDefaults.encoding,
+    channelProperties: channelProperties ?? configDefaults.channelProperties,
+    markPropertyValues: markPropertyValues ?? configDefaults.markPropertyValues,
+    channelPropertyValues: channelPropertyValues ?? configDefaults.channelPropertyValues,
+    selectMarkProperty: selectMarkProperty ?? configDefaults.selectMarkProperty,
+    selectChannel: selectChannel ?? configDefaults.selectChannel,
+    selectChannelProperty: selectChannelProperty ?? configDefaults.selectChannelProperty,
+  }), [])
 
   const state = useBuilderState(config, columnTypes, initialState)
 

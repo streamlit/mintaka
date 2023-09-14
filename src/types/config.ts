@@ -11,20 +11,26 @@ export interface Mode {
 
 export type NamedMode = [string, Mode]
 
+export type ModeConfig = Grouping<Mode>
 export type MarkConfig = PlainRecord<MarkPropName>
 export type EncodingConfig = PlainRecord<ChannelName>
-export type ChannelConfig = PlainRecord<ChannelPropName>
+export type ChannelPropertiesConfig = PlainRecord<ChannelPropName>
+export type MarkPropertyValuesConfig = Grouping<PropertyValues>
+export type ChannelPropertyValuesConfig = Grouping<PropertyValues>
+export type SelectMarkPropertyFunc = (name: string, state: BuilderState) => boolean
+export type SelectChannelFunc = (name: string, state: BuilderState) => boolean
+export type SelectChannelPropertyFunc = (name: string, channelName: string, state: BuilderState) => boolean
 
 export interface Config {
-  modes: Grouping<Mode>,
+  modes: ModeConfig,
   mark: MarkConfig,
   encoding: EncodingConfig,
-  channelProperties: ChannelConfig,
-  markPropertyValues: Grouping<PropertyValues>,
-  channelPropertyValues: Grouping<PropertyValues>,
-  selectMarkProperty: (name: string, state: BuilderState) => boolean,
-  selectChannel: (name: string, state: BuilderState) => boolean,
-  selectChannelProperty: (name: string, channelName: string, state: BuilderState) => boolean,
+  channelProperties: ChannelPropertiesConfig,
+  markPropertyValues: MarkPropertyValuesConfig,
+  channelPropertyValues: ChannelPropertyValuesConfig,
+  selectMarkProperty: SelectMarkPropertyFunc,
+  selectChannel: SelectChannelFunc,
+  selectChannelProperty: SelectChannelPropertyFunc,
 }
 
 export type VlFieldType =
