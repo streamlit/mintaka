@@ -37,17 +37,17 @@
   --raw-color-slate-800: 30 41 59;
   --raw-color-slate-900: 15 23 42;
   --raw-color-slate-950: 2 6 23;
-  --raw-color-pink-50: 253 242 248;
-  --raw-color-pink-100: 252 231 243;
-  --raw-color-pink-200: 251 207 232;
-  --raw-color-pink-300: 249 168 212;
-  --raw-color-pink-400: 244 114 182;
-  --raw-color-pink-500: 236 72 153;
-  --raw-color-pink-600: 219 39 119;
-  --raw-color-pink-700: 190 24 93;
-  --raw-color-pink-800: 157 23 77;
-  --raw-color-pink-900: 131 24 67;
-  --raw-color-pink-950: 80 7 36;
+  --raw-color-blue-50: 239 246 255;
+  --raw-color-blue-100: 219 234 254;
+  --raw-color-blue-200: 191 219 254;
+  --raw-color-blue-300: 147 197 253;
+  --raw-color-blue-400: 96 165 250;
+  --raw-color-blue-500: 59 130 246;
+  --raw-color-blue-600: 37 99 235;
+  --raw-color-blue-700: 29 78 216;
+  --raw-color-blue-800: 30 64 175;
+  --raw-color-blue-900: 30 58 138;
+  --raw-color-blue-950: 23 37 84;
 
   /* Full colors palette (ready to use) */
   --color-black: rgb(var(--raw-color-black));
@@ -63,17 +63,17 @@
   --color-slate-800: rgb(var(--raw-color-slate-800));
   --color-slate-900: rgb(var(--raw-color-slate-900));
   --color-slate-950: rgb(var(--raw-color-slate-950));
-  --color-pink-50: rgb(var(--raw-color-pink-50));
-  --color-pink-100: rgb(var(--raw-color-pink-100));
-  --color-pink-200: rgb(var(--raw-color-pink-200));
-  --color-pink-300: rgb(var(--raw-color-pink-300));
-  --color-pink-400: rgb(var(--raw-color-pink-400));
-  --color-pink-500: rgb(var(--raw-color-pink-500));
-  --color-pink-600: rgb(var(--raw-color-pink-600));
-  --color-pink-700: rgb(var(--raw-color-pink-700));
-  --color-pink-800: rgb(var(--raw-color-pink-800));
-  --color-pink-900: rgb(var(--raw-color-pink-900));
-  --color-pink-950: rgb(var(--raw-color-pink-950));
+  --color-blue-50: rgb(var(--raw-color-blue-50));
+  --color-blue-100: rgb(var(--raw-color-blue-100));
+  --color-blue-200: rgb(var(--raw-color-blue-200));
+  --color-blue-300: rgb(var(--raw-color-blue-300));
+  --color-blue-400: rgb(var(--raw-color-blue-400));
+  --color-blue-500: rgb(var(--raw-color-blue-500));
+  --color-blue-600: rgb(var(--raw-color-blue-600));
+  --color-blue-700: rgb(var(--raw-color-blue-700));
+  --color-blue-800: rgb(var(--raw-color-blue-800));
+  --color-blue-900: rgb(var(--raw-color-blue-900));
+  --color-blue-950: rgb(var(--raw-color-blue-950));
 }
 
 #root {
