@@ -1,7 +1,34 @@
+:root {
+  --title-size: var(--font-sm);
+  --label-size: var(--font-sm);
+  --label-size-tiny: var(--font-xs);
+  --value-size: var(--font-sm);
+  --text-color: var(--color-slate-500);
+  --border-color: var(--color-slate-200);
+  --text-color-hover: var(--color-blue-500);
+  --border-color-hover: var(--color-blue-500);
+  --input-bg-color: var(--color-slate-100);
+  --input-bg-color-hover: var(--color-slate-200);
+  --mode-bg-color: var(--color-slate-400);
+  --focus-ring: 0 0 0 3px var(--color-blue-200);
+  --scrollbar-width: 1rem;
+}
+
+.PageWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8rem;
+}
+
 .DemoWrapper {
   display: flex;
   flex-direction: column;
-  gap: 4rem;
+  gap: 2rem;
+}
+
+.DemoTitle {
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .BuilderWrapper {
@@ -16,10 +43,14 @@
   align-self: stretch;
 }
 
+.Details {
+  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-lg);
+  padding: 0.5rem;
+}
+
 .DetailsSummary {
   color: var(--color-slate-500);
-  border-top: 1px solid var(--color-slate-200);
-  padding-top: 0.5rem;
   cursor: pointer;
   font-size: var(--font-sm);
 }

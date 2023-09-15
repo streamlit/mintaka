@@ -129,10 +129,10 @@ export function MarkContainer({
   return (
     <GenericContainer
       title={"Mark"}
-      expandable={viewMode == "Adv"}
+      expandable={viewMode == "Adv" || viewMode == "Advanced"}
       startsExpanded={true}
       setCustomState={setCustomState}
-      advOptionsAvailable={viewMode == "Adv"}
+      advOptionsAvailable={viewMode == "Adv" || viewMode == "Advanced"}
       statePath={statePath}
     >
       {children}
@@ -150,10 +150,10 @@ export function ChannelContainer({
   return (
     <GenericContainer
       title={title}
-      expandable={viewMode == "Adv"}
+      expandable={viewMode == "Adv" || viewMode == "Advanced"}
       startsExpanded={AUTO_EXPANDED_CHANNELS.has(statePath[1])}
       setCustomState={setCustomState}
-      advOptionsAvailable={viewMode == "Adv"}
+      advOptionsAvailable={viewMode == "Adv" || viewMode == "Advanced"}
       statePath={statePath}
     >
       {children}
@@ -257,7 +257,7 @@ export function GenericPickerWidget({
   viewMode,
 }) {
   const parentPath = statePath.slice(0, -1)
-  const isCollapsed = viewMode == "Adv" && !customState[parentPath.join(".")]
+  const isCollapsed = (viewMode == "Adv" || viewMode == "Advanced") && !customState[parentPath.join(".")]
 
   const isPermanentChannelProp =
     statePath[0] == "encoding"

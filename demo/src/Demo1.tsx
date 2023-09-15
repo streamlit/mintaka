@@ -18,7 +18,7 @@ import irisDataset from "../data/iris.json"
 import moviesDataset from "../data/movies.json"
 import populationDataset from "../data/population.json"
 
-import styles from "./app.module.css"
+import styles from "./demo.module.css"
 
 function App() {
   const [dataset, setDataset] = useState(irisDataset)
@@ -47,6 +47,10 @@ function App() {
 
   return (
     <div className={styles.DemoWrapper}>
+      <h1 className={styles.DemoTitle}>
+        Demo 1: Default experience
+      </h1>
+
       <div className={styles.BuilderWrapper}>
         <BuilderPane
           key={key}
@@ -62,7 +66,7 @@ function App() {
         />
       </div>
 
-      <details>
+      <details className={styles.Details}>
         <summary className={styles.DetailsSummary}>
           Demo input / output
         </summary>
@@ -97,6 +101,36 @@ function App() {
       </details>
     </div>
   )
+}
+
+const modes = {
+  Base: {
+    presets: true,
+    encoding: new Set(["x", "y", "theta", "latitude", "longitude", "color"]),
+    channelProperties: new Set(["field"]),
+    else: false,
+  },
+
+  Agg: {
+    encoding: new Set(["x", "y", "theta", "latitude", "longitude", "color"]),
+    channelProperties: new Set(["aggregate", "bin", "binStep", "maxBins"]),
+    else: false,
+  },
+
+  Axis: {
+    encoding: new Set(["x", "y", "theta", "latitude", "longitude", "color"]),
+    channelProperties: new Set(["scaleType", "scheme", "domain", "range", "zero", "sort", "stack", "timeUnit", "title", "legend"]),
+    else: false,
+  },
+
+  Mark: {
+    mark: true,
+    else: false,
+  },
+
+  Adv: {
+    presets: false,
+  },
 }
 
 
