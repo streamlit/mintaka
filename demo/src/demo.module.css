@@ -56,14 +56,7 @@
 }
 
 .DetailsSummary:hover {
-  color: var(--color-pink-400);
-}
-
-.DetailsChild {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding-top: 1rem;
+  color: var(--color-blue-400);
 }
 
 .DatasetPickerWrapper {
@@ -71,17 +64,11 @@
   min-width: 300px;
 }
 
-.DatasetPickerLabel,
-.OutputLabel {
+.DatasetPickerLabel {
   color: var(--color-slate-500);
   font-weight: bold;
   font-size: var(--font-xs);
   text-transform: uppercase;
-}
-
-.OutputWrapper {
-  display: flex;
-  flex-direction: column;
 }
 
 .OutputCode {
@@ -92,4 +79,5 @@
   border-radius: var(--radius-lg);
   white-space: pre;
   display: block;
+  margin: 0.5rem 0 0 0;
 }

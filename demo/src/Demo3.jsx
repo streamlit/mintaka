@@ -36,17 +36,12 @@ function Demo3({ dataset, columnTypes }) {
 
       <details className={styles.Details}>
         <summary className={styles.DetailsSummary}>
-          Demo input / output
+          Demo output
         </summary>
 
-        <div className={styles.DetailsChild}>
-          <div className={styles.OutputWrapper}>
-            <h3 className={styles.OutputLabel}>Output</h3>
-            <code className={styles.OutputCode}>
-              { JSON.stringify(generatedSpec, undefined, 4) }
-            </code>
-          </div>
-        </div>
+        <code className={styles.OutputCode}>
+          { JSON.stringify(generatedSpec, undefined, 4) }
+        </code>
       </details>
     </div>
   )
