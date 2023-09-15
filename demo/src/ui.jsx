@@ -79,6 +79,9 @@ export function ModePicker({
     setValue(newValue)
   }, [items, setValue, setRadioValue])
 
+  if (!items || Object.keys(items).length <= 1)
+    return null
+
   return (
     <div className={styles.ModePicker}>
       {items.map((label, i) => (
@@ -129,10 +132,12 @@ export function MarkContainer({
   return (
     <GenericContainer
       title={"Mark"}
-      expandable={viewMode == "Adv" || viewMode == "Advanced"}
+      expandable={
+        viewMode == "Adv" || viewMode == "Advanced"}
       startsExpanded={true}
       setCustomState={setCustomState}
-      advOptionsAvailable={viewMode == "Adv" || viewMode == "Advanced"}
+      advOptionsAvailable={
+        viewMode == "Adv" || viewMode == "Advanced" || viewMode == "Default"}
       statePath={statePath}
     >
       {children}
@@ -147,13 +152,14 @@ export function ChannelContainer({
   setCustomState,
   viewMode,
 }) {
+  const isAdv = viewMode == "Adv" || viewMode == "Advanced"
   return (
     <GenericContainer
       title={title}
-      expandable={viewMode == "Adv" || viewMode == "Advanced"}
-      startsExpanded={AUTO_EXPANDED_CHANNELS.has(statePath[1])}
+      expandable={isAdv}
+      startsExpanded={!isAdv || AUTO_EXPANDED_CHANNELS.has(statePath[1])}
       setCustomState={setCustomState}
-      advOptionsAvailable={viewMode == "Adv" || viewMode == "Advanced"}
+      advOptionsAvailable={isAdv || viewMode == "Default"}
       statePath={statePath}
     >
       {children}
@@ -257,7 +263,7 @@ export function GenericPickerWidget({
   viewMode,
 }) {
   const parentPath = statePath.slice(0, -1)
-  const isCollapsed = (viewMode == "Adv" || viewMode == "Advanced") && !customState[parentPath.join(".")]
+  const isCollapsed = (viewMode == "Adv" || viewMode == "Advanced" || viewMode == "Default") && !customState[parentPath.join(".")]
 
   const isPermanentChannelProp =
     statePath[0] == "encoding"

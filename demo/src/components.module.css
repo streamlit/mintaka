@@ -226,8 +226,8 @@
 }
 
 .ToggleElement:hover {
-  border-color: var(--color-pink-500);
-  background-color: var(--color-pink-400);
+  border-color: var(--color-blue-500);
+  background-color: var(--color-blue-400);
 }
 
 .ToggleInput:focus ~ .ToggleElement {

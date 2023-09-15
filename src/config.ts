@@ -15,6 +15,7 @@ import {
 
 export const RANDOM_FIELD_NAME = "vlcb--random-values"
 
+// NOTE: Ordering matters.
 export const modes: ModeConfig = {
   Basic: {
     presets: true,
@@ -28,6 +29,7 @@ export const modes: ModeConfig = {
   },
 }
 
+// NOTE: Ordering matters.
 export const mark: MarkConfig = {
   "Type": "type",
   "Shape": "shape",
@@ -44,6 +46,7 @@ export const mark: MarkConfig = {
   "Tooltip": "tooltip",
 }
 
+// NOTE: Ordering matters.
 export const encoding: EncodingConfig = {
   // Important for some marks
   "Text": "text",
@@ -82,6 +85,7 @@ export const encoding: EncodingConfig = {
   "Row": "row",
 }
 
+// NOTE: Ordering matters.
 export const channelProperties: ChannelPropertiesConfig = {
   // Basic
   "Field": "field",
@@ -110,6 +114,7 @@ export const channelProperties: ChannelPropertiesConfig = {
   "Legend": "legend",
 }
 
+// NOTE: Ordering matters.
 export const markPropertyValues: MarkPropertyValuesConfig = {
   type: {
     "Point": "point",
@@ -180,6 +185,7 @@ export const markPropertyValues: MarkPropertyValuesConfig = {
   },
 }
 
+// NOTE: Ordering matters.
 export const channelPropertyValues: ChannelPropertyValuesConfig = {
   type: {
     "Auto": null,
@@ -541,6 +547,7 @@ export function selectChannelProperty(
   }
 }
 
+// NOTE: Ordering matters.
 export const UI_EXTRAS = {
   xOffset: {
     extraCols: {"Random jitter": RANDOM_FIELD_NAME},
