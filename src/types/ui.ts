@@ -1,9 +1,6 @@
 import { FunctionComponent, ReactNode, MouseEventHandler } from "react"
 
-import {
-  PlainRecord,
-  json,
-} from "./index"
+import { PlainRecord } from "./index"
 
 type Children = ReactNode | ReactNode[]
 
@@ -46,9 +43,11 @@ export type MarkContainer = LevelContainer
 export type EncodingContainer = LevelContainer
 export type PresetsContainer = LevelContainer
 
-export interface ChannelContainer extends LevelContainer {
+export interface ChannelContainerProps extends LevelContainerProps {
   title: string,
 }
+
+export type ChannelContainer = FunctionComponent<ChannelContainerProps>
 
 export type ItemizedWidgetHint =
   | "multiselect"

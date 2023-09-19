@@ -6,6 +6,7 @@ import {
   ColumnTypes,
   Config,
   NamedMode,
+  PlainRecord,
   UIComponents,
   WithCustomState,
 } from "../types"
@@ -69,7 +70,7 @@ export function EncodingBuilder({
           ui={ui}
           columns={{
             ...columnsLabelsToNames,
-            ...UI_EXTRAS[name]?.extraCols,
+            ...(UI_EXTRAS as PlainRecord<any>)[name]?.extraCols,
           }}
           namedViewMode={namedViewMode}
           customState={customState}

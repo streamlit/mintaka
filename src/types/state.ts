@@ -1,4 +1,6 @@
-import { PartialRecord, Grouping, json } from "./util"
+import { Dispatch, SetStateAction } from "react"
+
+import { PartialRecord, json } from "./util"
 import { Preset } from "./presets"
 
 export type MarkPropName =
@@ -64,11 +66,11 @@ export type ChannelPropName =
   | "zero"
 
 export type MarkPropertyValueSetter = (value: json) => void
-export type MarkPropertySetter = (propName: string) => MarkPropertyValueSetter
+export type MarkPropertySetter = (propName: MarkPropName) => MarkPropertyValueSetter
 
 export type ChannelPropertyValueSetter = (value: json) => void
-export type ChannelPropertySetter = (propName: string) => ChannelPropertyValueSetter
-export type EncodingSetter = (channelName: string) => ChannelPropertySetter
+export type ChannelPropertySetter = (propName: ChannelPropName) => ChannelPropertyValueSetter
+export type EncodingSetter = (channelName: ChannelName) => ChannelPropertySetter
 
 export type MarkState = PartialRecord<MarkPropName, json>
 export type EncodingState = PartialRecord<ChannelName, ChannelState>
@@ -81,10 +83,12 @@ export interface BuilderState {
   preset: Preset,
 
   mark: MarkState,
-  setMark: (mark: MarkState) => void,
+  // This is just the type returned by useState.
+  setMark: Dispatch<SetStateAction<MarkState>>,
 
   encoding: EncodingState,
-  setEncoding: (enc: EncodingState) => void,
+  // This is just the type returned by useState.
+  setEncoding: Dispatch<SetStateAction<EncodingState>>,
 
   getMarkSetter: MarkPropertySetter,
   getEncodingSetter: EncodingSetter,

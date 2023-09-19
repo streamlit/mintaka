@@ -485,27 +485,27 @@ export function selectChannelProperty(
     ? (channelState.field.length > 0 && channelState.field.some(f => f != null))
     : channelState.field != null
 
-  const is_color_channel_in_folded_dataset = (channelName == "color") && (
-      (Array.isArray(state?.encoding?.x?.field) && state.encoding.x.field.length > 1) ||
-      (Array.isArray(state?.encoding?.y?.field) && state.encoding.y.field.length > 1)
+  const is_color_channel_and_folded_dataset = (channelName == "color") && (
+    isArrayWith2PlusElements(state?.encoding?.x?.field) ||
+    isArrayWith2PlusElements(state?.encoding?.y?.field)
   )
 
   switch (name) {
     case "field":
-      return !is_color_channel_in_folded_dataset
+      return !is_color_channel_and_folded_dataset
 
     case "value":
-      return !fieldIsSet && !channelState.datum && !is_color_channel_in_folded_dataset
+      return !fieldIsSet && !channelState.datum && !is_color_channel_and_folded_dataset
 
     case "datum":
-      return !fieldIsSet && !channelState.value && !is_color_channel_in_folded_dataset
+      return !fieldIsSet && !channelState.value && !is_color_channel_and_folded_dataset
 
     case "type":
     case "scaleType":
-      return fieldIsSet && !is_color_channel_in_folded_dataset
+      return fieldIsSet && !is_color_channel_and_folded_dataset
 
     case "domain":
-      return !is_color_channel_in_folded_dataset
+      return !is_color_channel_and_folded_dataset
 
     case "sort":
       return fieldIsSet
@@ -514,10 +514,10 @@ export function selectChannelProperty(
       return fieldIsSet && !includes(["theta", "theta2", "radius", "radius2"], channelName)
 
     case "aggregate":
-      return fieldIsSet && !channelState.bin && !is_color_channel_in_folded_dataset
+      return fieldIsSet && !channelState.bin && !is_color_channel_and_folded_dataset
 
     case "bin":
-      return fieldIsSet && channelState.aggregate == null && !is_color_channel_in_folded_dataset
+      return fieldIsSet && channelState.aggregate == null && !is_color_channel_and_folded_dataset
 
     case "binStep":
       return channelState.bin == true && !channelState.maxBins
@@ -556,4 +556,10 @@ export const UI_EXTRAS = {
   yOffset: {
     extraCols: {"Random jitter": RANDOM_FIELD_NAME},
   },
+}
+
+function isArrayWith2PlusElements(obj: any): boolean {
+    if (!obj) return false
+    if (!Array.isArray(obj)) return false
+    return obj.length > 1
 }

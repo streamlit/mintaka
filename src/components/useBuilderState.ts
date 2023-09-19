@@ -4,12 +4,17 @@ import {
   BuilderState,
   Config,
   MarkPropertyValueSetter,
+  ChannelName,
   ChannelPropertySetter,
   ChannelPropertyValueSetter,
   json,
   MarkConfig,
+  MarkPropName,
   EncodingConfig,
   Preset,
+  EncodingState,
+  MarkState,
+  ChannelPropName,
 } from "../types"
 
 import { objectFrom } from "../collectionUtils"
@@ -19,9 +24,9 @@ export function useBuilderState(
   initialState: BuilderState,
 ): BuilderState {
   const getInitialMark = useCallback((): MarkConfig => {
-    const mark = objectFrom(config?.mark, ([label, name]: [string, string]) => [
-      name, initialState?.mark?.[name]
-    ])
+    const mark = objectFrom(config?.mark, ([_, name]: [string, string]) => [
+      name, initialState?.mark?.[name as MarkPropName] as string
+    ]) as MarkConfig
 
     // Vega requires a type in order to even draw.
     if (!mark.type) mark.type = "point"
@@ -30,14 +35,14 @@ export function useBuilderState(
   }, [])
 
   const getInitialEncoding = useCallback((): EncodingConfig => {
-    return objectFrom(config?.encoding, ([label, name]: [string, string]) => [
-      name, initialState?.encoding?.[name]
-    ])
+    return objectFrom(config?.encoding, ([_, name]: [string, string]) => [
+      name, initialState?.encoding?.[name as ChannelName] as string
+    ]) as EncodingConfig
   }, [])
 
   const [preset, setPreset] = useState<Preset>({})
-  const [mark, setMark] = useState<MarkConfig>(getInitialMark)
-  const [encoding, setEncoding] = useState<EncodingConfig>(getInitialEncoding)
+  const [mark, setMark] = useState<MarkState>(getInitialMark)
+  const [encoding, setEncoding] = useState<EncodingState>(getInitialEncoding)
 
   const reset = useCallback(() => {
     setMark(getInitialMark())
@@ -50,18 +55,18 @@ export function useBuilderState(
   ])
 
   const getMarkSetter = useCallback(
-    (key: string): MarkPropertyValueSetter => (
+    (key: MarkPropName): MarkPropertyValueSetter => (
       (value: json): void => {
         setMark({
           ...mark,
           [key]: value,
-        })
+        } as MarkState)
       }
     ), [mark, setMark])
 
   const getEncodingSetter = useCallback(
-    (channel: string): ChannelPropertySetter => (
-      (key: string): ChannelPropertyValueSetter => (
+    (channel: ChannelName): ChannelPropertySetter => (
+      (key: ChannelPropName): ChannelPropertyValueSetter => (
         (value: json): void => {
           setEncoding({
             ...encoding,
@@ -69,7 +74,7 @@ export function useBuilderState(
               ...encoding[channel],
               [key]: value,
             }
-          })
+          } as EncodingState)
         }
       )
     ), [encoding, setEncoding])

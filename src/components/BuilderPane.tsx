@@ -7,7 +7,6 @@ import {
   ColumnTypes,
   Config,
   EncodingConfig,
-  Grouping,
   MarkConfig,
   MarkPropertyValuesConfig,
   ModeConfig,

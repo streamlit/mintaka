@@ -5,7 +5,6 @@ import {
   Mode,
   NamedMode,
   PlainRecord,
-  json,
 } from "./types"
 import { objectFilter } from "./collectionUtils"
 
