@@ -1,12 +1,14 @@
-import { ReactNode, useState } from "react"
-import isEmpty from "lodash/isEmpty"
+import { ReactNode } from "react"
 
 import {
   BuilderState,
   Config,
+  MarkPropName,
   MarkPropertySetter,
   NamedMode,
+  PlainRecord,
   UIComponents,
+  WidgetHint,
   WithCustomState,
 } from "../types"
 
@@ -29,7 +31,7 @@ export function MarkBuilder({
   customState,
   setCustomState,
 }: Props): ReactNode {
-  const uiParams = {
+  const uiParams: PlainRecord<UIParam> = {
     align: { widgetHint: "select" },
     baseline: { widgetHint: "select" },
     filled: { widgetHint: "toggle" },
@@ -44,7 +46,7 @@ export function MarkBuilder({
 
   const cleanedProps = filterSection(
     "mark", config, namedViewMode,
-    (name) => config.selectMarkProperty(name, state))
+    (name) => config.selectMarkProperty(name as MarkPropName, state))
 
   if (!cleanedProps) return null
 
@@ -58,7 +60,7 @@ export function MarkBuilder({
       setCustomState={setCustomState}
     >
 
-      {Object.entries(cleanedProps).map(([label, name]) => (
+      {Object.entries(cleanedProps).map(([label, name]: [string, MarkPropName]) => (
         <ui.GenericPickerWidget
           statePath={[...statePath, name]}
           widgetHint={uiParams[name]?.widgetHint ?? "json"}
@@ -75,4 +77,8 @@ export function MarkBuilder({
 
     </ui.MarkContainer>
   )
+}
+
+interface UIParam {
+  widgetHint: WidgetHint,
 }

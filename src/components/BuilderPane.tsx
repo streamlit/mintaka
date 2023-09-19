@@ -16,6 +16,7 @@ import {
   SelectChannelPropertyFunc,
   SelectMarkPropertyFunc,
   UIComponents,
+  VLSpec,
 } from "../types"
 
 import * as configDefaults from "../config"
@@ -30,7 +31,7 @@ export interface Props {
   columnTypes: ColumnTypes,
   initialState: BuilderState, // TODO: Use VL Spec here.
   presets: Presets,
-  setGeneratedSpec: (VLSpec) => void,
+  setGeneratedSpec: (s: VLSpec) => void,
   ui: UIComponents,
 
   // Customization
@@ -73,16 +74,15 @@ export function BuilderPane({
     selectChannelProperty: selectChannelProperty ?? configDefaults.selectChannelProperty,
   }), [])
 
-  const state = useBuilderState(config, columnTypes, initialState)
+  const state = useBuilderState(config, initialState)
 
   // Some state for the developer to use however they want.
   const [customState, setCustomState] = useState({})
 
-  const [ advancedMode, setAdvancedMode ] = useState(false)
   const [ namedViewMode, setNamedViewMode ] =
     useState(Object.entries(config?.modes ?? {})?.[0])
 
-  const setViewMode = useCallback((name) => {
+  const setViewMode = useCallback((name: string) => {
     setNamedViewMode([name, config?.modes?.[name]])
   }, [ config?.modes ])
 

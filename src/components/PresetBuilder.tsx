@@ -4,6 +4,7 @@ import {
   BuilderState,
   ColumnTypes,
   NamedMode,
+  Preset,
   Presets,
   UIComponents,
   WithCustomState,
@@ -32,7 +33,7 @@ export function PresetBuilder({
 }: Props): ReactNode {
   if (!presets) presets = PRESETS
 
-  const setPreset = useCallback((preset) => {
+  const setPreset = useCallback((preset: Preset) => {
     updateStateFromPreset(state, preset, columnTypes)
   }, [state.mark, state.encoding, columnTypes])
 

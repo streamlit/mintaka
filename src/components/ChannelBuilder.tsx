@@ -1,22 +1,24 @@
-import { useState, ReactNode } from "react"
-import isEmpty from "lodash/isEmpty"
+import { ReactNode } from "react"
 
 import {
   BuilderState,
+  ChannelName,
+  ChannelPropName,
   Config,
   MarkPropertySetter,
   NamedMode,
   PlainRecord,
   StatePath,
   UIComponents,
+  WidgetHint,
   WithCustomState,
+  json,
 } from "../types"
 
-import { objectFilter } from "../collectionUtils"
 import { filterSection } from "../modeParser"
 
 export interface Props extends WithCustomState {
-  channelName: string,
+  channelName: ChannelName,
   channelLabel: string,
   columns: PlainRecord<string | null>,
   config: Config,
@@ -39,11 +41,11 @@ export function ChannelBuilder({
   namedViewMode,
   customState,
   setCustomState,
-}): ReactNode {
+}: Props): ReactNode {
   const channelState = state?.encoding?.[channelName] ?? {}
   const validValues = config.channelPropertyValues
 
-  const uiParams = {
+  const uiParams: PlainRecord<UIParam> = {
     aggregate: { widgetHint: "select" },
     bin: { widgetHint: "select" },
     binStep: { widgetHint: "number" },
@@ -57,17 +59,15 @@ export function ChannelBuilder({
     sort: { widgetHint: "select" },
     stack: { widgetHint: "select" },
     timeUnit: { widgetHint: "select" },
-    type: {
-      widgetHint: "select",
-      validValues: prepTypes(channelName, config.channelPropertyValues.type),
-    },
+    type: { widgetHint: "select" },
     value: { widgetHint: "json" },
     zero: { widgetHint: "select" },
   }
 
   const cleanedProps = filterSection(
     "channelProperties", config, namedViewMode,
-    (name) => config.selectChannelProperty(name, channelName, state))
+    (name) => config.selectChannelProperty(
+      name as ChannelPropName, channelName, state))
 
   if (!cleanedProps) return null
 
@@ -80,7 +80,7 @@ export function ChannelBuilder({
       setCustomState={setCustomState}
     >
 
-      {Object.entries(cleanedProps).map(([label, name]) => (
+      {Object.entries(cleanedProps).map(([label, name]: [string, ChannelPropName]) => (
         <ui.GenericPickerWidget
           statePath={[...statePath, channelName, name]}
           widgetHint={uiParams[name]?.widgetHint ?? "json"}
@@ -99,10 +99,7 @@ export function ChannelBuilder({
   )
 }
 
-function prepTypes(channelName, fieldTypes) {
-  if (channelName != "geoshape")
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return objectFilter(fieldTypes, ([k, n]) => n != "geojson")
-
-  return fieldTypes
+interface UIParam {
+  widgetHint: WidgetHint,
+  validValues?: PlainRecord<json>,
 }

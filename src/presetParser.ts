@@ -4,14 +4,13 @@ import merge from "lodash/merge"
 import {
   BuilderState,
   ColumnTypes,
-  EncodingState,
   FindColumnsSpec,
   Grouping,
-  JsonRecord,
   MarkPropName,
   PlainRecord,
   Preset,
   PresetColumnFilter,
+  json,
 } from "./types"
 
 import { objectFrom, deepClone } from "./collectionUtils"
@@ -29,7 +28,7 @@ export function updateStateFromPreset(
   followIfConditions(spec, columns)
 
   const mark = spec.mark as Grouping<Record<string, MarkPropName>>
-  const encodingState = objectFrom(spec.encoding, ([name, channelSpec]) =>
+  const encodingState = objectFrom(spec.encoding, ([name, channelSpec]: [string, PlainRecord<json>]) =>
     [name, {...channelSpec, field: columns[channelSpec.field as string]}]
   )
 
@@ -44,7 +43,7 @@ function findColumns(
 ): PlainRecord<string> {
   if (!findColsSpec) return {}
 
-  const columns = {}
+  const columns: PlainRecord<string> = {}
 
   for (const [varName, filter] of Object.entries(findColsSpec)) {
     const col = findColumn(
@@ -60,7 +59,7 @@ function findColumn(
   filterSpec: PresetColumnFilter,
   columnTypes: ColumnTypes,
   columnsAlreadyFound: string[],
-): string|null {
+): string|undefined {
   if (!filterSpec) return
 
   let candidateColsAndTypes = Object.entries(columnTypes)
@@ -83,7 +82,7 @@ function findColumn(
   return candidateCols.find(name => !includes(columnsAlreadyFound, name))
 }
 
-function followIfConditions(spec, columns) {
+function followIfConditions(spec: Preset, columns: PlainRecord<string>) {
   const matchingIfSpecs = Object.entries(spec.ifColumn ?? {})
     .filter(([col]) => columns[col] != null)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

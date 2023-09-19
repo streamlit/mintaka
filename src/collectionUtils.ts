@@ -6,8 +6,8 @@ export function haveAnyElementsInCommon(arr1: any[], arr2: any[]): boolean {
   return arr1.some(el1 => includes(arr2, el1))
 }
 
-type MapFn<T> = ([string, T]) => [string, T]
-type FilterFn<T> = ([string, T]) => boolean
+type MapFn<T> = ([k, v]: [string, T]) => [string, T]
+type FilterFn<T> = ([k, v]: [string, T]) => boolean
 
 export function objectFrom<T>(
   obj?: PlainRecord<T>|null,

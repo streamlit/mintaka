@@ -3,6 +3,7 @@ export type json =
     | number
     | boolean
     | null
+    | undefined // Not quite JSON, but convertible to null, so OK.
     | json[]
     | { [key: string]: json }
 
@@ -12,3 +13,5 @@ export type JsonRecord = PlainRecord<json>
 export type Grouping<T> = PlainRecord<T>
 
 export type JsonSetter = (value: json) => void
+
+export type ValueOf<T> = T[keyof T]

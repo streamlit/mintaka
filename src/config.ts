@@ -2,12 +2,13 @@ import includes from "lodash/includes"
 
 import {
   BuilderState,
-  ModeConfig,
-  MarkConfig,
-  EncodingConfig,
+  ChannelName,
   ChannelPropertiesConfig,
-  MarkPropertyValuesConfig,
   ChannelPropertyValuesConfig,
+  EncodingConfig,
+  MarkConfig,
+  MarkPropertyValuesConfig,
+  ModeConfig,
 } from "./types"
 
 // For these constants, order matters! This is the order they'll appear in the UI.
@@ -476,7 +477,7 @@ export function selectChannel(
 
 export function selectChannelProperty(
   name: string,
-  channelName: string,
+  channelName: ChannelName,
   state: BuilderState,
 ): boolean {
   const channelState = state?.encoding?.[channelName] ?? {}

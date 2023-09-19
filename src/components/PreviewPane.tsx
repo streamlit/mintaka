@@ -1,9 +1,8 @@
 import { ReactNode } from "react"
-import { Vega } from "react-vega"
+import { Vega, VisualizationSpec } from "react-vega"
 
 import {
   VLSpec,
-  UIComponents,
 } from "../types"
 
 interface PreviewProps {
@@ -29,7 +28,7 @@ export function PreviewPane({
   return (
     <Vega
       className={className}
-      spec={spec}
+      spec={spec as VisualizationSpec}
       data={{ dataset1: data }}
       />
   )

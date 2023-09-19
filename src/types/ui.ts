@@ -77,10 +77,6 @@ interface GenericPickerWidgetItemizedProps extends GenericPickerWidgetCommonProp
   items: PlainRecord<any>,
 }
 
-interface GenericPickerWidgetJsonizedProps extends GenericPickerWidgetCommonProps {
-  widgetHint: JsonizedWidgetHint,
-}
-
 interface GenericPickerWidgetAllProps extends GenericPickerWidgetCommonProps {
   widgetHint: WidgetHint,
   items: PlainRecord<any>,

@@ -2,23 +2,24 @@ import { useState, useCallback } from "react"
 
 import {
   BuilderState,
-  ColumnTypes,
   Config,
   MarkPropertyValueSetter,
   ChannelPropertySetter,
   ChannelPropertyValueSetter,
   json,
+  MarkConfig,
+  EncodingConfig,
+  Preset,
 } from "../types"
 
 import { objectFrom } from "../collectionUtils"
 
 export function useBuilderState(
   config: Config,
-  columnTypes: ColumnTypes,
   initialState: BuilderState,
 ): BuilderState {
-  const getInitialMark = useCallback(() => {
-    const mark = objectFrom(config?.mark, ([label, name]) => [
+  const getInitialMark = useCallback((): MarkConfig => {
+    const mark = objectFrom(config?.mark, ([label, name]: [string, string]) => [
       name, initialState?.mark?.[name]
     ])
 
@@ -26,17 +27,17 @@ export function useBuilderState(
     if (!mark.type) mark.type = "point"
 
     return mark
-  }, null)
+  }, [])
 
-  const getInitialEncoding = useCallback(() => {
-    return objectFrom(config?.encoding, ([label, name]) => [
+  const getInitialEncoding = useCallback((): EncodingConfig => {
+    return objectFrom(config?.encoding, ([label, name]: [string, string]) => [
       name, initialState?.encoding?.[name]
     ])
-  }, null)
+  }, [])
 
-  const [preset, setPreset] = useState(null)
-  const [mark, setMark] = useState(getInitialMark)
-  const [encoding, setEncoding] = useState(getInitialEncoding)
+  const [preset, setPreset] = useState<Preset>({})
+  const [mark, setMark] = useState<MarkConfig>(getInitialMark)
+  const [encoding, setEncoding] = useState<EncodingConfig>(getInitialEncoding)
 
   const reset = useCallback(() => {
     setMark(getInitialMark())

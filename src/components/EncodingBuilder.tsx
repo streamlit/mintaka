@@ -1,8 +1,8 @@
 import { ReactNode } from "react"
-import isEmpty from "lodash/isEmpty"
 
 import {
   BuilderState,
+  ChannelName,
   ColumnTypes,
   Config,
   NamedMode,
@@ -44,7 +44,7 @@ export function EncodingBuilder({
 
   const cleanedProps = filterSection(
     "encoding", config, namedViewMode,
-    (name) => config.selectChannel(name, state))
+    (name) => config.selectChannel(name as ChannelName, state))
 
   if (!cleanedProps) return null
 

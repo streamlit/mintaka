@@ -18,8 +18,9 @@ export type ChannelPropertiesConfig = PlainRecord<ChannelPropName>
 export type MarkPropertyValuesConfig = Grouping<PropertyValues>
 export type ChannelPropertyValuesConfig = Grouping<PropertyValues>
 export type SelectMarkPropertyFunc = (name: string, state: BuilderState) => boolean
-export type SelectChannelFunc = (name: string, state: BuilderState) => boolean
-export type SelectChannelPropertyFunc = (name: string, channelName: string, state: BuilderState) => boolean
+export type SelectChannelFunc = (name: ChannelName, state: BuilderState) => boolean
+export type SelectChannelPropertyFunc = (
+  name: ChannelPropName, channelName: ChannelName, state: BuilderState) => boolean
 
 export interface Config {
   modes: ModeConfig,
@@ -32,6 +33,11 @@ export interface Config {
   selectChannel: SelectChannelFunc,
   selectChannelProperty: SelectChannelPropertyFunc,
 }
+
+export type StructuralKey =
+  "modes" | "mark" | "encoding" | "channelProperties" | "markPropertyValues"
+export type StructuralConfig =
+  ModeConfig | MarkConfig | EncodingConfig | ChannelPropertiesConfig | MarkPropertyValuesConfig
 
 export type VlFieldType =
   | "quantitative"

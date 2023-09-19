@@ -3,8 +3,12 @@ import merge from "lodash/merge"
 
 import {
   BuilderState,
+  ChannelName,
+  ChannelPropName,
+  ChannelState,
   ColumnTypes,
   Config,
+  EncodingState,
   JsonRecord,
   PlainRecord,
   VLSpec,
@@ -32,9 +36,9 @@ export function generateVegaSpec(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
       .filter(([name]) =>
-        config.selectChannel(name, builderState))
-      .map(([name, channelState]) => {
-        const channelSpec = buildChannelSpec(name, builderState, columnTypes, config)
+        config.selectChannel(name as ChannelName, builderState))
+      .map(([name]) => {
+        const channelSpec = buildChannelSpec(name as ChannelName, builderState, columnTypes, config)
         if (channelSpec) return [name, channelSpec]
         return []
       }))
@@ -61,7 +65,7 @@ export function generateVegaSpec(
     },
   }
 
-  const transforms = []
+  const transforms: Array<PlainRecord<json>> = []
   convertFieldListToStrAndMaybeFold(encoding, transforms)
   addJitterColumn(encoding, transforms)
 
@@ -84,17 +88,18 @@ export function generateVegaSpec(
 }
 
 function buildChannelSpec(
-  channelName: string,
+  channelName: ChannelName,
   builderState: BuilderState,
   columnTypes: ColumnTypes,
   config: Config,
 ): json {
   const channelSpec: JsonRecord = {}
 
-  const channelState: JsonRecord = builderState?.encoding?.[channelName] ?? {}
+  const channelState: ChannelState = builderState?.encoding?.[channelName] ?? {}
 
   const s = Object.fromEntries(Object.entries(channelState)
-    .filter(([name]) => config.selectChannelProperty(name, channelName, builderState)))
+    .filter(([name]) => config.selectChannelProperty(
+      name as ChannelPropName, channelName as ChannelName, builderState)))
 
   if (s.aggregate != null) channelSpec.aggregate = s.aggregate
 
@@ -138,14 +143,12 @@ function buildChannelSpec(
   if (Array.isArray(s.field)) {
     // Guess type based on 0th field.
     channelSpec.type = getColType(
-      channelName,
       s.type as VlFieldType|null,
       s.field[0] as string,
       columnTypes,
     )
   } else if (s.field) {
     channelSpec.type = getColType(
-      channelName,
       s.type as VlFieldType|null,
       s.field as string,
       columnTypes,
@@ -185,7 +188,6 @@ function patchChannelSpec(
 }
 
 function getColType(
-  channelName: string,
   colType: VlFieldType|null,
   colName: string,
   columnTypes: ColumnTypes,
@@ -208,14 +210,20 @@ function convertFieldListToStrAndMaybeFold(
       if (!Array.isArray(channelSpec?.field)) return
 
       if (channelSpec.field.length > 1) {
-        foldChannel(channelName, channelSpec, encoding, transforms)
+        foldChannel(
+          channelName as ChannelName, channelSpec, encoding, transforms)
       } else {
         channelSpec.field = channelSpec.field[0]
       }
     })
 }
 
-function foldChannel(channelName, channelSpec, encoding, transforms) {
+function foldChannel(
+  channelName: ChannelName,
+  channelSpec: ChannelState,
+  encoding: EncodingState,
+  transforms: Array<PlainRecord<json>>,
+): void {
   const fields = channelSpec.field
 
   const values = VALUES + channelName
