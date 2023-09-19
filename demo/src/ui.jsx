@@ -225,6 +225,8 @@ export function GenericContainer({
     className,
   ].join(" ")
 
+  if (!children || children.length == 0) return null
+
   return (
     <div className={wrapperStyles}>
       {title && (

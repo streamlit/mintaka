@@ -224,7 +224,7 @@ function foldChannel(
   encoding: EncodingState,
   transforms: Array<PlainRecord<json>>,
 ): void {
-  const fields = channelSpec.field
+  const fields = channelSpec.field.filter(x => x != null)
 
   const values = VALUES + channelName
   const keys = KEYS + channelName
