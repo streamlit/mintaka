@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "demo": "cd demo && npm run dev",
-    "build": "tsc && vite build",
+    "build-demo": "cd demo && npm run build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "typecheck": "npx tsc --jsx react-jsx --noEmit --watch --skipLibCheck src/index.ts",
+    "typecheck": "tsc",
     "test": "vitest"
   },
   "dependencies": {
@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
+    "@types/lodash": "^4.14.198",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.59.0",

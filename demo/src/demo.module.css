@@ -43,6 +43,12 @@
   align-self: stretch;
 }
 
+.DemoInput {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .Details {
   border: 1px solid var(--color-slate-200);
   border-radius: var(--radius-lg);
@@ -57,6 +63,10 @@
 
 .DetailsSummary:hover {
   color: var(--color-blue-400);
+}
+
+.DetailsSummary + * {
+  margin: 0.5rem 0 0 0;
 }
 
 .DatasetPickerWrapper {
@@ -79,5 +89,4 @@
   border-radius: var(--radius-lg);
   white-space: pre;
   display: block;
-  margin: 0.5rem 0 0 0;
 }

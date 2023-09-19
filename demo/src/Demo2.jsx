@@ -17,7 +17,7 @@ function Demo2({ dataset, columnTypes }) {
   return (
     <div className={styles.DemoWrapper}>
       <h1 className={styles.DemoTitle}>
-        Demo 2: Custom modes
+        Demo 2: Custom modes + presets
       </h1>
 
       <div className={styles.BuilderWrapper}>

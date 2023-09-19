@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { AgGridReact } from 'ag-grid-react'; // the AG Grid React Component
 
 import {
   BuilderPane,
@@ -22,51 +23,77 @@ import moviesDataset from "../data/movies.json"
 import populationDataset from "../data/population.json"
 
 import './main.css'
+import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
+import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 import styles from "./demo.module.css"
 
 function App() {
   const [dataset, setDataset] = useState(irisDataset)
   const [columnTypes, setcolumnTypes] = useState({})
+  const [agGridColumnDefs, setAgGridColumnDefs] = useState(null)
   const [key, setKey] = useState(0)
 
-  // Handle dataset changes gracefully.
   useEffect(() => {
+    // Handle dataset changes gracefully.
     setKey(key + 1)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ dataset ])
 
-  useEffect(() => {
+    const firstRow = dataset[0]
+
     setcolumnTypes(Object.fromEntries(
-      Object.entries(dataset[0]).map(([colName, value]) => ([
+      Object.entries(firstRow).map(([colName, value]) => ([
         colName,
         { type: simpleColumnTypeDetector(value), unique: null }
       ]))))
-  }, [dataset])
+
+    setAgGridColumnDefs(Object.keys(firstRow).map(colName => ({
+      field: colName,
+    })))
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ dataset ])
+
+  const [gridOptions] = useState({
+    onFirstDataRendered: (ev) => ev.api.sizeColumnsToFit(),
+  })
 
   return (
-    <div className={styles.DemoWrapper}>
-      <div className={styles.DatasetPickerWrapper}>
-        <ui.SelectBox
-          label="Dataset for demos below:"
-          items={{
-            iris: irisDataset,
-            barley: barleyDataset,
-            cars: carsDataset,
-            disasters: disastersDataset,
-            driving: drivingDataset,
-            movies: moviesDataset,
-            population: populationDataset,
-          }}
-          value={irisDataset}
-          setValue={setDataset}
-        />
+    <div className={styles.PageWrapper}>
+      <div className={styles.DemoInput}>
+        <div className={styles.DatasetPickerWrapper}>
+          <ui.SelectBox
+            label="Dataset for demos below:"
+            items={{
+              iris: irisDataset,
+              barley: barleyDataset,
+              cars: carsDataset,
+              disasters: disastersDataset,
+              driving: drivingDataset,
+              movies: moviesDataset,
+              population: populationDataset,
+            }}
+            value={irisDataset}
+            setValue={setDataset}
+          />
+        </div>
+
+        <details className={styles.Details}>
+          <summary className={styles.DetailsSummary}>
+            Preview data
+          </summary>
+
+          <div className="ag-theme-alpine" style={{height: 500}}>
+            <AgGridReact
+              rowData={dataset}
+              columnDefs={agGridColumnDefs}
+              gridOptions={gridOptions}
+              />
+          </div>
+        </details>
       </div>
 
-      <div className={styles.PageWrapper}>
-        <Demo1 dataset={dataset} columnTypes={columnTypes} key={`demo1-${key}`} />
-        <Demo2 dataset={dataset} columnTypes={columnTypes} key={`demo2-${key}`} />
-        <Demo3 dataset={dataset} columnTypes={columnTypes} key={`demo3-${key}`} />
-      </div>
+      <Demo1 dataset={dataset} columnTypes={columnTypes} key={`demo1-${key}`} />
+      <Demo2 dataset={dataset} columnTypes={columnTypes} key={`demo2-${key}`} />
+      <Demo3 dataset={dataset} columnTypes={columnTypes} key={`demo3-${key}`} />
     </div>
   )
 }

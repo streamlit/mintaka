@@ -16,7 +16,7 @@ function Demo3({ dataset, columnTypes }) {
   return (
     <div className={styles.DemoWrapper}>
       <h1 className={styles.DemoTitle}>
-        Demo 3: Custom modes
+        Demo 3: Modeless, but showing only select properties
       </h1>
 
       <div className={styles.BuilderWrapper}>
@@ -51,7 +51,9 @@ const modes = {
   "Default": {
     mark: new Set(["type", "shape", "filled"]),
     encoding: new Set(["x", "y", "color", "size", "opacity"]),
-    channelProperties: new Set(["field", "aggregate", "bin", "stack", "sort", "scale"]),
+    channelProperties: new Set([
+      "field", "type", "aggregate", "bin", "stack", "sort", "scale",
+    ]),
     else: false,
   },
 }
