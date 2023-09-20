@@ -36,7 +36,7 @@
 .ResetButton {
   padding: 0.125rem 0.5rem;
   font-size: var(--label-size);
-  color: var(--text-color);
+  color: var(--label-color);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   user-select: none;
@@ -47,7 +47,7 @@
 .ModePickerLabel:hover,
 .ModePickerSelectedLabel:hover {
   border-color: var(--border-color-hover);
-  color: var(--text-color-hover);
+  color: var(--label-color-hover);
 }
 
 .ResetButton:focus {
@@ -81,7 +81,7 @@
   align-items: center;
   justify-content: center;
   font-size: var(--label-size-tiny);
-  color: var(--text-color);
+  color: var(--label-color);
   text-transform: uppercase;
   cursor: pointer;
   border: 1px solid var(--border-color);
@@ -128,7 +128,7 @@
   flex: auto;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
-  color: var(--text-color);
+  color: var(--label-color);
   cursor: pointer;
   background-color: var(--input-bg-color);
   font-size: var(--value-size);
@@ -155,7 +155,7 @@
 
 .MultiSelectAddSeries {
   font-size: var(--label-size-tiny);
-  color: var(--text-color);
+  color: var(--label-color);
   cursor: pointer;
   user-select: none;
   display: flex;
@@ -168,7 +168,7 @@
 }
 
 .MultiSelectAddSeries:hover {
-  color: var(--text-color-hover);
+  color: var(--label-color-hover);
   background-color: var(--input-bg-color);
 }
 
@@ -202,19 +202,6 @@
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-}
-
-.HiddenInput {
-  /* Hide for everyone except screen readers */
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
 }
 
 .ToggleElement {
@@ -261,7 +248,7 @@
   grid-column: span 1 / span 1;
   display: flex;
   font-size: var(--label-size);
-  color: var(--text-color);
+  color: var(--label-color);
   padding-left: 0.25rem;
   user-select: none;
 }
@@ -327,7 +314,7 @@
 }
 
 .GenericContainerExpandable .GenericContainerLabel:hover {
-  color: var(--text-color-hover);
+  color: var(--label-color-hover);
   background-color: var(--input-bg-color);
   border-radius: var(--radius-md);
 }
@@ -338,7 +325,7 @@
 }
 
 .GenericContainerCollapsed .GenericContainerLabel:hover {
-  color: var(--text-color-hover);
+  color: var(--label-color-hover);
 }
 
 .GenericContainerChildrenWrapper {

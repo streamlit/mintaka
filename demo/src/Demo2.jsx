@@ -7,44 +7,38 @@ import {
 } from "../../src"
 
 import * as ui from "./ui"
+import DemoOutput from "./DemoOutput"
+import DemoInfo from "./DemoInfo"
 import { PRESETS } from "./presets"
 
 import styles from "./demo.module.css"
 
-function Demo2({ dataset, columnTypes }) {
+export default function Demo({ demo, dataset, columnTypes }) {
   const [generatedSpec, setGeneratedSpec] = useState()
 
   return (
     <div className={styles.DemoWrapper}>
-      <h1 className={styles.DemoTitle}>
-        Demo 2: Custom modes + presets
-      </h1>
+      <div>
+        <DemoInfo demo={demo} />
 
-      <div className={styles.BuilderWrapper}>
-        <BuilderPane
-          columnTypes={columnTypes}
-          setGeneratedSpec={setGeneratedSpec}
-          ui={ui}
-          presets={PRESETS}
-          modes={modes}
-        />
+        <div className={styles.BuilderWrapper}>
+          <BuilderPane
+            columnTypes={columnTypes}
+            setGeneratedSpec={setGeneratedSpec}
+            ui={ui}
+            presets={PRESETS}
+            modes={modes}
+          />
 
-        <PreviewPane
-          className={styles.PreviewPane}
-          spec={generatedSpec}
-          data={dataset}
-        />
+          <PreviewPane
+            className={styles.PreviewPane}
+            spec={generatedSpec}
+            data={dataset}
+          />
+        </div>
       </div>
 
-      <details className={styles.Details}>
-        <summary className={styles.DetailsSummary}>
-          Demo output
-        </summary>
-
-        <code className={styles.OutputCode}>
-          { JSON.stringify(generatedSpec, undefined, 4) }
-        </code>
-      </details>
+      <DemoOutput generatedSpec={generatedSpec} />
     </div>
   )
 }
@@ -82,5 +76,3 @@ const modes = {
     else: true,
   },
 }
-
-export default Demo2

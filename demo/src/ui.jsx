@@ -4,6 +4,7 @@ import backspaceIconSvg from "../assets/backspace_FILL0_wght300_GRAD0_opsz48.svg
 import tuneIconSvg from "../assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
 import styles from "./components.module.css"
+import utilStyles from "./util.module.css"
 
 const AUTO_EXPANDED_CHANNELS = new Set([
   "text",
@@ -94,7 +95,7 @@ export function ModePicker({
         >
           <input
             type="radio"
-            className={styles.HiddenInput}
+            className={utilStyles.HiddenInput}
             value={label}
             onChange={onClick}
             checked={radioValue == label}

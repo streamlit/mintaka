@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useCallback, useState, useEffect } from "react"
 import { AgGridReact } from 'ag-grid-react'; // the AG Grid React Component
 
 import {
@@ -25,13 +25,36 @@ import populationDataset from "../data/population.json"
 import './main.css'
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
+
 import styles from "./demo.module.css"
+import utilStyles from "./util.module.css"
+
+const DEMOS = [
+  {
+    title: "Basic",
+    description: "Shows the default settings, plus custom chart presets.",
+    component: Demo1,
+  },
+  {
+    title: "Paginated properties",
+    description: "Splits the available chart props into 5 different pages.",
+    component: Demo2,
+  },
+  {
+    title: "Modeless",
+    description: "Shows everything in a single page, but hides less common chart props.",
+    component: Demo3,
+  }
+]
+
 
 function App() {
   const [dataset, setDataset] = useState(irisDataset)
   const [columnTypes, setcolumnTypes] = useState({})
   const [agGridColumnDefs, setAgGridColumnDefs] = useState(null)
   const [key, setKey] = useState(0)
+  const [selectedDemoIndex, setSelectedDemoIndex] = useState(0)
+  const selectedDemo = DEMOS[selectedDemoIndex]
 
   useEffect(() => {
     // Handle dataset changes gracefully.
@@ -56,12 +79,29 @@ function App() {
     onFirstDataRendered: (ev) => ev.api.sizeColumnsToFit(),
   })
 
+  const setDemoCallback = useCallback((ev) => {
+    const valueStr = ev.target.value
+    const index = parseInt(valueStr, 10)
+    setSelectedDemoIndex(index)
+  }, [ setSelectedDemoIndex ])
+
+  console.log(selectedDemoIndex)
+
   return (
     <div className={styles.PageWrapper}>
+      <div>
+        <h1>Deneb demo</h1>
+        <p>
+          Deneb is a chart builder library for <a href="https://vega.github.io/vega-lite/">Vega-Lite</a>.
+          For more information, see <a href="https://github.com/streamlit/deneb">Deneb's page on Github</a>.
+        </p>
+      </div>
+
       <div className={styles.DemoInput}>
         <div className={styles.DatasetPickerWrapper}>
+          <h2>Pick a dataset</h2>
           <ui.SelectBox
-            label="Dataset for demos below:"
+            label={null}
             items={{
               iris: irisDataset,
               barley: barleyDataset,
@@ -76,9 +116,9 @@ function App() {
           />
         </div>
 
-        <details className={styles.Details}>
+        <details>
           <summary className={styles.DetailsSummary}>
-            Preview data
+            Preview dataset
           </summary>
 
           <div className="ag-theme-alpine" style={{height: 500}}>
@@ -91,9 +131,32 @@ function App() {
         </details>
       </div>
 
-      <Demo1 dataset={dataset} columnTypes={columnTypes} key={`demo1-${key}`} />
-      <Demo2 dataset={dataset} columnTypes={columnTypes} key={`demo2-${key}`} />
-      <Demo3 dataset={dataset} columnTypes={columnTypes} key={`demo3-${key}`} />
+      <div>
+        <h2>Pick a demo</h2>
+        <ul className={styles.DemoPicker} onChange={setDemoCallback}>
+          {DEMOS.map((demo, i) => (
+            <li key={i} data-checked={i == selectedDemoIndex}>
+              <label>
+                <input
+                  type="radio"
+                  name="demoPicker"
+                  value={i}
+                  checked={i == selectedDemoIndex}
+                  className={utilStyles.HiddenInput}
+                />
+                <h3>{demo.title}</h3>
+                <p>{demo.description}</p>
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <selectedDemo.component
+        demo={selectedDemo}
+        dataset={dataset}
+        columnTypes={columnTypes}
+      />
     </div>
   )
 }
