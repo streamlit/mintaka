@@ -2,7 +2,7 @@ import styles from "./demo.module.css"
 
 export default function DemoInfo({ demo }) {
   return (
-    <div styled={styles.DemoInfo}>
+    <div className={styles.DemoInfo}>
       <h2>
         Selected demo: { demo.title }
       </h2>
@@ -11,7 +11,11 @@ export default function DemoInfo({ demo }) {
         { demo.description }
       </p>
 
-      <br />
+      <p className={styles.Note}>
+        Remember that the look-and-feel is completely configurable, since you can pass your own
+        React components!
+      </p>
+
     </div>
   )
 }

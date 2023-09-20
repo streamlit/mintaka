@@ -46,7 +46,8 @@ const modes = {
     mark: new Set(["type", "shape", "filled"]),
     encoding: new Set(["x", "y", "color", "size", "opacity"]),
     channelProperties: new Set([
-      "field", "type", "aggregate", "bin", "stack", "sort", "scale",
+      "field", "value", "type", "aggregate", "bin", "binStep", "maxBins",
+      "stack", "sort", "scale",
     ]),
     else: false,
   },

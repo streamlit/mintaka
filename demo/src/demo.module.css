@@ -70,6 +70,10 @@
   flex-direction: row;
   flex: none;
   height: 500px;
+  border: 1px solid var(--border-color);
+  border-left: none;
+  border-right: none;
+  padding: 2rem 0;
 }
 
 .PreviewPane {
@@ -129,9 +133,11 @@
   box-shadow: var(--focus-ring);
 }
 
-.DemoPicker li[data-checked=true]:hover,
 .DemoPicker li:hover {
-  border-color: var(--border-color-hover);
+  background: var(--input-bg-color);
+}
+
+.DemoPicker li[data-checked=true]:hover {
   background: var(--input-bg-color-hover);
 }
 
@@ -153,4 +159,16 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+.Note {
+  font-style: italic;
+  color: var(--label-color);
+}
+
+.DemoInfo {
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
