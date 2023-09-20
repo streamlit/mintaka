@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react"
 
-import {
-  BuilderPane,
-  PreviewPane,
-  simpleColumnTypeDetector,
-} from "../../src"
+import { BuilderPane } from "../../src"
 
 import * as ui from "./ui"
-import DemoOutput from "./DemoOutput"
 import DemoInfo from "./DemoInfo"
+import DemoOutput from "./DemoOutput"
+import PreviewPane from "./PreviewPane"
 import { PRESETS } from "./presets"
 
 import styles from "./demo.module.css"

@@ -1,21 +1,7 @@
 import { ReactNode } from "react"
-import { Vega, VisualizationSpec } from "react-vega"
+import { Vega } from "react-vega"
 
-import {
-  VLSpec,
-} from "../types"
-
-interface PreviewProps {
-  data: any,
-  spec: VLSpec,
-  className: string,
-}
-
-export function PreviewPane({
-  data,
-  spec,
-  className,
-}: PreviewProps): ReactNode {
+export default function PreviewPane({ data, spec, className }) {
   if (!spec) spec = {}
 
   if (!spec.encoding?.column
@@ -28,7 +14,7 @@ export function PreviewPane({
   return (
     <Vega
       className={className}
-      spec={spec as VisualizationSpec}
+      spec={spec}
       data={{ dataset1: data }}
       />
   )

@@ -211,7 +211,11 @@ function convertFieldListToStrAndMaybeFold(
 
       if (channelSpec.field.length > 1) {
         foldChannel(
-          channelName as ChannelName, channelSpec, encoding, transforms)
+          channelName as ChannelName,
+          channelSpec,
+          channelSpec.field as string[],
+          encoding,
+          transforms)
       } else {
         channelSpec.field = channelSpec.field[0]
       }
@@ -221,10 +225,11 @@ function convertFieldListToStrAndMaybeFold(
 function foldChannel(
   channelName: ChannelName,
   channelSpec: ChannelState,
+  channelFields: string[],
   encoding: EncodingState,
   transforms: Array<PlainRecord<json>>,
 ): void {
-  const fields = channelSpec.field.filter(x => x != null)
+  const fields = channelFields.filter(x => x != null)
 
   const values = VALUES + channelName
   const keys = KEYS + channelName

@@ -1,11 +1,9 @@
 import { useCallback, useState, useEffect } from "react"
-import { AgGridReact } from 'ag-grid-react'; // the AG Grid React Component
+import { AgGridReact } from '@ag-grid-community/react';
+import { ModuleRegistry } from '@ag-grid-community/core';
+import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 
-import {
-  BuilderPane,
-  PreviewPane,
-  simpleColumnTypeDetector,
-} from "../../src"
+import { simpleColumnTypeDetector } from "../../src"
 
 import * as ui from "./ui"
 import { PRESETS } from "./presets"
@@ -19,15 +17,18 @@ import carsDataset from "../data/cars.json"
 import disastersDataset from "../data/disasters.json"
 import drivingDataset from "../data/driving.json"
 import irisDataset from "../data/iris.json"
-import moviesDataset from "../data/movies.json"
 import populationDataset from "../data/population.json"
 
 import './main.css'
-import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
-import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
+import '@ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
+import '@ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 
 import styles from "./demo.module.css"
 import utilStyles from "./util.module.css"
+
+ModuleRegistry.registerModules([
+    ClientSideRowModelModule,
+]);
 
 const DEMOS = [
   {
@@ -85,8 +86,6 @@ function App() {
     setSelectedDemoIndex(index)
   }, [ setSelectedDemoIndex ])
 
-  console.log(selectedDemoIndex)
-
   return (
     <div className={styles.PageWrapper}>
       <div>
@@ -108,7 +107,6 @@ function App() {
               cars: carsDataset,
               disasters: disastersDataset,
               driving: drivingDataset,
-              movies: moviesDataset,
               population: populationDataset,
             }}
             value={irisDataset}
@@ -141,7 +139,7 @@ function App() {
                   type="radio"
                   name="demoPicker"
                   value={i}
-                  checked={i == selectedDemoIndex}
+                  defaultChecked={i == selectedDemoIndex}
                   className={utilStyles.HiddenInput}
                 />
                 <h3>{demo.title}</h3>
