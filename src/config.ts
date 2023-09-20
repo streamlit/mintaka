@@ -481,9 +481,13 @@ export function selectChannelProperty(
   state: BuilderState,
 ): boolean {
   const channelState = state?.encoding?.[channelName] ?? {}
+
   const fieldIsSet = Array.isArray(channelState.field)
     ? (channelState.field.length > 0 && channelState.field.some(f => f != null))
     : channelState.field != null
+
+  const valueOrDatumIsSet = !fieldIsSet
+    && (channelState.value != null || channelState.datum != null)
 
   const is_color_channel_and_folded_dataset = (channelName == "color") && (
     isArrayWith2PlusElements(state?.encoding?.x?.field) ||
@@ -492,7 +496,7 @@ export function selectChannelProperty(
 
   switch (name) {
     case "field":
-      return !is_color_channel_and_folded_dataset
+      return !is_color_channel_and_folded_dataset && !valueOrDatumIsSet
 
     case "value":
       return !fieldIsSet && !channelState.datum && !is_color_channel_and_folded_dataset
