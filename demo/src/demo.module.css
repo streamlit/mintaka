@@ -65,6 +65,25 @@
   gap: 1rem;
 }
 
+.PreviewDatasetToggle {
+  display: inline;
+  align-self: start;
+  justify-self: start;
+  padding-left: 0.75rem;
+  position: relative;
+}
+
+.PreviewDatasetToggle::before {
+  content: "⏵ ";
+  position: absolute;
+  left: 0;
+  transition: 200ms transform;
+}
+
+details[open] > .PreviewDatasetToggle::before {
+  transform: rotateZ(90deg);
+}
+
 .BuilderWrapper {
   display: flex;
   flex-direction: row;
@@ -89,7 +108,6 @@
 
 .DatasetPickerWrapper {
   align-self: start;
-  min-width: 300px;
 }
 
 .DatasetPickerLabel {
@@ -158,7 +176,7 @@
 .DemoWrapper {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 4rem;
 }
 
 .Note {

@@ -42,7 +42,7 @@ const DEMOS = [
     component: Demo2,
   },
   {
-    title: "Modeless",
+    title: "Modeless and filtered",
     description: "Shows everything in a single page, but hides less common chart props.",
     component: Demo3,
   }
@@ -115,7 +115,7 @@ function App() {
         </div>
 
         <details>
-          <summary className={styles.DetailsSummary}>
+          <summary className={styles.PreviewDatasetToggle}>
             Preview dataset
           </summary>
 
