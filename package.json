@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "demo": "cd demo && npm run dev",
+    "setup-demo": "cd demo && npm install",
     "build-demo": "cd demo && npm run build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
