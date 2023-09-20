@@ -54,7 +54,7 @@
   background: var(--input-bg-color-hover);
 }
 
-.PageWrapper summary:focus {
+.PageWrapper summary:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }
@@ -128,7 +128,7 @@
   background: var(--input-bg-color);
 }
 
-.DemoPicker li:has(:focus) {
+.DemoPicker li:has(:focus-visible) {
   border-color: var(--border-color-hover);
   box-shadow: var(--focus-ring);
 }
