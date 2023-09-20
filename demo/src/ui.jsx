@@ -535,7 +535,7 @@ export function Toggle({
           type="checkbox"
           key={/* This is a hack so presets work */ value}
           defaultChecked={value == values[1]}
-          className={[styles.ToggleInput, styles.HiddenInput].join(" ")}
+          className={[styles.ToggleInput, utilStyles.HiddenInput].join(" ")}
           onClick={toggle}
         />
         <div className={styles.ToggleElement}></div>
