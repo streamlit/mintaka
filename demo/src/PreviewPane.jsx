@@ -1,4 +1,3 @@
-import { ReactNode } from "react"
 import { Vega } from "react-vega"
 
 export default function PreviewPane({ data, spec, className }) {

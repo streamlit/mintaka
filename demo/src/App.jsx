@@ -3,21 +3,20 @@ import { AgGridReact } from '@ag-grid-community/react';
 import { ModuleRegistry } from '@ag-grid-community/core';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 
-import { simpleColumnTypeDetector } from "../../src"
-
-import * as ui from "./ui"
-import { PRESETS } from "./presets"
-
-import Demo1 from "./Demo1"
-import Demo2 from "./Demo2"
-import Demo3 from "./Demo3"
-
 import barleyDataset from "../data/barley.json"
 import carsDataset from "../data/cars.json"
 import disastersDataset from "../data/disasters.json"
 import drivingDataset from "../data/driving.json"
 import irisDataset from "../data/iris.json"
 import populationDataset from "../data/population.json"
+
+import { simpleColumnTypeDetector } from "../../src"
+
+import * as ui from "./ui"
+
+import Demo1 from "./Demo1"
+import Demo2 from "./Demo2"
+import Demo3 from "./Demo3"
 
 import './main.css'
 import '@ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
@@ -89,7 +88,10 @@ function App() {
   return (
     <div className={styles.PageWrapper}>
       <div>
-        <h1>Deneb demo</h1>
+        <h1>
+          Deneb demo
+        </h1>
+
         <p>
           Deneb is a chart builder library for <a href="https://vega.github.io/vega-lite/">Vega-Lite</a>.
           For more information, see <a href="https://github.com/streamlit/deneb">Deneb's page on Github</a>.

@@ -12,8 +12,9 @@ export default function DemoInfo({ demo }) {
       </p>
 
       <p className={styles.Note}>
-        Remember that the look-and-feel is completely configurable, since you can pass your own
-        React components!
+        Deneb is the component on the left of the chart, but you can place it anywhere you want. And
+        remember that the look-and-feel is completely configurable, since you can pass your own
+        React components.
       </p>
 
     </div>

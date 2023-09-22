@@ -1,11 +1,11 @@
 :root {
-  --value-size: var(--font-sm);
   --body-color: var(--color-slate-700);
   --link-color: var(--color-blue-500);
   --label-color: var(--color-slate-500);
   --label-color-hover: var(--color-blue-500);
   --label-size: var(--font-sm);
   --label-size-tiny: var(--font-xs);
+  --value-size: var(--font-sm);
   --border-color: var(--color-slate-200);
   --border-color-hover: var(--color-blue-500);
   --input-bg-color: var(--color-slate-100);
@@ -21,6 +21,10 @@
   flex-direction: column;
   gap: 4rem;
   color: var(--body-color);
+}
+
+.PageWrapper p {
+  max-width: 50em;
 }
 
 .PageWrapper p a {
@@ -120,7 +124,7 @@ details[open] > .PreviewDatasetToggle::before {
 .OutputCode {
   color: var(--color-slate-800);
   background-color: var(--color-slate-100);
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
   padding: 1rem;
   border-radius: var(--radius-lg);
   white-space: pre;
@@ -182,6 +186,7 @@ details[open] > .PreviewDatasetToggle::before {
 .Note {
   font-style: italic;
   color: var(--label-color);
+  font-size: var(--font-sm);
 }
 
 .DemoInfo {

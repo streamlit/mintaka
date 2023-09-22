@@ -35,7 +35,9 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-      - name: Install dependencies
+      - name: Install Deneb dependencies
+        run: npm install
+      - name: Install demo dependencies
         run: npm run setup-demo
       - name: Build
         run: npm run build-demo
