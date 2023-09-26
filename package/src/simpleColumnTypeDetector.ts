@@ -5,8 +5,8 @@ import { VlFieldType } from "./types"
 // arrowdata.schema.fields[0].type
 // arrowjs.type :: DataType.isDate, isTime, isTimestamp, isBool, isInt, isFloat
 
-export function simpleColumnTypeDetector(exampleCell: any): VlFieldType {
-  switch (getTypeAsStr(exampleCell)) {
+export function simpleColumnTypeDetector(exampleValue: any): VlFieldType {
+  switch (getTypeAsStr(exampleValue)) {
     case "number":
       return "quantitative"
 
@@ -18,7 +18,7 @@ export function simpleColumnTypeDetector(exampleCell: any): VlFieldType {
   }
 }
 
-export type TypeStr =
+type TypeStr =
   | "object"
   | "date"
   | "unknown"

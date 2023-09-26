@@ -17,9 +17,9 @@ import { objectFrom, deepClone } from "./collectionUtils"
 
 export function updateStateFromPreset(
   state: BuilderState,
-  presetSpec: Preset,
+  presetSpec?: Preset|null,
   columnTypes: ColumnTypes,
-) {
+): void {
   if (presetSpec == null) return null
 
   const spec = deepClone(presetSpec as PlainRecord<any>)
@@ -82,7 +82,7 @@ function findColumn(
   return candidateCols.find(name => !includes(columnsAlreadyFound, name))
 }
 
-function followIfConditions(spec: Preset, columns: PlainRecord<string>) {
+function followIfConditions(spec: Preset, columns: PlainRecord<string>): void {
   const matchingIfSpecs = Object.entries(spec.ifColumn ?? {})
     .filter(([col]) => columns[col] != null)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
