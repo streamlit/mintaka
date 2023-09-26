@@ -10,7 +10,7 @@ import drivingDataset from "../data/driving.json"
 import irisDataset from "../data/iris.json"
 import populationDataset from "../data/population.json"
 
-import { simpleColumnTypeDetector } from "../../src"
+import { simpleColumnTypeDetector } from "deneb"
 
 import * as ui from "./ui"
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 
-import { BuilderPane } from "../../src"
+import { BuilderPane } from "deneb"
 
 import * as ui from "./ui"
 import DemoOutput from "./DemoOutput"

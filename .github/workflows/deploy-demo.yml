@@ -35,8 +35,6 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-      - name: Install Deneb dependencies
-        run: npm install
       - name: Install demo dependencies
         run: npm run setup-demo
       - name: Build
@@ -47,7 +45,7 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload dist repository
-          path: './demo/dist'
+          path: './dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
