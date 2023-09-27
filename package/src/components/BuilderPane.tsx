@@ -22,7 +22,7 @@ import * as configDefaults from "../config"
 import { generateVegaSpec } from "../vegaBuilder"
 import { updateStateFromPreset } from "../presetParser"
 
-import { useBuilderState } from "./useBuilderState"
+import { useBuilderState } from "../hooks/useBuilderState"
 import { LayerBuilder } from "./LayerBuilder"
 import { PresetBuilder } from "./PresetBuilder"
 
