@@ -18,6 +18,8 @@ import Demo1 from "./Demo1"
 import Demo2 from "./Demo2"
 import Demo3 from "./Demo3"
 
+import logo from "../assets/logo.svg"
+
 import './main.css'
 import '@ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import '@ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
@@ -87,15 +89,24 @@ function App() {
 
   return (
     <div className={styles.PageWrapper}>
-      <div>
+      <div className={styles.Intro}>
+
+        <img src={logo} style={{ width: "6rem", height: "6rem"}} />
+
         <h1>
-          Deneb demo
+          Deneb
         </h1>
 
-        <p>
-          Deneb is a chart builder library for <a href="https://vega.github.io/vega-lite/">Vega-Lite</a>.
-          For more information, see <a href="https://github.com/streamlit/deneb">Deneb's page on Github</a>.
-        </p>
+        <div className={styles.Text}>
+          <p>
+            Deneb is an open-source chart builder library for <a href="https://vega.github.io/vega-lite/">Vega-Lite</a> written in React.
+            For information on how to use it, check out <a href="https://github.com/streamlit/deneb">the README on Github</a>.
+          </p>
+
+          <p>
+            Below is a demo of Deneb in action.
+          </p>
+        </div>
       </div>
 
       <div className={styles.DemoInput}>
