@@ -392,19 +392,20 @@ export function MultiSelect({
   return (
     <WidgetWrapper label={label}>
       {multiselectValue.map((selectboxValue, i) => (
-        <select
-          key={i}
-          data-index={i}
-          className={styles.MultiSelect}
-          value={selectboxValue}
-          onChange={setValueFromLabel}
-        >
-          {Object.keys(items).map(label => (
-            <option value={label} key={label}>
-              {label}
-            </option>
-          ))}
-        </select>
+        <div className={styles.MultiSelect} key={i}>
+          <select
+            data-index={i}
+            className={styles.MultiSelectEl}
+            value={selectboxValue}
+            onChange={setValueFromLabel}
+          >
+            {Object.keys(items).map(label => (
+              <option value={label} key={label}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
       ))}
 
       <a className={styles.MultiSelectAddSeries} onClick={addSeries}>
@@ -448,17 +449,19 @@ export function SelectBox({
 
   return (
     <WidgetWrapper label={label}>
-      <select
-        className={styles.SelectBox}
-        value={selectboxValue}
-        onChange={setValueFromLabel}
-      >
-        {Object.keys(items).map(label => (
-          <option value={label} key={label}>
-            {label}
-          </option>
-        ))}
-      </select>
+      <div className={styles.SelectBox}>
+        <select
+          className={styles.SelectBoxEl}
+          value={selectboxValue}
+          onChange={setValueFromLabel}
+        >
+          {Object.keys(items).map(label => (
+            <option value={label} key={label}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </div>
     </WidgetWrapper>
   )
 }
@@ -490,9 +493,9 @@ export function TextInput({
       : JSON.stringify(value)
 
   return (
-    <WidgetWrapper label={label} className={styles.TextInput}>
+    <WidgetWrapper label={label}>
       <input
-        className={styles.TextInputInput}
+        className={styles.TextInputEl}
         type="text"
         value={valueString ?? ""}
         onChange={setValueFromString}
@@ -550,13 +553,12 @@ export function HtmlLabel(props) {
 
 export function WidgetWrapper({
   label,
-  className,
   children,
 }) {
   return (
     <>
       { label &&
-        <HtmlLabel className={[styles.WidgetWrapperLabel, className].join(" ")}>
+        <HtmlLabel className={styles.WidgetWrapperLabel}>
           {label}
         </HtmlLabel>
       }

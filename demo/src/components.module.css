@@ -121,10 +121,11 @@
   display: none;
 }
 
-.SelectBox,
-.MultiSelect,
-.TextInputInput {
-  padding: 0.125rem 0;
+.SelectBoxEl,
+.MultiSelectEl,
+.TextInputEl {
+  appearance: none;
+  padding: 0.125rem 0.5rem;
   flex: auto;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
@@ -134,20 +135,41 @@
   font-size: var(--value-size);
 }
 
-.SelectBox,
-.MultiSelect {
+.SelectBoxEl,
+.MultiSelectEl {
   user-select: none;
 }
 
-.SelectBox:hover,
-.MultiSelect:hover,
-.TextInputInput:hover {
+.SelectBox,
+.MultiSelect {
+  position: relative;
+  display: flex;
+}
+
+.SelectBox::after,
+.MultiSelect::after {
+  content: "›";
+  rotate: 90deg;
+  position: absolute;
+  color: var(--label-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  bottom: 0;
+  right: 0.5rem;
+  transition: 200ms transform;
+}
+
+.SelectBoxEl:hover,
+.MultiSelectEl:hover,
+.TextInputEl:hover {
   background-color: var(--input-bg-color-hover);
 }
 
-.SelectBox:focus-visible,
-.MultiSelect:focus-visible,
-.TextInputInput:focus-visible {
+.SelectBoxEl:focus-visible,
+.MultiSelectEl:focus-visible,
+.TextInputEl:focus-visible {
   border-color: var(--border-color-hover);
   outline: none;
   box-shadow: var(--focus-ring);
@@ -172,11 +194,7 @@
   background-color: var(--input-bg-color);
 }
 
-.TextInput {
-  position: relative;
-}
-
-.TextInputInput {
+.TextInputEl {
   cursor: unset;
   padding-left: 0.25rem;
 }

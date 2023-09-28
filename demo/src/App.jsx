@@ -7,7 +7,7 @@ import barleyDataset from "../data/barley.json"
 import carsDataset from "../data/cars.json"
 import disastersDataset from "../data/disasters.json"
 import drivingDataset from "../data/driving.json"
-import irisDataset from "../data/iris.json"
+import penguinsDataset from "../data/penguins.json"
 import populationDataset from "../data/population.json"
 
 import { simpleColumnTypeDetector } from "deneb"
@@ -51,7 +51,7 @@ const DEMOS = [
 
 
 function App() {
-  const [dataset, setDataset] = useState(irisDataset)
+  const [dataset, setDataset] = useState(penguinsDataset)
   const [columnTypes, setcolumnTypes] = useState({})
   const [agGridColumnDefs, setAgGridColumnDefs] = useState(null)
   const [key, setKey] = useState(0)
@@ -115,14 +115,14 @@ function App() {
           <ui.SelectBox
             label={null}
             items={{
-              iris: irisDataset,
+              penguins: penguinsDataset,
               barley: barleyDataset,
               cars: carsDataset,
               disasters: disastersDataset,
               driving: drivingDataset,
               population: populationDataset,
             }}
-            value={irisDataset}
+            value={penguinsDataset}
             setValue={setDataset}
           />
         </div>

@@ -275,16 +275,27 @@ export const PRESETS = {
       tooltip: true,
     },
     findColumns: {
-      A: {},
-      B: {},
+      A1: { type: ["nominal"] },
+      B1: { type: ["nominal"] },
+      A2: {},
+      B2: {},
       C: { type: ["quantitative"] },
     },
     encoding: {
-      x: { field: "A", bin: true },
-      y: { field: "B" , bin: true },
-      color: { field: "A" , aggregate: "count" },
+      x: { field: "A2", bin: true },
+      y: { field: "B2" , bin: true },
+      color: { field: "A2" , aggregate: "count" },
     },
     ifColumn: {
+      A1: {
+        encoding: {
+          x: { field: "A1", bin: null },
+          color: { field: "A1", aggregate: "count" },
+        },
+      },
+      B1: {
+        encoding: { y: { field: "B1", bin: null } }
+      },
       C: {
         encoding: { color: { field: "C", aggregate: "sum" } },
       },

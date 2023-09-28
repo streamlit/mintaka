@@ -55,8 +55,14 @@
 
 .PageWrapper summary {
   cursor: pointer;
+  appearance: none;
+  display: block;
   border-radius: var(--radius-md);
   font-size: var(--label-size);
+}
+
+.PageWrapper ::-webkit-details-marker {
+  display: none;
 }
 
 .PageWrapper summary:hover {
