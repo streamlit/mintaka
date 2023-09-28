@@ -23,12 +23,13 @@ import { generateVegaSpec } from "../vegaBuilder"
 import { updateStateFromPreset } from "../presetParser"
 
 import { useBuilderState } from "../hooks/useBuilderState"
+
 import { LayerBuilder } from "./LayerBuilder"
 import { PresetBuilder } from "./PresetBuilder"
 
 export interface Props {
   columnTypes: ColumnTypes,
-  initialState: BuilderState, // TODO: Use VL Spec here.
+  initialState: BuilderState|null, // TODO: Use VL Spec here.
   presets: Presets,
   setGeneratedSpec: (s: VLSpec) => void,
   ui: UIComponents,
