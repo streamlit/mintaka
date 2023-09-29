@@ -159,6 +159,7 @@
   bottom: 0;
   right: 0.5rem;
   transition: 200ms transform;
+  pointer-events: none;
 }
 
 .SelectBoxEl:hover,
