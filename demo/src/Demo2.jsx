@@ -6,7 +6,6 @@ import * as ui from "./ui"
 import DemoOutput from "./DemoOutput"
 import DemoInfo from "./DemoInfo"
 import PreviewPane from "./PreviewPane"
-import { PRESETS } from "./presets"
 
 import styles from "./demo.module.css"
 
@@ -23,7 +22,6 @@ export default function Demo({ demo, dataset, columnTypes }) {
             columnTypes={columnTypes}
             setGeneratedSpec={setGeneratedSpec}
             ui={ui}
-            presets={PRESETS}
             modes={modes}
           />
 
