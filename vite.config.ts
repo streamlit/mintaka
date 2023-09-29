@@ -11,8 +11,8 @@ export default defineConfig({
     port: 3456
   },
   // URL subpath when published to Github pages.
-  // i.e. https://streamlit.github.io/deneb/
-  base: '/deneb/',
+  // i.e. https://streamlit.github.io/mintaka/
+  base: '/mintaka/',
   test: {
     environment: 'jsdom',
     setupFiles: [

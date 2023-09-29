@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 
-import { BuilderPane } from "deneb"
+import { BuilderPane } from "mintaka"
 
 import * as ui from "./ui"
 import DemoInfo from "./DemoInfo"

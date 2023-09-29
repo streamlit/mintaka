@@ -1,5 +1,5 @@
 {
-  "name": "deneb demo",
+  "name": "mintaka demo",
   "private": true,
   "version": "0.5.0",
   "scripts": {
@@ -15,7 +15,7 @@
     "@ag-grid-community/core": "^30.1.0",
     "@ag-grid-community/react": "^30.1.0",
     "@ag-grid-community/styles": "^30.1.0",
-    "deneb": "file:./package/",
+    "mintaka": "file:./package/",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

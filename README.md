@@ -1,6 +1,6 @@
-# Deneb - a chart builder for Vega-Lite
+# Mintaka - a chart builder for Vega-Lite
 
-Deneb is a headless React-based chart builder that produces Vega-Lite specs.
+Mintaka is a headless React-based chart builder that produces Vega-Lite specs.
 
 This is still very much a work in progress. Not enough tests. Almost no documentation.
 

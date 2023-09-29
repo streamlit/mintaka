@@ -8,7 +8,7 @@ export default function DemoOutput({ generatedSpec }) {
       </h2>
 
       <p>
-        Deneb outputs a Vega-Lite chart spec, as shown below.
+        Mintaka outputs a Vega-Lite chart spec, as shown below.
       </p>
 
       <code className={styles.OutputCode}>

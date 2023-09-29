@@ -10,7 +10,7 @@ import drivingDataset from "../data/driving.json"
 import penguinsDataset from "../data/penguins.json"
 import populationDataset from "../data/population.json"
 
-import { simpleColumnTypeDetector } from "deneb"
+import { simpleColumnTypeDetector } from "mintaka"
 
 import * as ui from "./ui"
 
@@ -94,17 +94,17 @@ function App() {
         <img src={logo} style={{ width: "6rem", height: "6rem"}} />
 
         <h1>
-          Deneb
+          Mintaka
         </h1>
 
         <div className={styles.Text}>
           <p>
-            Deneb is an open-source chart builder library for <a href="https://vega.github.io/vega-lite/">Vega-Lite</a> written in React.
-            For information on how to use it, check out <a href="https://github.com/streamlit/deneb">the README on Github</a>.
+            Mintaka is an open-source chart builder library for <a href="https://vega.github.io/vega-lite/">Vega-Lite</a> written in React.
+            For information on how to use it, check out <a href="https://github.com/streamlit/mintaka">the README on Github</a>.
           </p>
 
           <p>
-            Below is a demo of Deneb in action.
+            Below is a demo of Mintaka in action.
           </p>
         </div>
       </div>
