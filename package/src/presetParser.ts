@@ -88,5 +88,5 @@ function followIfConditions(spec: Preset, columns: PlainRecord<string>): void {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .map(([_, spec]) => spec)
 
-  if (matchingIfSpecs) merge(spec, ...matchingIfSpecs.reverse())
+  if (matchingIfSpecs) merge(spec, ...matchingIfSpecs)
 }

@@ -2,53 +2,93 @@ import { Presets } from "./types"
 
 export const PRESETS: Presets = {
   "Scatter": {
+    findColumns: {
+      xCol: { type: ["quantitative", null] },
+      yCol: { type: ["quantitative", null] },
+      colorCol: { type: ["nominal", "ordinal", null], maxUnique: 20 },
+    },
+
     mark: {
       type: "point",
       tooltip: true,
     },
-    findColumns: {
-      A: {},
-      B: {},
-      C: {},
-    },
+
     encoding: {
-      x: { field: "A" },
-      y: { field: "B" },
-      color: { field: "C" },
+      x: { zero: false },
+      y: { zero: false },
+    },
+
+    ifColumn: {
+      xCol: {
+        encoding: { x: { field: "xCol" } }
+      },
+      yCol: {
+        encoding: { y: { field: "yCol" } }
+      },
+      colorCol: {
+        encoding: { color: { field: "colorCol" } },
+      },
     },
   },
 
   "Line": {
+    findColumns: {
+      xCol: { type: ["quantitative", null] },
+      yCol: { type: ["quantitative", null] },
+      colorCol: { type: ["nominal", "ordinal", null], maxUnique: 20 },
+    },
+
     mark: {
       type: "line",
       tooltip: true,
     },
-    findColumns: {
-      A: {},
-      B: {},
-    },
-    encoding: {
-      x: { field: "A" },
-      y: { field: "B" },
+
+    encoding: {},
+
+    ifColumn: {
+      xCol: {
+        encoding: { x: { field: "xCol" } }
+      },
+      yCol: {
+        encoding: { y: { field: "yCol" } }
+      },
+      colorCol: {
+        encoding: { color: { field: "colorCol" } },
+      },
     },
   },
 
   "Bar": {
+    findColumns: {
+      xNom: { type: ["nominal", "ordinal"] },
+      xQuant: { type: ["quantitative"] },
+      colorCol: { type: ["nominal", "ordinal"], maxUnique: 20 },
+    },
+
     mark: {
       type: "bar",
       tooltip: true,
     },
-    findColumns: {
-      A: {},
-      B: { type: [ 'nominal'] },
-    },
+
     encoding: {
-      x: { field: "A" },
-      y: { field: "A", aggregate: "count", stack: false },
+      y: { stack: false },
     },
+
     ifColumn: {
-      "B": {
-        encoding: { color: { field: "B" } },
+      xQuant: {
+        encoding: {
+          x: { field: "xQuant" },
+          y: { field: "xQuant", aggregate: "sum" },
+        },
+      },
+      xNom: {
+        encoding: {
+          x: { field: "xNom" },
+          y: { field: "xNom", aggregate: "count" },
+        },
+      },
+      colorCol: {
+        encoding: { color: { field: "colorCol" } },
       },
     }
   },

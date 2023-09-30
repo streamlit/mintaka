@@ -7,26 +7,27 @@ export const PRESETS = {
       size: 100,
       opacity: 0.5,
     },
-    findColumns: {
-      A: { type: ["quantitative", null] },
-      B: { type: ["quantitative", null] },
-      C1: { type: ["nominal", "ordinal"], maxUnique: 10 },
-      C2: { type: ["quantitative", null] },
-    },
+
     encoding: {
-      x: { field: "A", zero: false },
-      y: { field: "B", zero: false },
+      x: { zero: false },
+      y: { zero: false },
     },
+
+    findColumns: {
+      xCol: { type: ["quantitative", null] },
+      yCol: { type: ["quantitative", null] },
+      colorCol: { type: ["nominal", "ordinal", null], maxUnique: 20 },
+    },
+
     ifColumn: {
-      C1: {
-        encoding: {
-          color: { field: "C1" },
-        }
+      xCol: {
+        encoding: { x: { field: "xCol" } }
       },
-      C2: {
-        encoding: {
-          color: { field: "C2" },
-        }
+      yCol: {
+        encoding: { y: { field: "yCol" } }
+      },
+      colorCol: {
+        encoding: { color: { field: "colorCol" } },
       },
     },
   },
@@ -36,15 +37,23 @@ export const PRESETS = {
       type: "line",
       tooltip: true,
     },
+
     findColumns: {
-      A: { type: ["quantitative", "temporal", null] },
-      B: { type: ["quantitative", null] },
-      C: { type: ["nominal", "ordinal"], maxUnique: 10 },
+      xCol: { type: ["quantitative", null] },
+      yCol: { type: ["quantitative", null] },
+      colorCol: { type: ["nominal", "ordinal", null], maxUnique: 20 },
     },
-    encoding: {
-      x: { field: "A" },
-      y: { field: "B" },
-      color: { field: "C" },
+
+    ifColumn: {
+      xCol: {
+        encoding: { x: { field: "xCol" } }
+      },
+      yCol: {
+        encoding: { y: { field: "yCol" } }
+      },
+      colorCol: {
+        encoding: { color: { field: "colorCol" } },
+      },
     },
   },
 
@@ -53,16 +62,27 @@ export const PRESETS = {
       type: "area",
       tooltip: true,
     },
-    findColumns: {
-      A: { type: ["quantitative", null] },
-      B: { type: ["quantitative", null] },
-      C: { type: ["nominal", "ordinal"], maxUnique: 10 },
-    },
+
     encoding: {
-      x: { field: "A" },
-      y: { field: "B", stack: false },
-      color: { field: "C" },
-      opacity: { value: 0.75 },
+      y: { stack: false },
+    },
+
+    findColumns: {
+      xCol: { type: ["quantitative", null] },
+      yCol: { type: ["quantitative", null] },
+      colorCol: { type: ["nominal", "ordinal", null], maxUnique: 20 },
+    },
+
+    ifColumn: {
+      xCol: {
+        encoding: { x: { field: "xCol" } }
+      },
+      yCol: {
+        encoding: { y: { field: "yCol" } }
+      },
+      colorCol: {
+        encoding: { color: { field: "colorCol" } },
+      },
     },
   },
 
@@ -71,129 +91,131 @@ export const PRESETS = {
       type: "area",
       tooltip: true,
     },
-    findColumns: {
-      A: { type: ["quantitative", null] },
-      B: { type: ["quantitative", null] },
-      C: { type: ["nominal", "ordinal"], maxUnique: 10 },
-    },
+
     encoding: {
-      x: { field: "A" },
-      y: { field: "B", aggregate: "max", stack: true },
-      color: { field: "C" },
+      y: { stack: true },
+    },
+
+    findColumns: {
+      xCol: { type: ["quantitative", null] },
+      yCol: { type: ["quantitative", null] },
+      colorCol: { type: ["nominal", "ordinal", null], maxUnique: 20 },
+    },
+
+    ifColumn: {
+      xCol: {
+        encoding: { x: { field: "xCol" } }
+      },
+      yCol: {
+        encoding: { y: { field: "yCol" } }
+      },
+      colorCol: {
+        encoding: { color: { field: "colorCol" } },
+      },
     },
   },
 
   "Bar chart": {
+    findColumns: {
+      xNom: { type: ["nominal", "ordinal"] },
+      xQuant: { type: ["quantitative"] },
+      colorCol: { type: ["nominal", "ordinal"], maxUnique: 20 },
+    },
+
     mark: {
       type: "bar",
       tooltip: true,
     },
-    findColumns: {
-      A1: { type: ["quantitative"] },
-      C1: { type: ["nominal", "ordinal"], maxUnique: 10 },
-      A2: {},
-      C2: {},
-    },
+
     encoding: {
+      y: { stack: false },
     },
+
     ifColumn: {
-      A1: {
+      xQuant: {
         encoding: {
-          x: { field: "A1", bin: true },
-          y: { field: "A1", aggregate: "count", stack: false },
+          x: { field: "xQuant" },
+          y: { field: "xQuant", aggregate: "sum" },
         },
       },
-      A2: {
+      xNom: {
         encoding: {
-          x: { field: "A2", type: "nominal", sort: "ascending" },
-          y: { field: "A2", aggregate: "count", stack: false },
+          x: { field: "xNom" },
+          y: { field: "xNom", aggregate: "count" },
         },
       },
-      C1: {
-        encoding: {
-          color: { field: "C1", bin: null },
-        },
-      },
-      C2: {
-        encoding: {
-          color: { field: "C2", bin: true },
-        },
+      colorCol: {
+        encoding: { color: { field: "colorCol" } },
       },
     }
   },
 
   "Horizontal bar chart": {
+    findColumns: {
+      yNom: { type: ["nominal", "ordinal"] },
+      yQuant: { type: ["quantitative"] },
+      colorCol: { type: ["nominal", "ordinal"], maxUnique: 20 },
+    },
+
     mark: {
       type: "bar",
       tooltip: true,
     },
-    findColumns: {
-      A1: { type: ["quantitative"] },
-      C1: { type: ["nominal", "ordinal"], maxUnique: 10 },
-      A2: {},
-      C2: {},
-    },
+
     encoding: {
+      x: { stack: false },
     },
+
     ifColumn: {
-      A1: {
+      yQuant: {
         encoding: {
-          x: { field: "A1", aggregate: "count", stack: false },
-          y: { field: "A1", bin: true },
+          y: { field: "yQuant" },
+          x: { field: "yQuant", aggregate: "sum" },
         },
       },
-      A2: {
+      yNom: {
         encoding: {
-          x: { field: "A2", aggregate: "count", stack: false },
-          y: { field: "A2", type: "nominal", sort: "ascending" },
+          y: { field: "yNom" },
+          x: { field: "yNom", aggregate: "count" },
         },
       },
-      C1: {
-        encoding: {
-          color: { field: "C1", bin: null },
-          yOffset: { field: "C1", bin: null },
-        },
-      },
-      C2: {
-        encoding: {
-          color: { field: "C2", bin: true },
-          yOffset: { field: "C2", bin: true }
-        },
+      colorCol: {
+        encoding: { color: { field: "colorCol" } },
       },
     }
   },
 
   "Stacked bar chart": {
+    findColumns: {
+      xNom: { type: ["nominal", "ordinal"] },
+      xQuant: { type: ["quantitative"] },
+      colorCol: { type: ["nominal", "ordinal"], maxUnique: 20 },
+    },
+
     mark: {
       type: "bar",
       tooltip: true,
     },
-    findColumns: {
-      A1: { type: ["quantitative"] },
-      C1: { type: ["nominal", "ordinal"], maxUnique: 10 },
-      A2: {},
-      C2: {},
-    },
+
     encoding: {
+      y: { stack: true },
     },
+
     ifColumn: {
-      A1: {
+      xQuant: {
         encoding: {
-          y: { field: "A1", aggregate: "count" },
-          x: { field: "A1", bin: true },
+          x: { field: "xQuant" },
+          y: { field: "xQuant", aggregate: "sum" },
         },
       },
-      A2: {
+      xNom: {
         encoding: {
-          x: { field: "A2", type: "nominal", sort: "ascending" },
-          y: { field: "A2", aggregate: "count" },
+          x: { field: "xNom" },
+          y: { field: "xNom", aggregate: "count" },
         },
       },
-      C1: {
-        encoding: { color: { field: "C1", bin: null } },
-      },
-      C2: {
-        encoding: { color: { field: "C2", bin: true } },
+      colorCol: {
+        encoding: { color: { field: "colorCol" } },
       },
     }
   },
@@ -203,31 +225,35 @@ export const PRESETS = {
       type: "arc",
       tooltip: true,
     },
+
+    encoding: {},
+
     findColumns: {
-      A1: { type: ["quantitative", null] },
-      B1: { type: ["nominal", "ordinal"], maxUnique: 20 },
-      A2: {},
-      B2: {},
+      thetaQuant: { type: ["quantitative"] },
+      colorNom: { type: ["nominal", "ordinal"], maxUnique: 20 },
+      thetaNom: { type: ["nominal", "ordinal"] },
+      colorQuant: { type: ["quantitative"] },
     },
+
     ifColumn: {
-      A1: {
+      thetaNom: {
         encoding: {
-          theta: { field: "A1", aggregate: "sum" },
+          theta: { field: "thetaNom", aggregate: "count" },
         }
       },
-      B1: {
+      colorQuant: {
         encoding: {
-          color: { field: "B1", bin: null },
+          color: { field: "colorQuant", bin: true },
         }
       },
-      A2: {
+      thetaQuant: {
         encoding: {
-          theta: { field: "A2", aggregate: "count" },
+          theta: { field: "thetaQuant", aggregate: "sum" },
         }
       },
-      B2: {
+      colorNom: {
         encoding: {
-          color: { field: "B2", bin: true },
+          color: { field: "colorNom", bin: null },
         }
       },
     }
@@ -239,31 +265,35 @@ export const PRESETS = {
       radius2: { expr: "min(containerSize()[0], containerSize()[1]) / 3" },
       tooltip: true,
     },
+
+    encoding: {},
+
     findColumns: {
-      A1: { type: ["quantitative", null] },
-      B1: { type: ["nominal", "ordinal"], maxUnique: 20 },
-      A2: {},
-      B2: {},
+      thetaQuant: { type: ["quantitative"] },
+      colorNom: { type: ["nominal", "ordinal"], maxUnique: 20 },
+      thetaNom: { type: ["nominal", "ordinal"] },
+      colorQuant: { type: ["quantitative"] },
     },
+
     ifColumn: {
-      A1: {
+      thetaNom: {
         encoding: {
-          theta: { field: "A1", aggregate: "sum" },
+          theta: { field: "thetaNom", aggregate: "count" },
         }
       },
-      B1: {
+      colorQuant: {
         encoding: {
-          color: { field: "B1", bin: null },
+          color: { field: "colorQuant", bin: true },
         }
       },
-      A2: {
+      thetaQuant: {
         encoding: {
-          theta: { field: "A2", aggregate: "count" },
+          theta: { field: "thetaQuant", aggregate: "sum" },
         }
       },
-      B2: {
+      colorNom: {
         encoding: {
-          color: { field: "B2", bin: true },
+          color: { field: "colorNom", bin: null },
         }
       },
     }
@@ -274,30 +304,44 @@ export const PRESETS = {
       type: "rect",
       tooltip: true,
     },
+
     findColumns: {
-      A1: { type: ["nominal"] },
-      B1: { type: ["nominal"] },
-      A2: {},
-      B2: {},
-      C: { type: ["quantitative"] },
+      xNom: { type: ["nominal", "ordinal"] },
+      yNom: { type: ["nominal", "ordinal"] },
+      xAny: {},
+      yAny: {},
+      colorCol: { type: ["quantitative"] },
     },
-    encoding: {
-      x: { field: "A2", bin: true },
-      y: { field: "B2" , bin: true },
-      color: { field: "A2" , aggregate: "count" },
-    },
+
+    encoding: {},
+
     ifColumn: {
-      A1: {
+      xAny: {
         encoding: {
-          x: { field: "A1", bin: null },
-          color: { field: "A1", aggregate: "count" },
+          x: { field: "xAny", bin: true },
+          color: { field: "xAny" , aggregate: "count" },
         },
       },
-      B1: {
-        encoding: { y: { field: "B1", bin: null } }
+
+      yAny: {
+        encoding: {
+          y: { field: "yAny" , bin: true },
+        },
       },
-      C: {
-        encoding: { color: { field: "C", aggregate: "sum" } },
+
+      xNom: {
+        encoding: {
+          x: { field: "xNom", bin: null },
+          color: { field: "xNom", aggregate: "count" },
+        },
+      },
+
+      yNom: {
+        encoding: { y: { field: "yNom", bin: null } }
+      },
+
+      colorCol: {
+        encoding: { color: { field: "colorCol", aggregate: "sum" } },
       },
     },
   },
