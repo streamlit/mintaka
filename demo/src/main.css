@@ -75,9 +75,3 @@
   --color-blue-900: rgb(var(--raw-color-blue-900));
   --color-blue-950: rgb(var(--raw-color-blue-950));
 }
-
-#root {
-  margin: 0 auto;
-  padding: 2rem;
-  max-width: 1280px;
-}

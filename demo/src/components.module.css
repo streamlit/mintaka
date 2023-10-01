@@ -2,8 +2,13 @@
   display: flex;
   flex-direction: column;
   flex: none;
-  width: 300px;
   padding: 0.25rem;
+}
+
+@media (min-width: 700px) {
+  .BuilderWrapper {
+    width: 300px;
+  }
 }
 
 .LayerContainer {
