@@ -4,52 +4,59 @@ Mintaka is a headless React-based chart builder that produces Vega-Lite specs.
 
 This is still very much a work in progress. Not enough tests. Almost no documentation.
 
-## Trying it out
 
-You can run the demo app with:
+## How to use it in your project
 
-```sh
-npm install
-npm run demo
-```
+1. Install Mintaka:
+
+   ```sh
+   npm install mintaka
+   ```
+
+1. Import the `BuilderPane` component:
+
+   ```js
+   import { BuilderPane } from "mintaka"
+   import { Vega } from "react-vega"
+   ```
+
+1. Insert the `<BuilderPane>` component somewhere in your React project:
+
+   ```jsx
+   const [ generatedSpec, setGeneratedSpec ] = useState(null)
+
+   return (
+     ...
+
+     <BuilderPane
+         columnTypes={columnTypes}  // <-- Tell us what your data looks like 
+         setGeneratedSpec={setGeneratedSpec}
+         initialSpec={null}  // <-- Pass an initial VL spec for us to load into the builder
+         ui={{
+           BuilderContainer: MyContainer,  // <-- Bring your own UI components
+           ChannelContainer: MyChannelContainer,
+           GenericPickerWidget: MyGenericPickerWidget,
+           ...
+         }}
+         config={{
+           ...  // <-- Which VL properties to show, how to group them, etc.
+                //     This has a pretty rich structure, and it's still in motion,
+                //     so I'm leaving it out of this spec for the time being! 
+         }}
+         presets={{
+           "Pie chart": {...},  // Specify presets.
+           ...
+         }}
+       />
+
+     <Vega data={myDataGoesHere} spec={generatedSpec} />  // <-- Just pass the spec into VegaLite
+
+     ...
+   )
+   ```
+
 
 ## More info
-
-- **The chart builder is a single React component:**
-
-    ```jsx
-    const [ generatedSpec, setGeneratedSpec ] = useState(null)
-
-    return (
-      ...
-
-      <BuilderPane
-          columnTypes={columnTypes}  // <-- Tell us what your data looks like 
-          setGeneratedSpec={setGeneratedSpec}
-          initialSpec={null}  // <-- Pass an initial VL spec for us to load into the builder
-          ui={{
-            BuilderContainer: MyContainer,  // <-- Bring your own UI components
-            ChannelContainer: MyChannelContainer,
-            GenericPickerWidget: MyGenericPickerWidget,
-            ...
-          }}
-          config={{
-            ...  // <-- Which VL properties to show, how to group them, etc.
-                 //     This has a pretty rich structure, and it's still in motion,
-                 //     so I'm leaving it out of this spec for the time being! 
-          }}
-          presets={{
-            "Pie chart": {...},  // Specify presets.
-            ...
-          }}
-        />
-
-      <MyVegaLiteComponent spec={generatedSpec} />  // <-- Just pass the spec into VegaLite
-
-      ...
-    )
-    ```
-
 
 - **The builder doesn’t draw the chart itself.** It just outputs a VL spec, and which you draw by passing into your own Vega-Lite component. Or you can use one I provide. Up to you!
 
@@ -121,6 +128,7 @@ npm run demo
           },
         }}
         ```
+
 
 ## UI Structure
 
