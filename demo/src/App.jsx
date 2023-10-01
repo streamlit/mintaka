@@ -99,9 +99,20 @@ function App() {
 
         <div className={styles.Text}>
           <p>
-            Mintaka is an open-source chart builder library for <a href="https://vega.github.io/vega-lite/">Vega-Lite</a> written in React.
-            For information on how to use it, check out <a href="https://github.com/streamlit/mintaka">the README on Github</a>.
+            Mintaka is an open-source chart builder library for{" "}
+            <a href="https://vega.github.io/vega-lite/">Vega-Lite</a> written in React.
           </p>
+
+          <p>
+            What makes it special is that it's ultra-configurable:
+          </p>
+
+          <ul>
+            <li><strong>Mintaka uses <em>your</em> React components.</strong> All labels, selectboxes, etc, that is draws are provided by you.</li>
+            <li>You choose which Vega-Lite properties to expose to the user.</li>
+            <li>You can specify smart chart presets, so users don't need to know anything about Vega-Lite.</li>
+            <li>And much more! See <a href="https://github.com/streamlit/mintaka">the README on GitHub</a> for more.</li>
+          </ul>
 
           <p>
             Below is a demo of Mintaka in action.

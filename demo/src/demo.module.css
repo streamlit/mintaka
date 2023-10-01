@@ -38,20 +38,30 @@
   }
 }
 
-.PageWrapper p {
+.Text p {
   max-width: 50em;
 }
 
-.PageWrapper p a {
+.Text a {
   color: var(--link-color);
 }
 
-.PageWrapper p a:hover {
+.Text a:hover {
   text-decoration: underline;
 }
 
-.PageWrapper strong {
+.Text strong {
   font-weight: bold;
+}
+
+.Text em {
+  font-style: italic;
+}
+
+.Text ul > li{
+  display: list-item;
+  list-style-type: disc;
+  margin-left: 1rem;
 }
 
 .PageWrapper h1 {
@@ -141,6 +151,7 @@ details[open] > .PreviewDatasetToggle::before {
   align-self: stretch;
   height: 32rem;
   overflow-x: auto;
+  overflow-x: overlay;
 }
 
 .PreviewPane > div {
