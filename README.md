@@ -65,7 +65,7 @@ What makes it special is that it's ultra-configurable:
    ```
 
 
-## More info
+## More info  
 
 - **The builder doesn’t draw the chart itself.** It just outputs a VL spec, and which you draw by passing into your own Vega-Lite component. Or you can use one I provide. Up to you!
 
@@ -137,6 +137,11 @@ What makes it special is that it's ultra-configurable:
           },
         }}
         ```
+
+
+_Proper documentation_ is coming soon! In the meantime, check out [the demo code](https://github.com/streamlit/mintaka/blob/main/demo/src/Demo1.jsx)
+for a full-featured example of how to use Mintaka. I also find the [TypeScript type defs](https://github.com/streamlit/mintaka/tree/main/package/src/types)
+very useful in lieu of docs.
 
 
 ## UI Structure
