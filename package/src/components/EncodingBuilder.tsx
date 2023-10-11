@@ -11,7 +11,6 @@ import {
   WithCustomState,
 } from "../types"
 
-import { UI_EXTRAS } from "../config"
 import { showSection, filterSection } from "../modeParser"
 
 import { ChannelBuilder } from "./ChannelBuilder"
@@ -68,10 +67,7 @@ export function EncodingBuilder({
           state={state}
           statePath={statePath}
           ui={ui}
-          columns={{
-            ...columnsLabelsToNames,
-            ...(UI_EXTRAS as PlainRecord<any>)[name]?.extraCols,
-          }}
+          columns={columnsLabelsToNames}
           namedViewMode={namedViewMode}
           customState={customState}
           setCustomState={setCustomState}

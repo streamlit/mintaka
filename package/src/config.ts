@@ -14,8 +14,6 @@ import {
 // For these constants, order matters! This is the order they'll appear in the UI.
 // (string keys in JS Objects are guaranteed to be ordered by insertion order)
 
-export const RANDOM_FIELD_NAME = "vlcb--random-values"
-
 // NOTE: Ordering matters.
 export const modes: ModeConfig = {
   Basic: {
@@ -550,16 +548,6 @@ export function selectChannelProperty(
     default:
       return true
   }
-}
-
-// NOTE: Ordering matters.
-export const UI_EXTRAS = {
-  xOffset: {
-    extraCols: {"Random jitter": RANDOM_FIELD_NAME},
-  },
-  yOffset: {
-    extraCols: {"Random jitter": RANDOM_FIELD_NAME},
-  },
 }
 
 function isArrayWith2PlusElements(obj: any): boolean {

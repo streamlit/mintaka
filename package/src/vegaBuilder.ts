@@ -17,7 +17,6 @@ import {
 } from "./types"
 
 import { haveAnyElementsInCommon } from "./collectionUtils"
-import { RANDOM_FIELD_NAME } from "./config"
 
 export function generateVegaSpec(
   builderState: BuilderState,
@@ -67,7 +66,6 @@ export function generateVegaSpec(
 
   const transforms: Array<PlainRecord<json>> = []
   convertFieldListToStrAndMaybeFold(encoding, transforms)
-  addJitterColumn(encoding, transforms)
 
   if (transforms.length > 0) {
     builderSpec.transform = transforms
@@ -193,7 +191,6 @@ function getColType(
   columnTypes: ColumnTypes,
 ): VlFieldType {
   if (colType != null) return colType
-  if (colName == RANDOM_FIELD_NAME) return "quantitative"
 
   return columnTypes[colName]?.type
 }
@@ -245,19 +242,5 @@ function foldChannel(
 
   transforms.push(
     { fold: fields, as: [ keys, values ] }
-  )
-}
-
-function addJitterColumn(
-  encoding: PlainRecord<PlainRecord<json>>,
-  transforms: Array<PlainRecord<json>>,
-): void {
-  const hasRandomField = Object.values(encoding)
-    .some(channelSpec => channelSpec?.field == RANDOM_FIELD_NAME)
-
-  if (!hasRandomField) return
-
-  transforms.push(
-    { calculate: "random()", as: RANDOM_FIELD_NAME },
   )
 }
