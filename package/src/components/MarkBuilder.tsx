@@ -1,4 +1,4 @@
-import { ReactNode } from "react"
+import React, { ReactNode } from "react"
 
 import {
   BuilderState,
@@ -14,15 +14,15 @@ import {
 
 import { filterSection } from "../modeParser"
 
-export interface Props extends WithCustomState {
+export interface Props<S> extends WithCustomState<S> {
   config: Config,
-  ui: UIComponents,
+  ui: UIComponents<S>,
   state: BuilderState,
   makeSetter: MarkPropertySetter,
   namedViewMode: NamedMode,
 }
 
-export function MarkBuilder({
+export function MarkBuilder<S>({
   config,
   ui,
   state,
@@ -30,7 +30,7 @@ export function MarkBuilder({
   namedViewMode,
   customState,
   setCustomState,
-}: Props): ReactNode {
+}: Props<S>): ReactNode {
   const uiParams: PlainRecord<UIParam> = {
     align: { widgetHint: "select" },
     baseline: { widgetHint: "select" },

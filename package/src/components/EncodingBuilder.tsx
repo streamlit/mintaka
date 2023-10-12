@@ -1,4 +1,4 @@
-import { ReactNode } from "react"
+import React, { ReactNode } from "react"
 
 import {
   BuilderState,
@@ -6,7 +6,6 @@ import {
   ColumnTypes,
   Config,
   NamedMode,
-  PlainRecord,
   UIComponents,
   WithCustomState,
 } from "../types"
@@ -15,15 +14,15 @@ import { showSection, filterSection } from "../modeParser"
 
 import { ChannelBuilder } from "./ChannelBuilder"
 
-export interface Props extends WithCustomState {
+export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,
   config: Config,
   state: BuilderState,
-  ui: UIComponents,
+  ui: UIComponents<S>,
   namedViewMode: NamedMode,
 }
 
-export function EncodingBuilder({
+export function EncodingBuilder<S>({
   columnTypes,
   config,
   state,
@@ -31,7 +30,7 @@ export function EncodingBuilder({
   namedViewMode,
   customState,
   setCustomState,
-}: Props): ReactNode {
+}: Props<S>): ReactNode {
   const columnsLabelsToNames = {
     "": null,
     ...Object.fromEntries(Object.keys(columnTypes)

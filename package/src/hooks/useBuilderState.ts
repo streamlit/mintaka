@@ -21,9 +21,10 @@ import { objectFrom } from "../collectionUtils"
 
 export function useBuilderState(
   config: Config,
-  initialState: BuilderState,
+  initialState?: BuilderState,
 ): BuilderState {
   const getInitialMark = useCallback((): MarkConfig => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const mark = objectFrom(config?.mark, ([_, name]: [string, string]) => [
       name, initialState?.mark?.[name as MarkPropName] as string
     ]) as MarkConfig
@@ -32,12 +33,15 @@ export function useBuilderState(
     if (!mark.type) mark.type = "point"
 
     return mark
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const getInitialEncoding = useCallback((): EncodingConfig => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return objectFrom(config?.encoding, ([_, name]: [string, string]) => [
       name, initialState?.encoding?.[name as ChannelName] as string
     ]) as EncodingConfig
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const [preset, setPreset] = useState<Preset>({})

@@ -1,4 +1,4 @@
-.BuilderContainer {
+.MintakaContainer {
   display: flex;
   flex-direction: column;
   flex: none;
@@ -6,7 +6,7 @@
 }
 
 @media (min-width: 700px) {
-  .BuilderWrapper {
+  .MintakaContainer {
     width: 300px;
   }
 }
@@ -27,7 +27,8 @@
   flex-direction: column;
 }
 
-.ToolbarContainer {
+.MegaToolbar,
+.ButtonToolbar {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -36,6 +37,15 @@
   z-index: 10;
   box-shadow: 0 0 1rem 0.5rem var(--color-white);
   padding-right: var(--scrollbar-width);
+}
+
+.ViewModeToolbar {
+  display: flex;
+  flex-direction: row;
+  z-index: 10;
+  box-shadow: 0 0 0.5rem 0.5rem var(--color-white);
+  padding-right: var(--scrollbar-width);
+  padding-bottom: 1rem;
 }
 
 .ResetButton {
@@ -79,6 +89,11 @@
   flex: 1;
 }
 
+.ViewModeToolbar .ModePickerLabel,
+.ViewModeToolbar .ModePickerSelectedLabel {
+  flex: 1;
+}
+
 .ModePickerLabel,
 .ModePickerSelectedLabel {
   display: flex;
@@ -92,8 +107,8 @@
   border: 1px solid var(--border-color);
   border-left-width: 0.5px;
   border-right-width: 0.5px;
-  padding: 0 0.25rem;
   user-select: none;
+  padding: 0.125rem 0.25rem;
 }
 
 .ModePickerLabel:first-child,

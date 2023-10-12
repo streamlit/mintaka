@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, MouseEventHandler } from "react"
+import { Dispatch, FunctionComponent, ReactNode, SetStateAction } from "react"
 
 import { PlainRecord } from "./index"
 
@@ -8,46 +8,45 @@ interface SimpleContainerProps {
   children: Children,
 }
 
-export interface WithCustomState {
-  customState?: any,
-  setCustomState?: Setter<any>,
+export interface WithCustomState<S> {
+  customState?: S | undefined,
+  // This is just the type returned by useState.
+  setCustomState?: Dispatch<SetStateAction<S | undefined>>,
 }
 
-export type Setter<T> = (value: T) => void
-export type BuilderContainer = FunctionComponent<SimpleContainerProps>
+export type Setter<V> = (value: V) => void
+export type MintakaContainer = FunctionComponent<SimpleContainerProps>
 export type LayerContainer = FunctionComponent<SimpleContainerProps>
-export type ToolbarContainer = FunctionComponent<SimpleContainerProps>
 
-export interface ResetButtonProps {
-  onClick: MouseEventHandler,
+export interface UtilBlockProps {
+  // Utils for settings and viewing the current view mode.
+  modes: string[] | null,
+  currentMode: string,
+  setMode: Setter<string>,
+
+  // Utils for resetting the chart builder.
+  reset: () => void,
 }
 
-export type ResetButton = FunctionComponent<ResetButtonProps>
+export type UtilBlock = FunctionComponent<UtilBlockProps>
 
-export interface ModePickerProps {
-  items: string[],
-  value: string,
-  setValue: Setter<string>,
-}
-
-export type ModePicker = FunctionComponent<ModePickerProps>
 export type StatePath = Array<string>
 
-export interface LevelContainerProps extends SimpleContainerProps, WithCustomState {
+export interface LevelContainerProps<S> extends SimpleContainerProps, WithCustomState<S> {
   statePath: StatePath,
   viewMode: string,
 }
 
-type LevelContainer = FunctionComponent<LevelContainerProps>
-export type MarkContainer = LevelContainer
-export type EncodingContainer = LevelContainer
-export type PresetsContainer = LevelContainer
+type LevelContainer<S> = FunctionComponent<LevelContainerProps<S>>
+export type MarkContainer<S> = LevelContainer<S>
+export type EncodingContainer<S> = LevelContainer<S>
+export type PresetsContainer<S> = LevelContainer<S>
 
-export interface ChannelContainerProps extends LevelContainerProps {
+export interface ChannelContainerProps<S> extends LevelContainerProps<S> {
   title: string,
 }
 
-export type ChannelContainer = FunctionComponent<ChannelContainerProps>
+export type ChannelContainer<S> = FunctionComponent<ChannelContainerProps<S>>
 
 export type ItemizedWidgetHint =
   | "multiselect"
@@ -63,40 +62,39 @@ export type JsonizedWidgetHint =
 
 export type WidgetHint = ItemizedWidgetHint | JsonizedWidgetHint
 
-interface GenericPickerWidgetCommonProps extends WithCustomState {
+interface GenericPickerWidgetCommonProps<V, S> extends WithCustomState<S> {
   statePath: StatePath,
   label: string,
-  value: any,
-  setValue: Setter<any>,
+  value: V,
+  setValue: Dispatch<SetStateAction<V>>,
   viewMode: string,
 }
 
-interface GenericPickerWidgetItemizedProps extends GenericPickerWidgetCommonProps {
+interface GenericPickerWidgetItemizedProps<V, S> extends GenericPickerWidgetCommonProps<V, S> {
   widgetHint: ItemizedWidgetHint,
-  items: PlainRecord<any>,
+  items: PlainRecord<V>,
 }
 
-interface GenericPickerWidgetAllProps extends GenericPickerWidgetCommonProps {
+interface GenericPickerWidgetAllProps<V, S> extends GenericPickerWidgetCommonProps<V, S> {
   widgetHint: WidgetHint,
-  items: PlainRecord<any>,
+  items: PlainRecord<V>,
 }
 
-export type GenericPickerWidgetProps =
-  | GenericPickerWidgetItemizedProps
-  | GenericPickerWidgetCommonProps
-  | GenericPickerWidgetAllProps
+export type GenericPickerWidgetProps<V, S> =
+  | GenericPickerWidgetItemizedProps<V, S>
+  | GenericPickerWidgetAllProps<V, S>
+  | GenericPickerWidgetCommonProps<V, S>
 
-export type GenericPickerWidget = FunctionComponent<GenericPickerWidgetProps>
+export type GenericPickerWidget<V, S> = FunctionComponent<GenericPickerWidgetProps<V, S>>
 
-export interface UIComponents {
-  BuilderContainer: BuilderContainer,
-  ResetButton: ResetButton,
-  ChannelContainer: ChannelContainer,
-  EncodingContainer: EncodingContainer,
-  GenericPickerWidget: GenericPickerWidget,
+export interface UIComponents<S> {
+  MintakaContainer: MintakaContainer,
+  ChannelContainer: ChannelContainer<S>,
+  EncodingContainer: EncodingContainer<S>,
+  GenericPickerWidget: GenericPickerWidget<any, S>,
   LayerContainer: LayerContainer,
-  MarkContainer: MarkContainer,
-  ModePicker: ModePicker,
-  PresetsContainer: PresetsContainer,
-  ToolbarContainer: ToolbarContainer,
+  MarkContainer: MarkContainer<S>,
+  PresetsContainer: PresetsContainer<S>,
+  TopUtilBlock: UtilBlock,
+  BottomUtilBlock: UtilBlock,
 }

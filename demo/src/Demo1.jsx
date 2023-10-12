@@ -1,12 +1,23 @@
 import { useState, useEffect } from "react"
 
-import { BuilderPane } from "mintaka"
+import { Mintaka } from "mintaka"
 
-import * as ui from "./ui"
 import DemoInfo from "./DemoInfo"
 import DemoOutput from "./DemoOutput"
 import PreviewPane from "./PreviewPane"
 import { PRESETS } from "./presets"
+
+import {
+  MintakaContainer,
+  ChannelContainer,
+  EmptyBlock,
+  EncodingContainer,
+  GenericPickerWidget,
+  LayerContainer,
+  MarkContainer,
+  MegaToolbar,
+  PresetsContainer,
+} from "./ui"
 
 import styles from "./demo.module.css"
 
@@ -19,10 +30,20 @@ export default function Demo({ demo, dataset, columnTypes }) {
         <DemoInfo demo={demo} />
 
         <div className={styles.BuilderWrapper}>
-          <BuilderPane
+          <Mintaka
             columnTypes={columnTypes}
             setGeneratedSpec={setGeneratedSpec}
-            ui={ui}
+            ui={{
+              MintakaContainer,
+              ChannelContainer,
+              EncodingContainer,
+              GenericPickerWidget,
+              LayerContainer,
+              MarkContainer,
+              PresetsContainer,
+              TopUtilBlock: EmptyBlock,
+              BottomUtilBlock: MegaToolbar,
+            }}
             presets={PRESETS}
           />
 

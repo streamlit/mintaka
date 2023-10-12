@@ -550,6 +550,7 @@ export function selectChannelProperty(
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isArrayWith2PlusElements(obj: any): boolean {
     if (!obj) return false
     if (!Array.isArray(obj)) return false

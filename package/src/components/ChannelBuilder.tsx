@@ -1,4 +1,4 @@
-import { ReactNode } from "react"
+import React, { ReactNode } from "react"
 
 import {
   BuilderState,
@@ -17,7 +17,8 @@ import {
 
 import { filterSection } from "../modeParser"
 
-export interface Props extends WithCustomState {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface Props<S> extends WithCustomState<S> {
   channelName: ChannelName,
   channelLabel: string,
   columns: PlainRecord<string | null>,
@@ -25,11 +26,11 @@ export interface Props extends WithCustomState {
   makeSetter: ChannelPropertySetter,
   state: BuilderState,
   statePath: StatePath,
-  ui: UIComponents,
+  ui: UIComponents<S>,
   namedViewMode: NamedMode,
 }
 
-export function ChannelBuilder({
+export function ChannelBuilder<S>({
   channelName,
   channelLabel,
   columns,
@@ -41,7 +42,7 @@ export function ChannelBuilder({
   namedViewMode,
   customState,
   setCustomState,
-}: Props): ReactNode {
+}: Props<S>): ReactNode {
   const channelState = state?.encoding?.[channelName] ?? {}
   const validValues = config.channelPropertyValues
 

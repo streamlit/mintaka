@@ -1,4 +1,4 @@
-import { ReactNode } from "react"
+import React, { ReactNode } from "react"
 
 import {
   BuilderState,
@@ -12,15 +12,15 @@ import {
 import { MarkBuilder } from "./MarkBuilder"
 import { EncodingBuilder } from "./EncodingBuilder"
 
-export interface Props extends WithCustomState {
+export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,
   config: Config,
   state: BuilderState,
-  ui: UIComponents,
+  ui: UIComponents<S>,
   namedViewMode: NamedMode,
 }
 
-export function LayerBuilder({
+export function LayerBuilder<S>({
   columnTypes,
   config,
   state,
@@ -28,7 +28,7 @@ export function LayerBuilder({
   namedViewMode,
   customState,
   setCustomState,
-}: Props): ReactNode {
+}: Props<S>): ReactNode {
   return (
     <ui.LayerContainer>
       <MarkBuilder

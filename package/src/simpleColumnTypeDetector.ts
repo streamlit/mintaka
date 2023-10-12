@@ -5,6 +5,7 @@ import { VlFieldType } from "./types"
 // arrowdata.schema.fields[0].type
 // arrowjs.type :: DataType.isDate, isTime, isTimestamp, isBool, isInt, isFloat
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function simpleColumnTypeDetector(exampleValue: any): VlFieldType {
   switch (getTypeAsStr(exampleValue)) {
     case "number":
@@ -30,6 +31,7 @@ type TypeStr =
   | "symbol"
   | "undefined"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getTypeAsStr(obj: any): TypeStr {
   const simple_type = typeof obj
   if (simple_type != "object") return simple_type

@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useCallback, useState, useMemo } from "react"
+import React, { ReactNode, useEffect, useCallback, useState, useMemo } from "react"
 
 import {
   BuilderState,
@@ -15,6 +15,7 @@ import {
   SelectChannelPropertyFunc,
   SelectMarkPropertyFunc,
   UIComponents,
+  UtilBlockProps,
   VLSpec,
 } from "../types"
 
@@ -27,26 +28,34 @@ import { useBuilderState } from "../hooks/useBuilderState"
 import { LayerBuilder } from "./LayerBuilder"
 import { PresetBuilder } from "./PresetBuilder"
 
-export interface Props {
+export interface Props<S> {
   columnTypes: ColumnTypes,
-  initialState: BuilderState|null, // TODO: Use VL Spec here.
+  initialState?: BuilderState, // TODO: Use VL Spec here.
+
+  // Customize presets to show.
   presets: Presets,
   setGeneratedSpec: (s: VLSpec) => void,
-  ui: UIComponents,
+  
+  // Customize UI components.
+  ui: UIComponents<S>,
 
-  // Customization
+  // Split properties into different "modes".
   modes?: ModeConfig,
+
+  // Customize the properties to show.
   mark?: MarkConfig,
   encoding?: EncodingConfig,
   channelProperties?: ChannelPropertiesConfig,
   markPropertyValues?: MarkPropertyValuesConfig,
   channelPropertyValues?: ChannelPropertyValuesConfig,
+
+  // Customize how we the UI adapts to selections.
   selectMarkProperty?: SelectMarkPropertyFunc,
   selectChannel?: SelectChannelFunc,
   selectChannelProperty?: SelectChannelPropertyFunc,
 }
 
-export function BuilderPane({
+export function Mintaka<S>({
   columnTypes,
   initialState,
   presets,
@@ -61,7 +70,7 @@ export function BuilderPane({
   selectMarkProperty,
   selectChannel,
   selectChannelProperty,
-}: Props): ReactNode {
+}: Props<S>): ReactNode {
   const config = useMemo<Config>(() => ({
     modes: modes ?? configDefaults.modes,
     mark: mark ?? configDefaults.mark,
@@ -72,12 +81,13 @@ export function BuilderPane({
     selectMarkProperty: selectMarkProperty ?? configDefaults.selectMarkProperty,
     selectChannel: selectChannel ?? configDefaults.selectChannel,
     selectChannelProperty: selectChannelProperty ?? configDefaults.selectChannelProperty,
-  }), [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [ /* Not including any of the above. */ ])
 
   const state = useBuilderState(config, initialState)
 
   // Some state for the developer to use however they want.
-  const [customState, setCustomState] = useState({})
+  const [customState, setCustomState] = useState<S>()
 
   const [ namedViewMode, setNamedViewMode ] =
     useState(Object.entries(config?.modes ?? {})?.[0])
@@ -89,24 +99,39 @@ export function BuilderPane({
   const reset = useCallback(() => {
     state.reset()
     updateStateFromPreset(state, state.preset, columnTypes)
-  }, [ columnTypes, state.preset ])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    columnTypes,
+    state.preset,
+    // Not including:
+    // state,
+  ])
 
   useEffect(() => {
     const spec = generateVegaSpec(state, columnTypes, config)
     setGeneratedSpec(spec)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-      config,
-      columnTypes,
-      setGeneratedSpec,
-      state.mark,
-      state.encoding,
-      // Not including:
-      // state,
+    config,
+    columnTypes,
+    setGeneratedSpec,
+    state.mark,
+    state.encoding,
+    // Not including:
+    // state,
   ])
 
+  const utilContainerProps: UtilBlockProps = {
+    modes: config?.modes ? Object.keys(config?.modes) : null,
+    currentMode: namedViewMode[0],
+    setMode: setViewMode,
+    reset: reset,
+  }
+
   return (
-    <ui.BuilderContainer>
+    <ui.MintakaContainer>
+      <ui.TopUtilBlock {...utilContainerProps} />
+
       <PresetBuilder
         state={state}
         columnTypes={columnTypes}
@@ -127,17 +152,7 @@ export function BuilderPane({
         setCustomState={setCustomState}
         />
 
-      <ui.ToolbarContainer>
-        {config?.modes && (
-          <ui.ModePicker
-            items={Object.keys(config?.modes)}
-            value={namedViewMode[0]}
-            setValue={setViewMode}
-          />
-        )}
-
-        <ui.ResetButton onClick={reset} />
-      </ui.ToolbarContainer>
-    </ui.BuilderContainer>
+      <ui.BottomUtilBlock {...utilContainerProps} />
+    </ui.MintakaContainer>
   )
 }

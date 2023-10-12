@@ -20,7 +20,7 @@ export function showSection(
   return !!sectionMode
 }
 
-type FilterFn = (string: String) => boolean
+type FilterFn = (str: string) => boolean
 
 export function filterSection(
   sectionName: StructuralKey,
@@ -48,6 +48,7 @@ export function filterSection(
 
   return objectFilter(
     currConfig as PlainRecord<string>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ([_, name]: [string, string]) => sectionItems.has(name) && filterFn(name)
   ) as StructuralConfig
 }

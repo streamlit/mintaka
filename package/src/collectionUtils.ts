@@ -2,6 +2,7 @@ import includes from "lodash/includes"
 
 import { PlainRecord } from "./types"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function haveAnyElementsInCommon(arr1: any[], arr2: any[]): boolean {
   return arr1.some(el1 => includes(arr2, el1))
 }
@@ -39,12 +40,14 @@ export function objectFilter<T>(
 // Does not support cycles.
 export function deepClone<T>(thing: T): T {
   if (Array.isArray(thing)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const arr = thing as Array<any>
     return arr.map(v => deepClone(v)) as T
   }
 
   // Don't use spread operator, to maintain ordering.
   if (thing instanceof Object) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const obj = thing as PlainRecord<any>
     return objectFrom(obj, ([k, v]) => [k, deepClone(v)]) as T
   }

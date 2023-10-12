@@ -22,14 +22,14 @@ What makes it special is that it's ultra-configurable:
    npm install mintaka
    ```
 
-1. Import the `BuilderPane` component:
+1. Import the `Mintaka` component:
 
    ```js
-   import { BuilderPane } from "mintaka"
+   import { Mintaka } from "mintaka"
    import { Vega } from "react-vega"
    ```
 
-1. Insert the `<BuilderPane>` component somewhere in your React project:
+1. Insert the `<Mintaka>` component somewhere in your React project:
 
    ```jsx
    const [ generatedSpec, setGeneratedSpec ] = useState(null)
@@ -37,12 +37,12 @@ What makes it special is that it's ultra-configurable:
    return (
      ...
 
-     <BuilderPane
+     <Mintaka
          columnTypes={columnTypes}  // <-- Tell us what your data looks like 
          setGeneratedSpec={setGeneratedSpec}
          initialSpec={null}  // <-- Pass an initial VL spec for us to load into the builder
          ui={{
-           BuilderContainer: MyContainer,  // <-- Bring your own UI components
+           MintakaContainer: MyContainer,  // <-- Bring your own UI components
            ChannelContainer: MyChannelContainer,
            GenericPickerWidget: MyGenericPickerWidget,
            ...
@@ -77,10 +77,10 @@ What makes it special is that it's ultra-configurable:
     For example: Streamlit can continue to use Arrow, Snowsight can continue to use… whatever it uses today (it doesn’t matter what it is!)
 
 
-- **The BuilderPane component doesn’t actually draw a single HTML element onscreen,** like divs, buttons, etc. Instead, it tells React to use the UI components provided via the `ui` prop. This means:
+- **The `<Mintaka>` component doesn’t actually draw a single HTML element onscreen,** like divs, buttons, etc. Instead, it tells React to use the UI components provided via the `ui` prop. This means:
     - You can make it **use your own widget library**
 
-        For example: The BuilderPane could use Streamlit widgets when inside Streamlit, and Snowsight widgets when inside Worksheets.
+        For example: The Mintaka component could use Streamlit widgets when inside Streamlit, and Snowsight widgets when inside Worksheets.
 
     - You can **customize it** *quite a bit!*
 
@@ -146,10 +146,23 @@ very useful in lieu of docs.
 
 ## UI Structure
 
-Below are the custom containers you should pass into `<BuilderPane>`'s `ui` prop, and how they
+Below are the custom containers you should pass into `<Mintaka>`'s `ui` prop, and how they
 get structured in the DOM:
 
-* `<BuilderContainer>`
+* `<MintakaContainer>`
+  * `<TopUtilBlock>`
+
+    This is a utility component. It's a place for you to add whatever your want.
+
+    In particular, it's a good place to add a pagination widget for changing the editor's current
+    "mode":
+    * modes: Record<string, any>
+    * currentMode: any
+    * setMode: (any) => void
+
+    ...and it's also a good place to add a reset button:
+    * reset: () => void
+
   * `<PresetsContainer>` _(if exists in current viewMode)_
     * title: "Chart type"
     * statePath: ["preset"]
@@ -208,12 +221,12 @@ get structured in the DOM:
           * customState: any
           * setCustomState: (any) => void
 
-  * `<ToolbarContainer>`
+  * `<BottomUtilBlock>`
 
-    * `<ModePicker>`
-        * items: Record<string, any>
-        * value: any
-        * setValue: (any) => void
+    This is another util component. Its props are identical to the TopUtilContainer, so you can
+    choose where you want your mode picker and reset button to live.
 
-    * `<ResetButton>`
-        * onClick: () => void
+    * modes: Record<string, any>
+    * currentMode: any
+    * setMode: (any) => void
+    * reset: () => void

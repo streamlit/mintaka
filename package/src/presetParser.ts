@@ -17,11 +17,12 @@ import { objectFrom, deepClone } from "./collectionUtils"
 
 export function updateStateFromPreset(
   state: BuilderState,
-  presetSpec?: Preset|null,
+  presetSpec: Preset|null|undefined,
   columnTypes: ColumnTypes,
 ): void {
-  if (presetSpec == null) return null
+  if (presetSpec == null) return
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const spec = deepClone(presetSpec as PlainRecord<any>)
 
   const columns = findColumns(spec.findColumns, columnTypes)

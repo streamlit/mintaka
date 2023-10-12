@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useCallback } from "react"
+import React, { ReactNode, useEffect, useCallback } from "react"
 
 import {
   BuilderState,
@@ -14,15 +14,15 @@ import { PRESETS } from "../presets"
 import { updateStateFromPreset } from "../presetParser"
 import { showSection } from "../modeParser"
 
-export interface Props extends WithCustomState {
+export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,
   presets: Presets,
   state: BuilderState,
-  ui: UIComponents,
+  ui: UIComponents<S>,
   namedViewMode: NamedMode,
 }
 
-export function PresetBuilder({
+export function PresetBuilder<S>({
   columnTypes,
   presets,
   state,
@@ -30,12 +30,13 @@ export function PresetBuilder({
   namedViewMode,
   customState,
   setCustomState,
-}: Props): ReactNode {
+}: Props<S>): ReactNode {
   if (!presets) presets = PRESETS
 
   const setPreset = useCallback((preset: Preset) => {
     updateStateFromPreset(state, preset, columnTypes)
-  }, [state.mark, state.encoding, columnTypes])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.mark, state.encoding, columnTypes, /* state */])
 
   useEffect(() => {
     if (!Object.keys(presets).length) return

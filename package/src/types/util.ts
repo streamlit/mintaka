@@ -7,6 +7,7 @@ export type json =
     | json[]
     | { [key: string]: json }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type PartialRecord<K extends keyof any, T> =  Partial<Record<K, T>>
 export type PlainRecord<T> = Record<string, T>
 export type JsonRecord = PlainRecord<json>

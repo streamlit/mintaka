@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react"
 import backspaceIconSvg from "../assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 import tuneIconSvg from "../assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
-import styles from "./components.module.css"
+import styles from "./ui.module.css"
 import utilStyles from "./util.module.css"
 
 const AUTO_EXPANDED_CHANNELS = new Set([
@@ -25,9 +25,9 @@ const ALWAYS_EXPANDED_CHANNEL_PROPS = new Set([
   "field",
 ])
 
-export function BuilderContainer({children}) {
+export function MintakaContainer({children}) {
   return (
-    <div className={styles.BuilderContainer}>
+    <div className={styles.MintakaContainer}>
       {children}
     </div>
   )
@@ -49,15 +49,49 @@ export function EncodingContainer({children}) {
   )
 }
 
-export function ToolbarContainer({children}) {
+export function MegaToolbar({modes, currentMode, setMode, reset}) {
   return (
-    <div className={styles.ToolbarContainer}>
-      {children}
+    <div className={styles.MegaToolbar}>
+      {modes && (
+        <ModePicker
+          items={modes}
+          value={currentMode}
+          setValue={setMode}
+        />
+      )}
+
+      <ResetButton onClick={reset} />
     </div>
   )
 }
 
-export function ResetButton({
+export function EmptyBlock(props) {
+  return null
+}
+
+export function ViewModeToolbar({modes, currentMode, setMode}) {
+  return (
+    <div className={styles.ViewModeToolbar}>
+      {modes && (
+        <ModePicker
+          items={modes}
+          value={currentMode}
+          setValue={setMode}
+        />
+      )}
+    </div>
+  )
+}
+
+export function ButtonToolbar({reset}) {
+  return (
+    <div className={styles.ButtonToolbar}>
+      <ResetButton onClick={reset} />
+    </div>
+  )
+}
+
+function ResetButton({
   onClick,
 }) {
   return (
@@ -67,7 +101,7 @@ export function ResetButton({
   )
 }
 
-export function ModePicker({
+function ModePicker({
   items,
   value,
   setValue,
