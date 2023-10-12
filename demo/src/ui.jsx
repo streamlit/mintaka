@@ -300,7 +300,7 @@ export function GenericPickerWidget({
   viewMode,
 }) {
   const parentPath = statePath.slice(0, -1)
-  const isCollapsed = (viewMode == "Adv" || viewMode == "Advanced" || viewMode == "Default") && !customState[parentPath.join(".")]
+  const isCollapsed = (viewMode == "Adv" || viewMode == "Advanced" || viewMode == "Default") && !customState?.[parentPath.join(".")]
 
   const isPermanentChannelProp =
     statePath[0] == "encoding"
