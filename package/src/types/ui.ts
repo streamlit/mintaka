@@ -91,6 +91,7 @@ export interface UIComponents<S> {
   MintakaContainer: MintakaContainer,
   ChannelContainer: ChannelContainer<S>,
   EncodingContainer: EncodingContainer<S>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   GenericPickerWidget: GenericPickerWidget<any, S>,
   LayerContainer: LayerContainer,
   MarkContainer: MarkContainer<S>,

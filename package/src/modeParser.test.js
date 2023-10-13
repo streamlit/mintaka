@@ -1,31 +1,31 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test } from "vitest"
 
 import { showSection, filterSection } from "./modeParser"
 
-describe('showSection', () => {
-  test('null namedMode', () => {
+describe("showSection", () => {
+  test("null namedMode", () => {
     const out = showSection(
-      'foo',
+      "foo",
       null,
     )
 
     expect(out).toBeTruthy()
   })
 
-  test('empty namedMode', () => {
+  test("empty namedMode", () => {
     const out = showSection(
-      'foo',
-      ['name', {}],
+      "foo",
+      ["name", {}],
     )
 
     expect(out).toBeTruthy()
   })
 
-  describe('section not in namedMode', () => {
-    test('no else', () => {
+  describe("section not in namedMode", () => {
+    test("no else", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           bar: true,
         }],
       )
@@ -33,10 +33,10 @@ describe('showSection', () => {
       expect(out).toBeTruthy()
     })
 
-    test('else null', () => {
+    test("else null", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           bar: true,
           else: null,
         }],
@@ -45,10 +45,10 @@ describe('showSection', () => {
       expect(out).toBeTruthy()
     })
 
-    test('else true', () => {
+    test("else true", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           bar: true,
           else: true,
         }],
@@ -57,10 +57,10 @@ describe('showSection', () => {
       expect(out).toBeTruthy()
     })
 
-    test('else false', () => {
+    test("else false", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           bar: true,
           else: false,
         }],
@@ -70,11 +70,11 @@ describe('showSection', () => {
     })
   })
 
-  describe('section true in namedMode', () => {
-    test('no else', () => {
+  describe("section true in namedMode", () => {
+    test("no else", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           foo: true,
           bar: false,
         }],
@@ -83,10 +83,10 @@ describe('showSection', () => {
       expect(out).toBeTruthy()
     })
 
-    test('else null', () => {
+    test("else null", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           foo: true,
           bar: false,
           else: null,
@@ -96,10 +96,10 @@ describe('showSection', () => {
       expect(out).toBeTruthy()
     })
 
-    test('else true', () => {
+    test("else true", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           foo: true,
           bar: false,
           else: true,
@@ -109,10 +109,10 @@ describe('showSection', () => {
       expect(out).toBeTruthy()
     })
 
-    test('else false', () => {
+    test("else false", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           foo: true,
           bar: false,
           else: false,
@@ -123,11 +123,11 @@ describe('showSection', () => {
     })
   })
 
-  describe('section false in namedMode', () => {
-    test('no else', () => {
+  describe("section false in namedMode", () => {
+    test("no else", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           foo: false,
           bar: true,
         }],
@@ -136,10 +136,10 @@ describe('showSection', () => {
       expect(out).toBeFalsy()
     })
 
-    test('else null', () => {
+    test("else null", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           foo: false,
           bar: true,
           else: null,
@@ -149,10 +149,10 @@ describe('showSection', () => {
       expect(out).toBeFalsy()
     })
 
-    test('else true', () => {
+    test("else true", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           foo: false,
           bar: true,
           else: true,
@@ -162,10 +162,10 @@ describe('showSection', () => {
       expect(out).toBeFalsy()
     })
 
-    test('else false', () => {
+    test("else false", () => {
       const out = showSection(
-        'foo',
-        ['name', {
+        "foo",
+        ["name", {
           foo: false,
           bar: true,
           else: false,
@@ -176,12 +176,12 @@ describe('showSection', () => {
     })
   })
 
-  describe('section=Set in namedMode', () => {
-    test('no else', () => {
+  describe("section=Set in namedMode", () => {
+    test("no else", () => {
       const out = showSection(
-        'foo',
-        ['name', {
-          foo: new Set(['value1', 'value2']),
+        "foo",
+        ["name", {
+          foo: new Set(["value1", "value2"]),
           bar: false,
         }],
       )
@@ -189,11 +189,11 @@ describe('showSection', () => {
       expect(out).toBeTruthy()
     })
 
-    test('else null', () => {
+    test("else null", () => {
       const out = showSection(
-        'foo',
-        ['name', {
-          foo: new Set(['value1', 'value2']),
+        "foo",
+        ["name", {
+          foo: new Set(["value1", "value2"]),
           bar: false,
           else: null,
         }],
@@ -202,11 +202,11 @@ describe('showSection', () => {
       expect(out).toBeTruthy()
     })
 
-    test('else true', () => {
+    test("else true", () => {
       const out = showSection(
-        'foo',
-        ['name', {
-          foo: new Set(['value1', 'value2']),
+        "foo",
+        ["name", {
+          foo: new Set(["value1", "value2"]),
           bar: false,
           else: true,
         }],
@@ -215,11 +215,11 @@ describe('showSection', () => {
       expect(out).toBeTruthy()
     })
 
-    test('else false', () => {
+    test("else false", () => {
       const out = showSection(
-        'foo',
-        ['name', {
-          foo: new Set(['value1', 'value2']),
+        "foo",
+        ["name", {
+          foo: new Set(["value1", "value2"]),
           bar: false,
           else: false,
         }],
@@ -232,182 +232,82 @@ describe('showSection', () => {
 })
 
 
-describe('filterSection', () => {
+describe("filterSection", () => {
   const configSpec = {
-    foo: { key1: 'value1', key2: 'value2', key3: 'value3' }
+    foo: { key1: "value1", key2: "value2", key3: "value3" }
   }
 
-  test('null namedMode', () => {
+  test("null namedMode", () => {
     const out = filterSection(
-      'foo',
+      "foo",
       configSpec,
       null,
       x => true,
     )
 
     expect(out).toEqual({
-      key1: 'value1', key2: 'value2', key3: 'value3',
+      key1: "value1", key2: "value2", key3: "value3",
     })
   })
 
-  test('empty namedMode', () => {
+  test("empty namedMode", () => {
     const out = filterSection(
-      'foo',
+      "foo",
       configSpec,
-      ['name', {}],
+      ["name", {}],
       x => true,
     )
 
     expect(out).toEqual({
-      key1: 'value1', key2: 'value2', key3: 'value3',
+      key1: "value1", key2: "value2", key3: "value3",
     })
   })
 
-  describe('section not in namedMode', () => {
-    test('no else', () => {
+  describe("section not in namedMode", () => {
+    test("no else", () => {
       const out = filterSection(
-        'foo',
+        "foo",
         configSpec,
-        ['name', { bar: true, }],
+        ["name", { bar: true, }],
         x => true,
       )
 
       expect(out).toEqual({
-        key1: 'value1', key2: 'value2', key3: 'value3',
+        key1: "value1", key2: "value2", key3: "value3",
       })
     })
 
-    test('else null', () => {
+    test("else null", () => {
       const out = filterSection(
-        'foo',
+        "foo",
         configSpec,
-        ['name', { bar: true, else: null }],
+        ["name", { bar: true, else: null }],
         x => true,
       )
 
       expect(out).toEqual({
-        key1: 'value1', key2: 'value2', key3: 'value3',
+        key1: "value1", key2: "value2", key3: "value3",
       })
     })
 
-    test('else true', () => {
+    test("else true", () => {
       const out = filterSection(
-        'foo',
+        "foo",
         configSpec,
-        ['name', { bar: true, else: true}],
+        ["name", { bar: true, else: true}],
         x => true,
       )
 
       expect(out).toEqual({
-        key1: 'value1', key2: 'value2', key3: 'value3',
+        key1: "value1", key2: "value2", key3: "value3",
       })
     })
 
-    test('else false', () => {
+    test("else false", () => {
       const out = filterSection(
-        'foo',
+        "foo",
         configSpec,
-        ['name', { bar: true, else: false}],
-        x => true,
-      )
-
-      expect(out).toEqual(null)
-    })
-  })
-
-  describe('section true in namedMode', () => {
-    test('no else', () => {
-      const out = filterSection(
-        'foo',
-        configSpec,
-        ['name', { foo: true, bar: false, }],
-        x => true,
-      )
-
-      expect(out).toEqual({
-        key1: 'value1', key2: 'value2', key3: 'value3',
-      })
-    })
-
-    test('else null', () => {
-      const out = filterSection(
-        'foo',
-        configSpec,
-        ['name', { foo: true, bar: false, else: null }],
-        x => true,
-      )
-
-      expect(out).toEqual({
-        key1: 'value1', key2: 'value2', key3: 'value3',
-      })
-    })
-
-    test('else true', () => {
-      const out = filterSection(
-        'foo',
-        configSpec,
-        ['name', { foo: true, bar: false, else: true }],
-        x => true,
-      )
-
-      expect(out).toEqual({
-        key1: 'value1', key2: 'value2', key3: 'value3',
-      })
-    })
-
-    test('else false', () => {
-      const out = filterSection(
-        'foo',
-        configSpec,
-        ['name', { foo: true, bar: false, else: false }],
-        x => true,
-      )
-
-      expect(out).toEqual({
-        key1: 'value1', key2: 'value2', key3: 'value3',
-      })
-    })
-  })
-
-  describe('section false in namedMode', () => {
-    test('no else', () => {
-      const out = filterSection(
-        'foo',
-        configSpec,
-        ['name', { foo: false, bar: false, }],
-        x => true,
-      )
-
-      expect(out).toEqual(null)
-    })
-
-    test('else null', () => {
-      const out = filterSection(
-        'foo',
-        configSpec,
-        ['name', { foo: false, bar: false, else: null }],
-        x => true,
-      )
-
-      expect(out).toEqual(null)
-    })
-
-    test('else true', () => {
-      const out = filterSection(
-        'foo',
-        configSpec,
-        ['name', { foo: false, bar: false, else: true }],
-        x => true,
-      )
-
-      expect(out).toEqual(null)
-    })
-
-    test('else false', () => {
-      const out = filterSection(
-        'foo',
-        configSpec,
-        ['name', { foo: false, bar: false, else: false }],
+        ["name", { bar: true, else: false}],
         x => true,
       )
 
@@ -415,13 +315,113 @@ describe('filterSection', () => {
     })
   })
 
-  describe('section=Set in namedMode, no intersection', () => {
-    test('no else', () => {
+  describe("section true in namedMode", () => {
+    test("no else", () => {
       const out = filterSection(
-        'foo',
+        "foo",
         configSpec,
-        ['name', {
-          foo: new Set(['notValue1', 'notValue2']),
+        ["name", { foo: true, bar: false, }],
+        x => true,
+      )
+
+      expect(out).toEqual({
+        key1: "value1", key2: "value2", key3: "value3",
+      })
+    })
+
+    test("else null", () => {
+      const out = filterSection(
+        "foo",
+        configSpec,
+        ["name", { foo: true, bar: false, else: null }],
+        x => true,
+      )
+
+      expect(out).toEqual({
+        key1: "value1", key2: "value2", key3: "value3",
+      })
+    })
+
+    test("else true", () => {
+      const out = filterSection(
+        "foo",
+        configSpec,
+        ["name", { foo: true, bar: false, else: true }],
+        x => true,
+      )
+
+      expect(out).toEqual({
+        key1: "value1", key2: "value2", key3: "value3",
+      })
+    })
+
+    test("else false", () => {
+      const out = filterSection(
+        "foo",
+        configSpec,
+        ["name", { foo: true, bar: false, else: false }],
+        x => true,
+      )
+
+      expect(out).toEqual({
+        key1: "value1", key2: "value2", key3: "value3",
+      })
+    })
+  })
+
+  describe("section false in namedMode", () => {
+    test("no else", () => {
+      const out = filterSection(
+        "foo",
+        configSpec,
+        ["name", { foo: false, bar: false, }],
+        x => true,
+      )
+
+      expect(out).toEqual(null)
+    })
+
+    test("else null", () => {
+      const out = filterSection(
+        "foo",
+        configSpec,
+        ["name", { foo: false, bar: false, else: null }],
+        x => true,
+      )
+
+      expect(out).toEqual(null)
+    })
+
+    test("else true", () => {
+      const out = filterSection(
+        "foo",
+        configSpec,
+        ["name", { foo: false, bar: false, else: true }],
+        x => true,
+      )
+
+      expect(out).toEqual(null)
+    })
+
+    test("else false", () => {
+      const out = filterSection(
+        "foo",
+        configSpec,
+        ["name", { foo: false, bar: false, else: false }],
+        x => true,
+      )
+
+      expect(out).toEqual(null)
+    })
+  })
+
+  describe("section=Set in namedMode, no intersection", () => {
+    test("no else", () => {
+      const out = filterSection(
+        "foo",
+        configSpec,
+        ["name", {
+          foo: new Set(["notValue1", "notValue2"]),
           bar: false,
         }],
         x => true,
@@ -430,12 +430,12 @@ describe('filterSection', () => {
       expect(out).toEqual({})
     })
 
-    test('else null', () => {
+    test("else null", () => {
       const out = filterSection(
-        'foo',
+        "foo",
         configSpec,
-        ['name', {
-          foo: new Set(['notValue1', 'notValue2']),
+        ["name", {
+          foo: new Set(["notValue1", "notValue2"]),
           bar: false,
           else: null,
         }],
@@ -445,12 +445,12 @@ describe('filterSection', () => {
       expect(out).toEqual({})
     })
 
-    test('else true', () => {
+    test("else true", () => {
       const out = filterSection(
-        'foo',
+        "foo",
         configSpec,
-        ['name', {
-          foo: new Set(['notValue1', 'notValue2']),
+        ["name", {
+          foo: new Set(["notValue1", "notValue2"]),
           bar: false,
           else: true,
         }],
@@ -460,12 +460,12 @@ describe('filterSection', () => {
       expect(out).toEqual({})
     })
 
-    test('else false', () => {
+    test("else false", () => {
       const out = filterSection(
-        'foo',
+        "foo",
         configSpec,
-        ['name', {
-          foo: new Set(['notValue1', 'notValue2']),
+        ["name", {
+          foo: new Set(["notValue1", "notValue2"]),
           bar: false,
           else: false,
         }],
@@ -476,33 +476,33 @@ describe('filterSection', () => {
     })
   })
 
-  describe('section=Set in namedMode, with intersection', () => {
-    describe('filter true', () => {
+  describe("section=Set in namedMode, with intersection", () => {
+    describe("filter true", () => {
       const filter = x => true
 
-      test('no else', () => {
+      test("no else", () => {
         const out = filterSection(
-          'foo',
+          "foo",
           configSpec,
-          ['name', {
-            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+          ["name", {
+            foo: new Set(["value3", "notValue1", "value1", "notValue2"]),
             bar: false,
           }],
           filter,
         )
 
         expect(out).toEqual({
-          key1: 'value1',
-          key3: 'value3',
+          key1: "value1",
+          key3: "value3",
         })
       })
 
-      test('else null', () => {
+      test("else null", () => {
         const out = filterSection(
-          'foo',
+          "foo",
           configSpec,
-          ['name', {
-            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+          ["name", {
+            foo: new Set(["value3", "notValue1", "value1", "notValue2"]),
             bar: false,
             else: null,
           }],
@@ -510,17 +510,17 @@ describe('filterSection', () => {
         )
 
         expect(out).toEqual({
-          key1: 'value1',
-          key3: 'value3',
+          key1: "value1",
+          key3: "value3",
         })
       })
 
-      test('else true', () => {
+      test("else true", () => {
         const out = filterSection(
-          'foo',
+          "foo",
           configSpec,
-          ['name', {
-            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+          ["name", {
+            foo: new Set(["value3", "notValue1", "value1", "notValue2"]),
             bar: false,
             else: true,
           }],
@@ -528,17 +528,17 @@ describe('filterSection', () => {
         )
 
         expect(out).toEqual({
-          key1: 'value1',
-          key3: 'value3',
+          key1: "value1",
+          key3: "value3",
         })
       })
 
-      test('else false', () => {
+      test("else false", () => {
         const out = filterSection(
-          'foo',
+          "foo",
           configSpec,
-          ['name', {
-            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+          ["name", {
+            foo: new Set(["value3", "notValue1", "value1", "notValue2"]),
             bar: false,
             else: false,
           }],
@@ -546,37 +546,37 @@ describe('filterSection', () => {
         )
 
         expect(out).toEqual({
-          key1: 'value1',
-          key3: 'value3',
+          key1: "value1",
+          key3: "value3",
         })
       })
     })
 
-    describe('filter out one value', () => {
-      const filter = x => x == 'value3'
+    describe("filter out one value", () => {
+      const filter = x => x == "value3"
 
-      test('no else', () => {
+      test("no else", () => {
         const out = filterSection(
-          'foo',
+          "foo",
           configSpec,
-          ['name', {
-            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+          ["name", {
+            foo: new Set(["value3", "notValue1", "value1", "notValue2"]),
             bar: false,
           }],
           filter,
         )
 
         expect(out).toEqual({
-          key3: 'value3',
+          key3: "value3",
         })
       })
 
-      test('else null', () => {
+      test("else null", () => {
         const out = filterSection(
-          'foo',
+          "foo",
           configSpec,
-          ['name', {
-            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+          ["name", {
+            foo: new Set(["value3", "notValue1", "value1", "notValue2"]),
             bar: false,
             else: null,
           }],
@@ -584,16 +584,16 @@ describe('filterSection', () => {
         )
 
         expect(out).toEqual({
-          key3: 'value3',
+          key3: "value3",
         })
       })
 
-      test('else true', () => {
+      test("else true", () => {
         const out = filterSection(
-          'foo',
+          "foo",
           configSpec,
-          ['name', {
-            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+          ["name", {
+            foo: new Set(["value3", "notValue1", "value1", "notValue2"]),
             bar: false,
             else: true,
           }],
@@ -601,16 +601,16 @@ describe('filterSection', () => {
         )
 
         expect(out).toEqual({
-          key3: 'value3',
+          key3: "value3",
         })
       })
 
-      test('else false', () => {
+      test("else false", () => {
         const out = filterSection(
-          'foo',
+          "foo",
           configSpec,
-          ['name', {
-            foo: new Set(['value3', 'notValue1', 'value1', 'notValue2']),
+          ["name", {
+            foo: new Set(["value3", "notValue1", "value1", "notValue2"]),
             bar: false,
             else: false,
           }],
@@ -618,7 +618,7 @@ describe('filterSection', () => {
         )
 
         expect(out).toEqual({
-          key3: 'value3',
+          key3: "value3",
         })
       })
     })

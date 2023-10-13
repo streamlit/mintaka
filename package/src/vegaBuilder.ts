@@ -18,10 +18,27 @@ import {
 
 import { haveAnyElementsInCommon } from "./collectionUtils"
 
+export const DEFAULT_BASE_SPEC = {
+  mark: {
+    clip: true,
+  },
+
+  params: [{
+    name: "grid",
+    select: "interval",
+    bind: "scales"
+  }],
+
+  data: {
+    name: "dataset1",
+  },
+}
+
 export function generateVegaSpec(
   builderState: BuilderState,
   columnTypes: ColumnTypes,
   config: Config,
+  baseSpec: VLSpec,
 ): VLSpec {
   const mark: PlainRecord<json> = Object.fromEntries(
     Object.entries(builderState.mark)
@@ -44,24 +61,9 @@ export function generateVegaSpec(
 
   patchChannelSpec(encoding, builderState)
 
-  // TODO: Make this a config param, and set zero=false there.
   const builderSpec: JsonRecord = {
-    mark: {
-      clip: true,
-      ...mark,
-    },
-
+    mark,
     encoding,
-
-    params: [{
-      name: "grid",
-      select: "interval",
-      bind: "scales"
-    }],
-
-    data: {
-      name: "dataset1",
-    },
   }
 
   const transforms: Array<PlainRecord<json>> = []
@@ -71,7 +73,7 @@ export function generateVegaSpec(
     builderSpec.transform = transforms
   }
 
-  const outSpec = merge({}, builderSpec)
+  const outSpec = merge({}, baseSpec, builderSpec)
 
   // The row, column, and facet encodings use the chart-wide size,
   // which is usually not what users want. Besides, they don't work when

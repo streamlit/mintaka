@@ -20,7 +20,7 @@ import {
 } from "../types"
 
 import * as configDefaults from "../config"
-import { generateVegaSpec } from "../vegaBuilder"
+import { generateVegaSpec, DEFAULT_BASE_SPEC } from "../vegaBuilder"
 import { updateStateFromPreset } from "../presetParser"
 
 import { useBuilderState } from "../hooks/useBuilderState"
@@ -31,11 +31,12 @@ import { PresetBuilder } from "./PresetBuilder"
 export interface Props<S> {
   columnTypes: ColumnTypes,
   initialState?: BuilderState, // TODO: Use VL Spec here.
+  baseSpec?: VLSpec,
 
   // Customize presets to show.
   presets: Presets,
   setGeneratedSpec: (s: VLSpec) => void,
-  
+
   // Customize UI components.
   ui: UIComponents<S>,
 
@@ -58,6 +59,7 @@ export interface Props<S> {
 export function Mintaka<S>({
   columnTypes,
   initialState,
+  baseSpec,
   presets,
   setGeneratedSpec,
   ui,
@@ -108,7 +110,7 @@ export function Mintaka<S>({
   ])
 
   useEffect(() => {
-    const spec = generateVegaSpec(state, columnTypes, config)
+    const spec = generateVegaSpec(state, columnTypes, config, baseSpec ?? DEFAULT_BASE_SPEC)
     setGeneratedSpec(spec)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

@@ -21,7 +21,7 @@ import {
 import styles from "./demo.module.css"
 
 export default function Demo({ demo, dataset, columnTypes }) {
-  const [generatedSpec, setGeneratedSpec] = useState()
+  const [generatedSpec, setGeneratedSpec] = useState({})
 
   return (
     <div className={styles.DemoWrapper}>

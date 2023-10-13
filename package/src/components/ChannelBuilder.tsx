@@ -17,7 +17,6 @@ import {
 
 import { filterSection } from "../modeParser"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Props<S> extends WithCustomState<S> {
   channelName: ChannelName,
   channelLabel: string,

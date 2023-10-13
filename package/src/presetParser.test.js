@@ -1,6 +1,6 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test } from "vitest"
 
-import { updateStateFromPreset } from './presetParser'
+import { updateStateFromPreset } from "./presetParser"
 
 function makeFakeState() {
   const newState = {}
@@ -17,8 +17,8 @@ function makeFakeState() {
   return [ state, newState ]
 }
 
-describe('updateStateFromPreset', () => {
-  test('null state throws error', () => {
+describe("updateStateFromPreset", () => {
+  test("null state throws error", () => {
     const state = null
     const preset = {}
     const columnTypes = {}
@@ -27,7 +27,7 @@ describe('updateStateFromPreset', () => {
       .toThrow()
   })
 
-  test('bad state throws error', () => {
+  test("bad state throws error", () => {
     const state = {}
     const preset = {}
     const columnTypes = {}
@@ -36,7 +36,7 @@ describe('updateStateFromPreset', () => {
       .toThrow()
   })
 
-  test('null preset', () => {
+  test("null preset", () => {
     const [ state, newState ] = makeFakeState()
     const preset = {}
     const columnTypes = {}
@@ -50,7 +50,7 @@ describe('updateStateFromPreset', () => {
     })
   })
 
-  test('simple preset', () => {
+  test("simple preset", () => {
     const [ state, newState ] = makeFakeState()
     const preset = {
       mark: {
@@ -91,7 +91,7 @@ describe('updateStateFromPreset', () => {
     })
   })
 
-  describe('preset with if condition', () => {
+  describe("preset with if condition", () => {
     const [ state, newState ] = makeFakeState()
     const preset = {
       mark: {
@@ -110,15 +110,15 @@ describe('updateStateFromPreset', () => {
       },
     }
 
-    test('with empty columnTypes', () => {
+    test("with empty columnTypes", () => {
       const columnTypes = {}
 
-      preset['findColumns'] = {
+      preset["findColumns"] = {
         A: { type: ["nominal"] },
         B: { type: ["nominal"] },
       }
 
-      preset['ifColumn'] = {
+      preset["ifColumn"] = {
         A: {
           mark: { m1k1: "m1v1--modified" },
           chan1: { field: "A", chan1k2: "chan1v2--modified" },
@@ -149,19 +149,19 @@ describe('updateStateFromPreset', () => {
       })
     })
 
-    test('with matching columnTypes', () => {
+    test("with matching columnTypes", () => {
       const columnTypes = {
         col1: { type: "nominal" },
         col2: { type: "nominal" },
       }
 
-      preset['findColumns'] = {
+      preset["findColumns"] = {
         Z: { type: ["quantitative", "temporal"] },
         A: { type: ["temporal", "nominal"] },
         B: { type: [null] },
       }
 
-      preset['ifColumn'] = {
+      preset["ifColumn"] = {
         A: {
           mark: { mk1: "mv1--modified" },
           encoding: {

@@ -6,7 +6,7 @@ import tuneIconSvg from "../assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 import styles from "./ui.module.css"
 import utilStyles from "./util.module.css"
 
-const AUTO_EXPANDED_CHANNELS = new Set([
+const AUTO_VISIBLE_CHANNELS = new Set([
   "text",
   "url",
   "x",
@@ -17,11 +17,11 @@ const AUTO_EXPANDED_CHANNELS = new Set([
   "color",
 ])
 
-const ALWAYS_EXPANDED_MARK_PROPS = new Set([
+const ALWAYS_VISIBLE_MARK_PROPS = new Set([
   "type",
 ])
 
-const ALWAYS_EXPANDED_CHANNEL_PROPS = new Set([
+const ALWAYS_VISIBLE_CHANNEL_PROPS = new Set([
   "field",
 ])
 
@@ -149,7 +149,7 @@ export function PresetsContainer({
   return (
     <GenericContainer
       title={"Chart type"}
-      expandable={false}
+      minimizable={false}
       className={styles.PresetsContainer}
       statePath={statePath}
     >
@@ -160,6 +160,7 @@ export function PresetsContainer({
 
 export function MarkContainer({
   children,
+  customState,
   setCustomState,
   viewMode,
   statePath,
@@ -167,11 +168,12 @@ export function MarkContainer({
   return (
     <GenericContainer
       title={"Mark"}
-      expandable={
+      minimizable={
         viewMode == "Adv" || viewMode == "Advanced"}
-      startsExpanded={true}
+      startsMinimized={false}
+      customState={customState}
       setCustomState={setCustomState}
-      advOptionsAvailable={
+      hasSettingsDrawer={
         viewMode == "Adv" || viewMode == "Advanced" || viewMode == "Default"}
       statePath={statePath}
     >
@@ -184,6 +186,7 @@ export function ChannelContainer({
   title,
   children,
   statePath,
+  customState,
   setCustomState,
   viewMode,
 }) {
@@ -191,10 +194,11 @@ export function ChannelContainer({
   return (
     <GenericContainer
       title={title}
-      expandable={isAdv}
-      startsExpanded={!isAdv || AUTO_EXPANDED_CHANNELS.has(statePath[1])}
+      minimizable={isAdv}
+      startsMinimized={isAdv && !AUTO_VISIBLE_CHANNELS.has(statePath[1])}
+      customState={customState}
       setCustomState={setCustomState}
-      advOptionsAvailable={isAdv || viewMode == "Default"}
+      hasSettingsDrawer={isAdv || viewMode == "Default"}
       statePath={statePath}
     >
       {children}
@@ -206,57 +210,43 @@ export function GenericContainer({
   title,
   children,
   className,
-  expandable,
-  startsExpanded,
-  advShownByDefault,
-  advOptionsAvailable,
+  minimizable,
+  startsMinimized,
+  hasSettingsDrawer,
   setCustomState,
   customState,
   statePath,
 }) {
-  const [expanded, setExpanded] = useState(startsExpanded ?? !expandable)
-  const [advShown, setAdvShown] = useState(!!advShownByDefault)
+  const [minimized, setMinimized] = useState(minimizable ? startsMinimized : false)
+  const [drawerVisible, setDrawerVisible] = useState(false)
 
-  const showAdvanced = useCallback((newValue) => {
-    setAdvShown(newValue)
+  const toggleMinimized = useCallback(() => {
+    setMinimized(!minimized)
+  }, [
+    minimized,
+    setMinimized,
+  ])
+
+  const toggleDrawer = useCallback(() => {
+    const newValue = !drawerVisible
+    setDrawerVisible(newValue)
+
     if (setCustomState)
       setCustomState({ ...customState, [statePath.join(".")]: newValue })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    setAdvShown,
+    drawerVisible,
+    setDrawerVisible,
     setCustomState,
     customState,
     // Not including:
     // statePath
   ])
 
-  useEffect(() => {
-    showAdvanced(advShownByDefault)
-  }, [
-    showAdvanced,
-    advShownByDefault,
-  ])
-
-  const toggleAdvanced = useCallback(() => {
-    showAdvanced(!advShown)
-  }, [
-    showAdvanced,
-    advShown,
-  ])
-
-  const toggleExpanded = useCallback(() => {
-    setExpanded(!expanded)
-
-    if (expanded) {
-      setAdvShown(false)
-      if (setCustomState)
-        setCustomState({ ...customState, [statePath.join(".")]: false })
-    }
-  }, [expanded, setExpanded, setAdvShown, setCustomState])
-
   const wrapperStyles = [
-    expanded ? styles.GenericContainer : styles.GenericContainerCollapsed,
-    expandable ? styles.GenericContainerExpandable : null,
+    minimized ? styles.GenericContainerMinimized : styles.GenericContainer,
+    minimizable ? styles.GenericContainerMinimizable : null,
     className,
   ].join(" ")
 
@@ -266,21 +256,21 @@ export function GenericContainer({
     <div className={wrapperStyles}>
       {title && (
         <div className={styles.GenericContainerTitle}>
-          <label className={styles.GenericContainerLabel} onClick={expandable ? toggleExpanded : null}>
+          <label className={styles.GenericContainerLabel} onClick={minimizable ? toggleMinimized : null}>
             {title.toUpperCase()}
           </label>
 
-          {expanded && setCustomState && advOptionsAvailable && (
+          {!minimized && setCustomState && hasSettingsDrawer && (
             <div className={styles.GenericContainerToolbar}>
-              <button className={styles.GenericContainerAdvButton} onClick={toggleAdvanced}>
-                <img src={tuneIconSvg} alt="Advanced" />
+              <button className={styles.GenericContainerDrawerButton} onClick={toggleDrawer}>
+                <img src={tuneIconSvg} alt="More options" />
               </button>
             </div>
           )}
         </div>
       )}
 
-      {(expanded || !title) && (
+      {(!minimized || !title) && (
         <div className={styles.GenericContainerChildrenWrapper}>
           {children}
         </div>
@@ -304,10 +294,10 @@ export function GenericPickerWidget({
 
   const isPermanentChannelProp =
     statePath[0] == "encoding"
-    && !ALWAYS_EXPANDED_CHANNEL_PROPS.has(statePath[2])
+    && !ALWAYS_VISIBLE_CHANNEL_PROPS.has(statePath[2])
   const isPermanentMarkProp =
     statePath[0] == "mark"
-    && !ALWAYS_EXPANDED_MARK_PROPS.has(statePath[1])
+    && !ALWAYS_VISIBLE_MARK_PROPS.has(statePath[1])
 
   if (isCollapsed && (isPermanentMarkProp || isPermanentChannelProp))
     return null

@@ -310,7 +310,7 @@
   padding-bottom: 1rem;
 }
 
-.GenericContainerCollapsed {
+.GenericContainerMinimized {
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--border-color);
@@ -319,11 +319,11 @@
   margin-top: -1px;
 }
 
-.LayerContainer > .GenericContainerCollapsed:first-child {
+.LayerContainer > .GenericContainerMinimized:first-child {
   margin-top: 0;
 }
 
-.GenericContainerExpandable {
+.GenericContainerMinimizable {
   /* Used for more complex selectors below */
 }
 
@@ -334,7 +334,7 @@
   height: 2rem;
 }
 
-.GenericContainerCollapsed .GenericContainerTitle {
+.GenericContainerMinimized .GenericContainerTitle {
   height: 1.25rem;
   align-items: stretch;
 }
@@ -348,22 +348,22 @@
   user-select: none;
 }
 
-.GenericContainerExpandable .GenericContainerLabel {
+.GenericContainerMinimizable .GenericContainerLabel {
   cursor: pointer;
 }
 
-.GenericContainerExpandable .GenericContainerLabel:hover {
+.GenericContainerMinimizable .GenericContainerLabel:hover {
   color: var(--label-color-hover);
   background-color: var(--input-bg-color);
   border-radius: var(--radius-md);
 }
 
-.GenericContainerCollapsed .GenericContainerLabel {
+.GenericContainerMinimized .GenericContainerLabel {
   padding: 0 0.25rem;
   font-weight: normal;
 }
 
-.GenericContainerCollapsed .GenericContainerLabel:hover {
+.GenericContainerMinimized .GenericContainerLabel:hover {
   color: var(--label-color-hover);
 }
 
@@ -381,7 +381,7 @@
   flex: 0;
 }
 
-.GenericContainerAdvButton {
+.GenericContainerDrawerButton {
   display: flex;
   align-items: center;
   width: 1rem;
@@ -390,7 +390,7 @@
   user-select: none;
 }
 
-.GenericContainerAdvButton:hover {
+.GenericContainerDrawerButton:hover {
   opacity: 1.0;
   background-color: var(--input-bg-color);
 }
