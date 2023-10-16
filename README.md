@@ -6,9 +6,10 @@
 
 What makes it special is that it's ultra-configurable:
 
-* Mintaka uses your React components. All labels, selectboxes, etc, that is draws are provided by you.
-* You choose which Vega-Lite properties to expose to the user.
-* You can specify smart chart presets, so users don't need to know anything about Vega-Lite.
+* Mintaka uses your React components. All labels, selectboxes, etc, that it draws are provided _by you._
+* You choose which Vega-Lite properties to expose to the user, and which are TMI.
+* You can specify smart chart presets, so users don't need to know anything about Vega-Lite to get
+started.
 * And much more! See below for more.
 
 👉 [Live demo](https://streamlit.github.io/mintaka/)
