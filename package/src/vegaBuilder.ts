@@ -59,30 +59,22 @@ export function generateVegaSpec(
         return []
       }))
 
-  patchChannelSpec(encoding, builderState)
+  handleStackSpec(encoding, builderState)
+
+  const transforms: Array<PlainRecord<json>> = []
+  handleFieldListAndFolding(encoding, transforms)
 
   const builderSpec: JsonRecord = {
     mark,
     encoding,
   }
 
-  const transforms: Array<PlainRecord<json>> = []
-  convertFieldListToStrAndMaybeFold(encoding, transforms)
-
   if (transforms.length > 0) {
     builderSpec.transform = transforms
   }
 
   const outSpec = merge({}, baseSpec, builderSpec)
-
-  // The row, column, and facet encodings use the chart-wide size,
-  // which is usually not what users want. Besides, they don't work when
-  // width/height are set to "container". So we just delete the chart
-  // width/height and let Vega pick the best dimensions instead.
-  if (haveAnyElementsInCommon(Object.keys(encoding), ["row", "column", "facet"])) {
-    delete outSpec.width
-    delete outSpec.height
-  }
+  fixChartSizeIfFaceting(encoding, outSpec)
 
   return outSpec
 }
@@ -156,11 +148,12 @@ function buildChannelSpec(
   }
 
   if (s.value != null) channelSpec.value = s.value
+  if (s.datum != null) channelSpec.datum = s.datum
 
   return Object.keys(channelSpec).length > 0 ? channelSpec : null
 }
 
-function patchChannelSpec(
+function handleStackSpec(
   encoding: PlainRecord<PlainRecord<json>>,
   builderState: BuilderState,
 ) {
@@ -197,10 +190,10 @@ function getColType(
   return columnTypes[colName]?.type
 }
 
-const KEYS = "vlcb--folded-keys-"
-const VALUES = "vlcb--folded-values-"
+const KEYS = "mtk--folded-keys-"
+const VALUES = "mtk--folded-values-"
 
-function convertFieldListToStrAndMaybeFold(
+function handleFieldListAndFolding(
   encoding: PlainRecord<PlainRecord<json>>,
   transforms: Array<PlainRecord<json>>,
 ) {
@@ -245,4 +238,15 @@ function foldChannel(
   transforms.push(
     { fold: fields, as: [ keys, values ] }
   )
+}
+
+function fixChartSizeIfFaceting(encoding, outSpec): void {
+  // The row, column, and facet encodings use the chart-wide size,
+  // which is usually not what users want. Besides, they don't work when
+  // width/height are set to "container". So we just delete the chart
+  // width/height and let Vega pick the best dimensions instead.
+  if (haveAnyElementsInCommon(Object.keys(encoding), ["row", "column", "facet"])) {
+    delete outSpec.width
+    delete outSpec.height
+  }
 }
