@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react"
 
-import { PartialRecord, json } from "./util"
-import { Preset } from "./presets"
+import { PartialRecord, json } from "./util.ts"
+import { Preset } from "./presets.ts"
 
 export type MarkPropName =
   | "angle"

@@ -1,12 +1,12 @@
 import {
-  Config, 
-  StructuralConfig, 
-  StructuralKey, 
+  Config,
+  StructuralConfig,
+  StructuralKey,
   Mode,
   NamedMode,
   PlainRecord,
-} from "./types"
-import { objectFilter } from "./collectionUtils"
+} from "./types/index.ts"
+import { objectFilter } from "./collectionUtils.ts"
 
 export function showSection(
   sectionName: keyof Mode,

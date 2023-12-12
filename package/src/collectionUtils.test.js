@@ -5,7 +5,7 @@ import {
   deepClone,
   objectFilter,
   objectFrom,
-} from "./collectionUtils"
+} from "./collectionUtils.ts"
 
 describe("haveAnyElementsInCommon", () => {
   test("empty vs empty", () => {

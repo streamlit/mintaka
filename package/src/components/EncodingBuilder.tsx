@@ -8,11 +8,11 @@ import {
   NamedMode,
   UIComponents,
   WithCustomState,
-} from "../types"
+} from "../types/index.ts"
 
-import { showSection, filterSection } from "../modeParser"
+import { showSection, filterSection } from "../modeParser.ts"
 
-import { ChannelBuilder } from "./ChannelBuilder"
+import { ChannelBuilder } from "./ChannelBuilder.tsx"
 
 export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,

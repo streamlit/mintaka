@@ -1,4 +1,4 @@
-import { Grouping, json } from "./util"
+import { Grouping, json } from "./util.ts"
 
 export interface PresetColumnFilter {
   type?: Array<string | null>,

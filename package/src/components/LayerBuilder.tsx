@@ -7,10 +7,10 @@ import {
   NamedMode,
   UIComponents,
   WithCustomState,
-} from "../types"
+} from "../types/index.ts"
 
-import { MarkBuilder } from "./MarkBuilder"
-import { EncodingBuilder } from "./EncodingBuilder"
+import { MarkBuilder } from "./MarkBuilder.tsx"
+import { EncodingBuilder } from "./EncodingBuilder.tsx"
 
 export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,

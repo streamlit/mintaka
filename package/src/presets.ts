@@ -1,4 +1,4 @@
-import { Presets } from "./types"
+import { Presets } from "./types/index.ts"
 
 export const PRESETS: Presets = {
   "Scatter": {

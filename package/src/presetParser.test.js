@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest"
 
-import { updateStateFromPreset } from "./presetParser"
+import { updateStateFromPreset } from "./presetParser.ts"
 
 function makeFakeState() {
   const newState = {}

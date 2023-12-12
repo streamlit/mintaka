@@ -1,6 +1,6 @@
 import includes from "lodash/includes"
 
-import { PlainRecord } from "./types"
+import { PlainRecord } from "./types/index.ts"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function haveAnyElementsInCommon(arr1: any[], arr2: any[]): boolean {

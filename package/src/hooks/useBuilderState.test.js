@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest'
 import { renderHook } from '@testing-library/react'
 
-import * as configDefaults from '../config'
+import * as configDefaults from '../config.ts'
 
-import { useBuilderState } from './useBuilderState'
+import { useBuilderState } from './useBuilderState.ts'
 
 describe('useBuilderState', () => {
   test('empty arguments', () => {

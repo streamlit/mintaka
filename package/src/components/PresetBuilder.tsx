@@ -8,11 +8,11 @@ import {
   Presets,
   UIComponents,
   WithCustomState,
-} from "../types"
+} from "../types/index.ts"
 
-import { PRESETS } from "../presets"
-import { updateStateFromPreset } from "../presetParser"
-import { showSection } from "../modeParser"
+import { PRESETS } from "../presets.ts"
+import { updateStateFromPreset } from "../presetParser.ts"
+import { showSection } from "../modeParser.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,

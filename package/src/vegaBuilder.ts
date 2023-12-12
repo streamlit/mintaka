@@ -14,9 +14,9 @@ import {
   VLSpec,
   VlFieldType,
   json,
-} from "./types"
+} from "./types/index.ts"
 
-import { haveAnyElementsInCommon } from "./collectionUtils"
+import { haveAnyElementsInCommon } from "./collectionUtils.ts"
 
 export const DEFAULT_BASE_SPEC = {
   mark: {

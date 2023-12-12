@@ -1,4 +1,4 @@
-import { VlFieldType } from "./types"
+import { VlFieldType } from "./types/index.ts"
 
 // TODO: Use Arrow fields to guess columnTypes:
 // arrowdata.schema.fields[0].name
