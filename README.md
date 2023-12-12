@@ -66,7 +66,7 @@ started.
    ```
 
 
-## More info  
+## More info
 
 - **The builder doesn’t draw the chart itself.** It just outputs a VL spec, and which you draw by passing into your own Vega-Lite component. Or you can use one I provide. Up to you!
 
