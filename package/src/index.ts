@@ -1,9 +1,9 @@
-export * from "./types"
+export * from "./types/index.ts"
 
-export * from "./config"
-export * from "./presets"
+export * from "./config.ts"
+export * from "./presets.ts"
 
-export * from "./components/Mintaka"
+export * from "./components/Mintaka.tsx"
 
 // Utilities
-export { simpleColumnTypeDetector } from "./simpleColumnTypeDetector"
+export { simpleColumnTypeDetector } from "./simpleColumnTypeDetector.ts"

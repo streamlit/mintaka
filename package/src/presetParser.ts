@@ -11,9 +11,9 @@ import {
   Preset,
   PresetColumnFilter,
   json,
-} from "./types"
+} from "./types/index.ts"
 
-import { objectFrom, deepClone } from "./collectionUtils"
+import { objectFrom, deepClone } from "./collectionUtils.ts"
 
 export function updateStateFromPreset(
   state: BuilderState,

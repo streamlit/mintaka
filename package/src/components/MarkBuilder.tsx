@@ -10,9 +10,9 @@ import {
   UIComponents,
   WidgetHint,
   WithCustomState,
-} from "../types"
+} from "../types/index.ts"
 
-import { filterSection } from "../modeParser"
+import { filterSection } from "../modeParser.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   config: Config,

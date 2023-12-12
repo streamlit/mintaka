@@ -13,9 +13,9 @@ import {
   WidgetHint,
   WithCustomState,
   json,
-} from "../types"
+} from "../types/index.ts"
 
-import { filterSection } from "../modeParser"
+import { filterSection } from "../modeParser.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   channelName: ChannelName,

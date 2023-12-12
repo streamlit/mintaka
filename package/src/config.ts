@@ -9,7 +9,7 @@ import {
   MarkConfig,
   MarkPropertyValuesConfig,
   ModeConfig,
-} from "./types"
+} from "./types/index.ts"
 
 // For these constants, order matters! This is the order they'll appear in the UI.
 // (string keys in JS Objects are guaranteed to be ordered by insertion order)

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest"
 
-import { simpleColumnTypeDetector } from "./simpleColumnTypeDetector"
+import { simpleColumnTypeDetector } from "./simpleColumnTypeDetector.ts"
 
 describe("simpleColumnTypeDetector", () => {
   test("quantitative columns", () => {

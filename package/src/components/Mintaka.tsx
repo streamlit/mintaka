@@ -17,16 +17,16 @@ import {
   UIComponents,
   UtilBlockProps,
   VLSpec,
-} from "../types"
+} from "../types/index.ts"
 
-import * as configDefaults from "../config"
-import { generateVegaSpec, DEFAULT_BASE_SPEC } from "../vegaBuilder"
-import { updateStateFromPreset } from "../presetParser"
+import * as configDefaults from "../config.ts"
+import { generateVegaSpec, DEFAULT_BASE_SPEC } from "../vegaBuilder.ts"
+import { updateStateFromPreset } from "../presetParser.ts"
 
-import { useBuilderState } from "../hooks/useBuilderState"
+import { useBuilderState } from "../hooks/useBuilderState.ts"
 
-import { LayerBuilder } from "./LayerBuilder"
-import { PresetBuilder } from "./PresetBuilder"
+import { LayerBuilder } from "./LayerBuilder.tsx"
+import { PresetBuilder } from "./PresetBuilder.tsx"
 
 export interface Props<S> {
   columnTypes: ColumnTypes,

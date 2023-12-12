@@ -4,16 +4,16 @@ import {
   selectMarkProperty,
   selectChannel,
   selectChannelProperty,
-} from "./config"
+} from "./config.ts"
 
 import {
   haveAnyElementsInCommon,
   deepClone,
   objectFilter,
   objectFrom,
-} from "./collectionUtils"
+} from "./collectionUtils.ts"
 
-import { generateVegaSpec } from "./vegaBuilder"
+import { generateVegaSpec } from "./vegaBuilder.ts"
 
 const trivialColumnTypes = {}
 const trivialConfig = {

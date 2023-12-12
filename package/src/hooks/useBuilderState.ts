@@ -15,9 +15,9 @@ import {
   EncodingState,
   MarkState,
   ChannelPropName,
-} from "../types"
+} from "../types/index.ts"
 
-import { objectFrom } from "../collectionUtils"
+import { objectFrom } from "../collectionUtils.ts"
 
 export function useBuilderState(
   config: Config,

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest"
 
-import { showSection, filterSection } from "./modeParser"
+import { showSection, filterSection } from "./modeParser.ts"
 
 describe("showSection", () => {
   test("null namedMode", () => {
