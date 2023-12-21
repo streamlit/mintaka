@@ -1,7 +1,7 @@
 {
   "name": "mintaka-demo",
   "private": true,
-  "version": "0.5.2",
+  "version": "0.6.0",
   "scripts": {
     "setup-demo": "npm install",
     "build-demo": "tsc && vite build",
