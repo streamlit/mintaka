@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from "react"
+import { useCallback, useState, useEffect, ChangeEvent } from "react"
 import { AgGridReact } from '@ag-grid-community/react';
 import { ModuleRegistry } from '@ag-grid-community/core';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
@@ -10,13 +10,13 @@ import drivingDataset from "../data/driving.json"
 import penguinsDataset from "../data/penguins.json"
 import populationDataset from "../data/population.json"
 
-import { simpleColumnTypeDetector } from "mintaka"
+import { simpleColumnTypeDetector } from "../../mintaka/src"
 
-import * as ui from "./ui"
+import * as ui from "./ui.tsx"
 
-import Demo1 from "./Demo1"
-import Demo2 from "./Demo2"
-import Demo3 from "./Demo3"
+import Demo1 from "./Demo1.tsx"
+import Demo2 from "./Demo2.tsx"
+import Demo3 from "./Demo3.tsx"
 
 import logo from "../assets/logo.svg"
 
@@ -26,12 +26,13 @@ import '@ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 
 import styles from "./demo.module.css"
 import utilStyles from "./util.module.css"
+import { DemoMeta } from "./demoProps.ts";
 
 ModuleRegistry.registerModules([
     ClientSideRowModelModule,
 ]);
 
-const DEMOS = [
+const DEMOS: DemoMeta[] = [
   {
     title: "Basic",
     description: "Shows the default settings, plus custom chart presets.",
@@ -53,7 +54,7 @@ const DEMOS = [
 function App() {
   const [dataset, setDataset] = useState(penguinsDataset)
   const [columnTypes, setcolumnTypes] = useState({})
-  const [agGridColumnDefs, setAgGridColumnDefs] = useState(null)
+  const [agGridColumnDefs, setAgGridColumnDefs] = useState<any>(null)
   const [key, setKey] = useState(0)
   const [selectedDemoIndex, setSelectedDemoIndex] = useState(0)
   const selectedDemo = DEMOS[selectedDemoIndex]
@@ -78,11 +79,11 @@ function App() {
   }, [ dataset ])
 
   const [gridOptions] = useState({
-    onFirstDataRendered: (ev) => ev.api.sizeColumnsToFit(),
+    onFirstDataRendered: (ev: any) => ev.api.sizeColumnsToFit(),
   })
 
-  const setDemoCallback = useCallback((ev) => {
-    const valueStr = ev.target.value
+  const setDemoCallback = useCallback((ev: ChangeEvent) => {
+    const valueStr = (ev.currentTarget as HTMLInputElement).value
     const index = parseInt(valueStr, 10)
     setSelectedDemoIndex(index)
   }, [ setSelectedDemoIndex ])
@@ -124,7 +125,6 @@ function App() {
         <div className={styles.DatasetPickerWrapper}>
           <h2>Pick a dataset</h2>
           <ui.SelectBox
-            label={null}
             items={{
               penguins: penguinsDataset,
               barley: barleyDataset,
@@ -155,7 +155,7 @@ function App() {
 
       <div>
         <h2>Pick a demo</h2>
-        <ul className={styles.DemoPicker} onChange={setDemoCallback}>
+        <ul className={styles.DemoPicker}>
           {DEMOS.map((demo, i) => (
             <li key={i} data-checked={i == selectedDemoIndex}>
               <label>
@@ -165,6 +165,7 @@ function App() {
                   value={i}
                   defaultChecked={i == selectedDemoIndex}
                   className={utilStyles.HiddenInput}
+                  onChange={setDemoCallback}
                 />
                 <h3>{demo.title}</h3>
                 <p>{demo.description}</p>

@@ -229,6 +229,7 @@ details[open] > .PreviewDatasetToggle::before {
   justify-content: stretch;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
+  user-select: none;
 }
 
 .DemoPicker li[data-checked=true] {
@@ -255,7 +256,7 @@ details[open] > .PreviewDatasetToggle::before {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-contents: center;
+  justify-content: center;
   padding: 1rem;
 }
 

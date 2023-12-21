@@ -1,10 +1,21 @@
-import { useState, useEffect, useCallback } from "react"
+import { Dispatch, useState, useEffect, useCallback, SetStateAction, ReactNode, ChangeEvent, MouseEvent } from "react"
+
+import {
+  ChannelContainerProps,
+  GenericPickerWidgetProps,
+  SectionContainerProps,
+  Setter,
+  SimpleContainerProps,
+  UtilBlockProps,
+} from "mintaka"
 
 import backspaceIconSvg from "../assets/backspace_FILL0_wght300_GRAD0_opsz48.svg"
 import tuneIconSvg from "../assets/tune_FILL0_wght300_GRAD0_opsz48.svg"
 
 import styles from "./ui.module.css"
 import utilStyles from "./util.module.css"
+
+type DrawerStates = Record<string, boolean>
 
 const AUTO_VISIBLE_CHANNELS = new Set([
   "text",
@@ -25,7 +36,7 @@ const ALWAYS_VISIBLE_CHANNEL_PROPS = new Set([
   "field",
 ])
 
-export function MintakaContainer({children}) {
+export function MintakaContainer({children}: SimpleContainerProps) {
   return (
     <div className={styles.MintakaContainer}>
       {children}
@@ -33,7 +44,7 @@ export function MintakaContainer({children}) {
   )
 }
 
-export function LayerContainer({children}) {
+export function LayerContainer({children}: SimpleContainerProps) {
   return (
     <div className={styles.LayerContainer}>
       {children}
@@ -41,7 +52,7 @@ export function LayerContainer({children}) {
   )
 }
 
-export function EncodingContainer({children}) {
+export function EncodingContainer({children}: SimpleContainerProps) {
   return (
     <div className={styles.EncodingContainer}>
       {children}
@@ -49,14 +60,14 @@ export function EncodingContainer({children}) {
   )
 }
 
-export function MegaToolbar({modes, currentMode, setMode, reset}) {
+export function MegaToolbar({modes, currentMode, setMode, reset}: UtilBlockProps) {
   return (
     <div className={styles.MegaToolbar}>
       {modes && (
         <ModePicker
-          items={modes}
-          value={currentMode}
-          setValue={setMode}
+          modes={modes}
+          currentMode={currentMode}
+          setMode={setMode}
         />
       )}
 
@@ -65,25 +76,25 @@ export function MegaToolbar({modes, currentMode, setMode, reset}) {
   )
 }
 
-export function EmptyBlock(props) {
+export function EmptyBlock() {
   return null
 }
 
-export function ViewModeToolbar({modes, currentMode, setMode}) {
+export function ViewModeToolbar({modes, currentMode, setMode}: UtilBlockProps) {
   return (
     <div className={styles.ViewModeToolbar}>
       {modes && (
         <ModePicker
-          items={modes}
-          value={currentMode}
-          setValue={setMode}
+          modes={modes}
+          currentMode={currentMode}
+          setMode={setMode}
         />
       )}
     </div>
   )
 }
 
-export function ButtonToolbar({reset}) {
+export function ButtonToolbar({reset}: UtilBlockProps) {
   return (
     <div className={styles.ButtonToolbar}>
       <ResetButton onClick={reset} />
@@ -91,9 +102,13 @@ export function ButtonToolbar({reset}) {
   )
 }
 
+interface ResetButtonProps {
+  onClick: () => void,
+}
+
 function ResetButton({
   onClick,
-}) {
+}: ResetButtonProps) {
   return (
     <button className={styles.ResetButton} onClick={onClick}>
       Reset
@@ -101,25 +116,31 @@ function ResetButton({
   )
 }
 
+interface ModePickerProps {
+  modes: string[] | null,
+  currentMode: string,
+  setMode: Setter<string>,
+}
+
 function ModePicker({
-  items,
-  value,
-  setValue,
-}) {
-  const [ radioValue, setRadioValue ] = useState(value)
+  modes,
+  currentMode,
+  setMode,
+}: ModePickerProps) {
+  const [ radioValue, setRadioValue ] = useState(currentMode)
 
-  const onClick = useCallback(ev => {
-    const newValue = ev.currentTarget.value
+  const onClick = useCallback((ev: ChangeEvent) => {
+    const newValue = (ev.currentTarget as HTMLInputElement).value
     setRadioValue(newValue)
-    setValue(newValue)
-  }, [items, setValue, setRadioValue])
+    setMode(newValue)
+  }, [modes, setMode, setRadioValue])
 
-  if (!items || Object.keys(items).length <= 1)
+  if (!modes || Object.keys(modes).length <= 1)
     return null
 
   return (
     <div className={styles.ModePicker}>
-      {items.map((label, i) => (
+      {modes.map((label, i) => (
         <label
           className={radioValue == label
             ? styles.ModePickerSelectedLabel
@@ -145,7 +166,7 @@ function ModePicker({
 export function PresetsContainer({
   children,
   statePath,
-}) {
+}: SectionContainerProps<DrawerStates>) {
   return (
     <GenericContainer
       title={"Chart type"}
@@ -164,7 +185,7 @@ export function MarkContainer({
   setCustomState,
   viewMode,
   statePath,
-}) {
+}: SectionContainerProps<DrawerStates>) {
   return (
     <GenericContainer
       title={"Mark"}
@@ -189,7 +210,7 @@ export function ChannelContainer({
   customState,
   setCustomState,
   viewMode,
-}) {
+}: ChannelContainerProps<DrawerStates>) {
   const isAdv = viewMode == "Adv" || viewMode == "Advanced"
   return (
     <GenericContainer
@@ -206,6 +227,18 @@ export function ChannelContainer({
   )
 }
 
+interface GenericContainerProps {
+  title?: string,
+  children: ReactNode|ReactNode[],
+  className?: string,
+  minimizable?: boolean,
+  startsMinimized?: boolean,
+  hasSettingsDrawer?: boolean,
+  setCustomState?: Dispatch<SetStateAction<DrawerStates|undefined>>,
+  customState?: DrawerStates,
+  statePath?: string[],
+}
+
 export function GenericContainer({
   title,
   children,
@@ -216,7 +249,7 @@ export function GenericContainer({
   setCustomState,
   customState,
   statePath,
-}) {
+}: GenericContainerProps) {
   const [minimized, setMinimized] = useState(minimizable ? startsMinimized : false)
   const [drawerVisible, setDrawerVisible] = useState(false)
 
@@ -231,7 +264,7 @@ export function GenericContainer({
     const newValue = !drawerVisible
     setDrawerVisible(newValue)
 
-    if (setCustomState)
+    if (setCustomState && statePath)
       setCustomState({ ...customState, [statePath.join(".")]: newValue })
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -250,13 +283,13 @@ export function GenericContainer({
     className,
   ].join(" ")
 
-  if (!children || children.length == 0) return null
+  if (!children || (children as ReactNode[]).length == 0) return null
 
   return (
     <div className={wrapperStyles}>
       {title && (
         <div className={styles.GenericContainerTitle}>
-          <label className={styles.GenericContainerLabel} onClick={minimizable ? toggleMinimized : null}>
+          <label className={styles.GenericContainerLabel} onClick={minimizable ? toggleMinimized : undefined}>
             {title.toUpperCase()}
           </label>
 
@@ -288,7 +321,7 @@ export function GenericPickerWidget({
   statePath,
   customState,
   viewMode,
-}) {
+}: GenericPickerWidgetProps<any, DrawerStates>) {
   const parentPath = statePath.slice(0, -1)
   const isCollapsed = (viewMode == "Adv" || viewMode == "Advanced" || viewMode == "Default") && !customState?.[parentPath.join(".")]
 
@@ -310,14 +343,15 @@ export function GenericPickerWidget({
     widgetHint = "select"
   }
 
-  if (statePath[0] == "presets") label = null
+  const widgetLabel = statePath[0] == "presets" ?
+    undefined : label
 
   switch (widgetHint) {
     case "multiselect":
       return (
         <MultiSelect
-          label={label}
-          items={items}
+          label={widgetLabel}
+          items={items as Record<string, any>}
           value={value}
           setValue={setValue}
         />
@@ -326,8 +360,8 @@ export function GenericPickerWidget({
     case "select":
       return (
         <SelectBox
-          label={label}
-          items={items}
+          label={widgetLabel}
+          items={items as Record<string, any>}
           value={value}
           setValue={setValue}
         />
@@ -336,8 +370,8 @@ export function GenericPickerWidget({
     case "toggle":
       return (
         <Toggle
-          label={label}
-          items={items}
+          label={widgetLabel}
+          items={items as Record<string, any>}
           value={value}
           setValue={setValue}
         />
@@ -349,12 +383,19 @@ export function GenericPickerWidget({
     default:
       return (
         <TextInput
-          label={label}
-          value={value}
-          setValue={setValue}
+          label={widgetLabel}
+          value={value as string|null}
+          setValue={setValue as Dispatch<SetStateAction<string|null|undefined>>}
         />
       )
   }
+}
+
+interface SelectInputProps<V> {
+  label?: string,
+  items: Record<string, V>,
+  value: V,
+  setValue: Dispatch<SetStateAction<V>>,
 }
 
 export function MultiSelect({
@@ -362,14 +403,14 @@ export function MultiSelect({
   items,
   value,
   setValue,
-}) {
+}: SelectInputProps<any>) {
   const NO_VALUE_LABEL = Object.keys(items)[0]
   const valueArr =
       Array.isArray(value) ? value :
       value == null ? []
       : [value]
 
-  const getLabelFromValue = useCallback((v) => {
+  const getLabelFromValue = useCallback((v: any) => {
     return Object.entries(items ?? {})
       .find(([_, itemValue]) => itemValue == v)
       ?.[0]
@@ -377,7 +418,7 @@ export function MultiSelect({
 
   // We use labels for selectbox values since they're always strings,
   // and HTML Selectbox only supports value strings.
-  const [multiselectValue, setMultiselectValue] = useState([])
+  const [multiselectValue, setMultiselectValue] = useState<any[]>([])
 
   useEffect(() => {
     const newSelectboxValue = valueArr?.map(v => getLabelFromValue(v))
@@ -391,11 +432,10 @@ export function MultiSelect({
     setMultiselectValue(newSelectboxValue)
   }, [value])
 
-  const setValueFromLabel = useCallback((ev) => {
-    const domLabel = ev.currentTarget.value
-    const index = parseInt(ev.currentTarget.dataset["index"], 10)
-
-    const domValue = items[domLabel]
+  const setValueFromLabel = useCallback((ev: ChangeEvent) => {
+    const el = ev.currentTarget as HTMLSelectElement 
+    const domLabel = el.value
+    const index = parseInt(el.dataset["index"] || "0", 10)
 
     if (multiselectValue.length > 1 && domLabel == NO_VALUE_LABEL) {
       multiselectValue.splice(index, 1)
@@ -444,8 +484,8 @@ export function SelectBox({
   items,
   value,
   setValue,
-}) {
-  const getLabelFromValue = useCallback((v) => {
+}: SelectInputProps<any>) {
+  const getLabelFromValue = useCallback((v: any) => {
     return Object.entries(items ?? {})
       .find(([_, itemValue]) => itemValue == v)
       ?.[0]
@@ -454,7 +494,7 @@ export function SelectBox({
   // We use labels for selectbox values since they're always strings,
   // and HTML Selectbox only supports value strings.
   // (BTW "" doesn't matter since the useEffect below will replace it)
-  const [selectboxValue, setSelectboxValue] = useState("")
+  const [selectboxValue, setSelectboxValue] = useState<string|undefined>("")
 
   useEffect(() => {
     const currItemLabel = getLabelFromValue(value)
@@ -463,8 +503,8 @@ export function SelectBox({
     setSelectboxValue(currItemLabel)
   }, [value])
 
-  const setValueFromLabel = useCallback((ev) => {
-    const label = ev.currentTarget.value
+  const setValueFromLabel = useCallback((ev: ChangeEvent) => {
+    const label = (ev.currentTarget as HTMLSelectElement).value
     setSelectboxValue(label)
 
     const newValue = items[label]
@@ -490,13 +530,54 @@ export function SelectBox({
   )
 }
 
+export function Toggle({
+  label,
+  items,
+  value,
+  setValue,
+}: SelectInputProps<string>) {
+  let values: string[]
+
+  if (Array.isArray(items)) {
+    values = items 
+  } else {
+    values = Object.values(items)
+  }
+
+  const toggle = useCallback((ev: MouseEvent) => {
+    const el = ev.currentTarget as HTMLInputElement
+    setValue(el.checked ? values[1] : values[0])
+  }, [setValue, values])
+
+  return (
+    <WidgetWrapper label={label}>
+      <HtmlLabel className={styles.ToggleLabel}>
+        <input
+          type="checkbox"
+          key={/* This is a hack so presets work */ value}
+          defaultChecked={value == values[1]}
+          className={[styles.ToggleInput, utilStyles.HiddenInput].join(" ")}
+          onClick={toggle}
+        />
+        <div className={styles.ToggleElement}></div>
+      </HtmlLabel>
+    </WidgetWrapper>
+  )
+}
+
+interface TextInputProps {
+  label?: string,
+  value: string|null,
+  setValue: Dispatch<SetStateAction<string|null|undefined>>,
+}
+
 export function TextInput({
   label,
   value,
   setValue,
-}) {
-  const setValueFromString = useCallback((ev) => {
-    const newValue = ev.currentTarget.value
+}: TextInputProps) {
+  const setValueFromString = useCallback((ev: ChangeEvent) => {
+    const newValue = (ev.currentTarget as HTMLInputElement).value
     try {
       setValue(JSON.parse(newValue))
     } catch (e) {
@@ -513,7 +594,7 @@ export function TextInput({
   const valueString = value == null
     ? value = ""
     : typeof value == "string"
-      ? value
+      ?value 
       : JSON.stringify(value)
 
   return (
@@ -537,48 +618,19 @@ export function TextInput({
   )
 }
 
-export function Toggle({
-  label,
-  items,
-  value,
-  setValue,
-}) {
-  let values
-
-  if (Array.isArray(items)) {
-    values = items
-  } else {
-    values = Object.values(items)
-  }
-
-  const toggle = useCallback((ev) => {
-    setValue(ev.currentTarget.checked ? values[1] : values[0])
-  }, [setValue, values])
-
-  return (
-    <WidgetWrapper label={label}>
-      <HtmlLabel className={styles.ToggleLabel}>
-        <input
-          type="checkbox"
-          key={/* This is a hack so presets work */ value}
-          defaultChecked={value == values[1]}
-          className={[styles.ToggleInput, utilStyles.HiddenInput].join(" ")}
-          onClick={toggle}
-        />
-        <div className={styles.ToggleElement}></div>
-      </HtmlLabel>
-    </WidgetWrapper>
-  )
+export function HtmlLabel(props: Record<string, any>) {
+  return <label {...props} />
 }
 
-export function HtmlLabel(props) {
-  return <label {...props} />
+interface WidgetWrapperProps {
+  label?: string,
+  children?: ReactNode|ReactNode[],
 }
 
 export function WidgetWrapper({
   label,
   children,
-}) {
+}: WidgetWrapperProps) {
   return (
     <>
       { label &&

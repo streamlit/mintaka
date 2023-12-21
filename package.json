@@ -1,21 +1,21 @@
 {
-  "name": "mintaka demo",
+  "name": "mintaka-demo",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.5.2",
   "scripts": {
     "setup-demo": "npm install",
     "build-demo": "tsc && vite build",
     "dev": "vite --host",
-    "lint": "cd package && npm run lint",
-    "test": "cd package && npm run test",
-    "typecheck": "cd package && npm run typecheck"
+    "lint": "cd mintaka && npm run lint",
+    "test": "cd mintaka && npm run test",
+    "typecheck": "cd mintaka && npm run typecheck"
   },
   "dependencies": {
     "@ag-grid-community/client-side-row-model": "^30.1.0",
     "@ag-grid-community/core": "^30.1.0",
     "@ag-grid-community/react": "^30.1.0",
     "@ag-grid-community/styles": "^30.1.0",
-    "mintaka": "file:./package/",
+    "mintaka": "file:./mintaka/",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

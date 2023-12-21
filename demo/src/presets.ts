@@ -1,4 +1,6 @@
-export const PRESETS = {
+import { Presets } from "mintaka";
+
+export const PRESETS: Presets = {
   "Scatter plot": {
     mark: {
       type: "point",

@@ -1,26 +1,27 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 
 import { Mintaka } from "mintaka"
 
 import DemoOutput from "./DemoOutput"
 import DemoInfo from "./DemoInfo"
 import PreviewPane from "./PreviewPane"
+import { DemoProps } from "./demoProps"
 
 import {
   MintakaContainer,
   ButtonToolbar,
   ChannelContainer,
+  EmptyBlock,
   EncodingContainer,
   GenericPickerWidget,
   LayerContainer,
   MarkContainer,
   PresetsContainer,
-  ViewModeToolbar,
 } from "./ui"
 
 import styles from "./demo.module.css"
 
-export default function Demo({ demo, dataset, columnTypes }) {
+export default function Demo({ demo, dataset, columnTypes }: DemoProps) {
   const [generatedSpec, setGeneratedSpec] = useState({})
 
   return (
@@ -40,7 +41,7 @@ export default function Demo({ demo, dataset, columnTypes }) {
               LayerContainer,
               MarkContainer,
               PresetsContainer,
-              TopUtilBlock: ViewModeToolbar,
+              TopUtilBlock: EmptyBlock,
               BottomUtilBlock: ButtonToolbar,
             }}
             modes={modes}
@@ -60,35 +61,13 @@ export default function Demo({ demo, dataset, columnTypes }) {
 }
 
 const modes = {
-  Base: {
-    presets: true,
-    encoding: new Set(["x", "y", "theta", "latitude", "longitude", "color"]),
-    channelProperties: new Set(["field"]),
-    else: false,
-  },
-
-  Agg: {
-    encoding: new Set(["x", "y", "theta", "latitude", "longitude", "color"]),
-    channelProperties: new Set(["aggregate", "bin", "binStep", "maxBins"]),
-    else: false,
-  },
-
-  Axis: {
-    encoding: new Set(["x", "y", "theta", "latitude", "longitude", "color"]),
+  "Default": {
+    mark: new Set(["type", "shape", "filled"]),
+    encoding: new Set(["x", "y", "color", "size", "opacity"]),
     channelProperties: new Set([
-      "scaleType", "scheme", "domain", "range", "zero", "sort", "stack",
-      "timeUnit", "title", "legend",
+      "field", "value", "type", "aggregate", "bin", "binStep", "maxBins",
+      "stack", "sort", "scale",
     ]),
     else: false,
-  },
-
-  Mark: {
-    mark: true,
-    else: false,
-  },
-
-  Adv: {
-    presets: false,
-    else: true,
   },
 }

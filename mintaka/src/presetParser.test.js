@@ -1,57 +1,21 @@
 import { describe, expect, test } from "vitest"
 
-import { updateStateFromPreset } from "./presetParser.ts"
+import { parsePreset } from "./presetParser.ts"
 
-function makeFakeState() {
-  const newState = {}
-
-  const state = {
-    preset: null,
-    mark: {},
-    encoding: {},
-    setPreset: (v) => newState.preset = v,
-    setMark: (v) => newState.mark = v,
-    setEncoding: (v) => newState.encoding = v,
-  }
-
-  return [ state, newState ]
-}
-
-describe("updateStateFromPreset", () => {
-  test("null state throws error", () => {
-    const state = null
-    const preset = {}
-    const columnTypes = {}
-
-    expect(() => updateStateFromPreset(state, preset, columnTypes))
-      .toThrow()
-  })
-
-  test("bad state throws error", () => {
-    const state = {}
-    const preset = {}
-    const columnTypes = {}
-
-    expect(() => updateStateFromPreset(state, preset, columnTypes))
-      .toThrow()
-  })
-
+describe("parsePreset", () => {
   test("null preset", () => {
-    const [ state, newState ] = makeFakeState()
     const preset = {}
     const columnTypes = {}
 
-    updateStateFromPreset(state, preset, columnTypes)
+    const out = parsePreset(preset, columnTypes)
 
-    expect(newState).toEqual({
-      preset: {},
+    expect(out).toEqual({
       mark: {},
       encoding: {},
     })
   })
 
   test("simple preset", () => {
-    const [ state, newState ] = makeFakeState()
     const preset = {
       mark: {
         mk1: "mv1",
@@ -70,10 +34,9 @@ describe("updateStateFromPreset", () => {
     }
     const columnTypes = {}
 
-    updateStateFromPreset(state, preset, columnTypes)
+    const out = parsePreset(preset, columnTypes)
 
-    expect(newState).toEqual({
-      preset,
+    expect(out).toEqual({
       mark: {
         mk1: "mv1",
         mk2: "mv2",
@@ -92,7 +55,6 @@ describe("updateStateFromPreset", () => {
   })
 
   describe("preset with if condition", () => {
-    const [ state, newState ] = makeFakeState()
     const preset = {
       mark: {
         mk1: "mv1",
@@ -128,10 +90,9 @@ describe("updateStateFromPreset", () => {
         },
       }
 
-      updateStateFromPreset(state, preset, columnTypes)
+      const out = parsePreset(preset, columnTypes)
 
-      expect(newState).toEqual({
-        preset,
+      expect(out).toEqual({
         mark: {
           mk1: "mv1",
           mk2: "mv2",
@@ -175,10 +136,9 @@ describe("updateStateFromPreset", () => {
         },
       }
 
-      updateStateFromPreset(state, preset, columnTypes)
+      const out = parsePreset(preset, columnTypes)
 
-      expect(newState).toEqual({
-        preset,
+      expect(out).toEqual({
         mark: {
           mk1: "mv1--modified",
           mk2: "mv2",

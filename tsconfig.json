@@ -18,8 +18,12 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    "paths": {
+      "mintaka/*": ["./mintaka/src/*"]
+    }
   },
-  "include": ["src"],
+  "include": ["demo/src", "declarations.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

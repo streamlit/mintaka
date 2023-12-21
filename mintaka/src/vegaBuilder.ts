@@ -240,7 +240,7 @@ function foldChannel(
   )
 }
 
-function fixChartSizeIfFaceting(encoding, outSpec): void {
+function fixChartSizeIfFaceting(encoding: PlainRecord<PlainRecord<json>>, outSpec: VLSpec): void {
   // The row, column, and facet encodings use the chart-wide size,
   // which is usually not what users want. Besides, they don't work when
   // width/height are set to "container". So we just delete the chart

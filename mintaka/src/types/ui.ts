@@ -4,7 +4,7 @@ import { PlainRecord } from "./index.ts"
 
 type Children = ReactNode | ReactNode[]
 
-interface SimpleContainerProps {
+export interface SimpleContainerProps {
   children: Children,
 }
 
@@ -18,31 +18,35 @@ export type Setter<V> = (value: V) => void
 export type MintakaContainer = FunctionComponent<SimpleContainerProps>
 export type LayerContainer = FunctionComponent<SimpleContainerProps>
 
-export interface UtilBlockProps {
-  // Utils for settings and viewing the current view mode.
+// Utils for settings and viewing the current view mode.
+export interface ModeBlockProps {
   modes: string[] | null,
   currentMode: string,
   setMode: Setter<string>,
+}
 
-  // Utils for resetting the chart builder.
+// Utils for resetting the chart builder.
+export interface ResetBlockProps {
   reset: () => void,
 }
+
+export interface UtilBlockProps extends ModeBlockProps, ResetBlockProps {}
 
 export type UtilBlock = FunctionComponent<UtilBlockProps>
 
 export type StatePath = Array<string>
 
-export interface LevelContainerProps<S> extends SimpleContainerProps, WithCustomState<S> {
+export interface SectionContainerProps<S> extends SimpleContainerProps, WithCustomState<S> {
   statePath: StatePath,
   viewMode: string,
 }
 
-type LevelContainer<S> = FunctionComponent<LevelContainerProps<S>>
-export type MarkContainer<S> = LevelContainer<S>
-export type EncodingContainer<S> = LevelContainer<S>
-export type PresetsContainer<S> = LevelContainer<S>
+type SectionContainer<S> = FunctionComponent<SectionContainerProps<S>>
+export type MarkContainer<S> = SectionContainer<S>
+export type EncodingContainer<S> = SectionContainer<S>
+export type PresetsContainer<S> = SectionContainer<S>
 
-export interface ChannelContainerProps<S> extends LevelContainerProps<S> {
+export interface ChannelContainerProps<S> extends SectionContainerProps<S> {
   title: string,
 }
 
@@ -62,28 +66,15 @@ export type JsonizedWidgetHint =
 
 export type WidgetHint = ItemizedWidgetHint | JsonizedWidgetHint
 
-interface GenericPickerWidgetCommonProps<V, S> extends WithCustomState<S> {
+export interface GenericPickerWidgetProps<V, S> extends WithCustomState<S> {
   statePath: StatePath,
   label: string,
+  items: PlainRecord<V>|undefined,
   value: V,
   setValue: Dispatch<SetStateAction<V>>,
   viewMode: string,
+  widgetHint: WidgetHint|undefined,
 }
-
-interface GenericPickerWidgetItemizedProps<V, S> extends GenericPickerWidgetCommonProps<V, S> {
-  widgetHint: ItemizedWidgetHint,
-  items: PlainRecord<V>,
-}
-
-interface GenericPickerWidgetAllProps<V, S> extends GenericPickerWidgetCommonProps<V, S> {
-  widgetHint: WidgetHint,
-  items: PlainRecord<V>,
-}
-
-export type GenericPickerWidgetProps<V, S> =
-  | GenericPickerWidgetItemizedProps<V, S>
-  | GenericPickerWidgetAllProps<V, S>
-  | GenericPickerWidgetCommonProps<V, S>
 
 export type GenericPickerWidget<V, S> = FunctionComponent<GenericPickerWidgetProps<V, S>>
 

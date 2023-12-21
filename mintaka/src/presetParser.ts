@@ -1,12 +1,14 @@
 import includes from "lodash/includes"
 import merge from "lodash/merge"
+import cloneDeep from "lodash/cloneDeep"
 
 import {
-  BuilderState,
   ColumnTypes,
+  EncodingState,
   FindColumnsSpec,
   Grouping,
   MarkPropName,
+  MarkState,
   PlainRecord,
   Preset,
   PresetColumnFilter,
@@ -15,12 +17,16 @@ import {
 
 import { objectFrom, deepClone } from "./collectionUtils.ts"
 
-export function updateStateFromPreset(
-  state: BuilderState,
+export interface ParsedPreset {
+  mark?: MarkState,
+  encoding?: EncodingState,
+}
+
+export function parsePreset(
   presetSpec: Preset|null|undefined,
   columnTypes: ColumnTypes,
-): void {
-  if (presetSpec == null) return
+): ParsedPreset {
+  if (presetSpec == null) return {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const spec = deepClone(presetSpec as PlainRecord<any>)
@@ -33,9 +39,10 @@ export function updateStateFromPreset(
     [name, {...channelSpec, field: columns[channelSpec.field as string]}]
   )
 
-  state.setPreset(presetSpec)
-  state.setMark({ ...mark })
-  state.setEncoding({ ...encodingState })
+  return {
+    mark: {...mark},
+    encoding: cloneDeep(encodingState),
+  }
 }
 
 function findColumns(

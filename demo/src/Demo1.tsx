@@ -1,26 +1,28 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 
 import { Mintaka } from "mintaka"
 
-import DemoOutput from "./DemoOutput"
 import DemoInfo from "./DemoInfo"
+import DemoOutput from "./DemoOutput"
 import PreviewPane from "./PreviewPane"
+import { PRESETS } from "./presets"
+import { DemoProps } from "./demoProps"
 
 import {
   MintakaContainer,
-  ButtonToolbar,
   ChannelContainer,
   EmptyBlock,
   EncodingContainer,
   GenericPickerWidget,
   LayerContainer,
   MarkContainer,
+  MegaToolbar,
   PresetsContainer,
 } from "./ui"
 
 import styles from "./demo.module.css"
 
-export default function Demo({ demo, dataset, columnTypes }) {
+export default function Demo({ demo, dataset, columnTypes }: DemoProps) {
   const [generatedSpec, setGeneratedSpec] = useState({})
 
   return (
@@ -41,9 +43,9 @@ export default function Demo({ demo, dataset, columnTypes }) {
               MarkContainer,
               PresetsContainer,
               TopUtilBlock: EmptyBlock,
-              BottomUtilBlock: ButtonToolbar,
+              BottomUtilBlock: MegaToolbar,
             }}
-            modes={modes}
+            presets={PRESETS}
           />
 
           <PreviewPane
@@ -57,16 +59,4 @@ export default function Demo({ demo, dataset, columnTypes }) {
       <DemoOutput generatedSpec={generatedSpec} />
     </div>
   )
-}
-
-const modes = {
-  "Default": {
-    mark: new Set(["type", "shape", "filled"]),
-    encoding: new Set(["x", "y", "color", "size", "opacity"]),
-    channelProperties: new Set([
-      "field", "value", "type", "aggregate", "bin", "binStep", "maxBins",
-      "stack", "sort", "scale",
-    ]),
-    else: false,
-  },
 }

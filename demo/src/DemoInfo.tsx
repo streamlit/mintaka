@@ -1,6 +1,11 @@
 import styles from "./demo.module.css"
+import { DemoMeta } from "./demoProps"
 
-export default function DemoInfo({ demo }) {
+interface DemoInfoProps {
+  demo: DemoMeta
+}
+
+export default function DemoInfo({ demo }: DemoInfoProps) {
   return (
     <div className={styles.DemoInfo}>
       <h2>
