@@ -17,7 +17,8 @@ import { filterSection } from "../modeParser.ts"
 export interface Props<S> extends WithCustomState<S> {
   config: Config,
   ui: UIComponents<S>,
-  state: BuilderState,
+  layer: LayerState,
+  layerState: LayerState,
   makeSetter: MarkPropertySetter,
   namedViewMode: NamedMode,
 }
@@ -25,7 +26,7 @@ export interface Props<S> extends WithCustomState<S> {
 export function MarkBuilder<S>({
   config,
   ui,
-  state,
+  layer,
   makeSetter,
   namedViewMode,
   customState,
@@ -46,7 +47,7 @@ export function MarkBuilder<S>({
 
   const cleanedProps = filterSection(
     "mark", config, namedViewMode,
-    (name) => config.selectMarkProperty(name as MarkPropName, state))
+    (name) => config.selectMarkProperty(name as MarkPropName, layer))
 
   if (!cleanedProps) return null
 
@@ -65,7 +66,7 @@ export function MarkBuilder<S>({
           statePath={[...statePath, name]}
           widgetHint={uiParams[name]?.widgetHint ?? "json"}
           label={label}
-          value={state.mark[name]}
+          value={layer.mark[name]}
           setValue={makeSetter(name)}
           items={config?.markPropertyValues?.[name]}
           viewMode={namedViewMode?.[0]}

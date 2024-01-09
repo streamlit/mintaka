@@ -29,12 +29,14 @@ export function LayerBuilder<S>({
   customState,
   setCustomState,
 }: Props<S>): ReactNode {
+  const layer = state.layers[state.currentLayerIndex]
+
   return (
     <ui.LayerContainer>
       <MarkBuilder
         config={config}
         makeSetter={state.getMarkSetter}
-        state={state}
+        layer={layer}
         ui={ui}
         namedViewMode={namedViewMode}
         customState={customState}
@@ -44,7 +46,7 @@ export function LayerBuilder<S>({
       <EncodingBuilder
         columnTypes={columnTypes}
         config={config}
-        state={state}
+        layer={layer}
         namedViewMode={namedViewMode}
         ui={ui}
         customState={customState}

@@ -10,6 +10,7 @@ import {
   Config,
   EncodingState,
   JsonRecord,
+  LayerState,
   PlainRecord,
   VLSpec,
   VlFieldType,
@@ -40,26 +41,28 @@ export function generateVegaSpec(
   config: Config,
   baseSpec: VLSpec,
 ): VLSpec {
+  const layer = builderState.layers[builderState.currentLayerIndex]
+
   const mark: PlainRecord<json> = Object.fromEntries(
-    Object.entries(builderState.mark)
+    Object.entries(layer.mark)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
       .filter(([name]) =>
-        config.selectMarkProperty(name, builderState)))
+        config.selectMarkProperty(name, layer)))
 
   const encoding: PlainRecord<PlainRecord<json>> = Object.fromEntries(
-    Object.entries(builderState.encoding)
+    Object.entries(layer.encoding)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
       .filter(([name]) =>
-        config.selectChannel(name as ChannelName, builderState))
+        config.selectChannel(name as ChannelName, layer))
       .map(([name]) => {
-        const channelSpec = buildChannelSpec(name as ChannelName, builderState, columnTypes, config)
+        const channelSpec = buildChannelSpec(name as ChannelName, layer, columnTypes, config)
         if (channelSpec) return [name, channelSpec]
         return []
       }))
 
-  handleStackSpec(encoding, builderState)
+  handleStackSpec(encoding, layer)
 
   const transforms: Array<PlainRecord<json>> = []
   handleFieldListAndFolding(encoding, transforms)
@@ -81,17 +84,17 @@ export function generateVegaSpec(
 
 function buildChannelSpec(
   channelName: ChannelName,
-  builderState: BuilderState,
+  layer: LayerState,
   columnTypes: ColumnTypes,
   config: Config,
 ): json {
   const channelSpec: JsonRecord = {}
 
-  const channelState: ChannelState = builderState?.encoding?.[channelName] ?? {}
+  const channelState: ChannelState = layer?.encoding?.[channelName] ?? {}
 
   const s = Object.fromEntries(Object.entries(channelState)
     .filter(([name]) => config.selectChannelProperty(
-      name as ChannelPropName, channelName as ChannelName, builderState)))
+      name as ChannelPropName, channelName as ChannelName, layer)))
 
   if (s.aggregate != null) channelSpec.aggregate = s.aggregate
 
@@ -155,10 +158,10 @@ function buildChannelSpec(
 
 function handleStackSpec(
   encoding: PlainRecord<PlainRecord<json>>,
-  builderState: BuilderState,
+  layer: LayerState,
 ) {
   if (encoding?.color?.field != null) {
-    if (encoding?.x?.stack == false && builderState?.mark?.type == "bar") {
+    if (encoding?.x?.stack == false && layer?.mark?.type == "bar") {
       if (!includes(["nominal", "ordinal"], encoding.y.type))
         encoding.y.type = "nominal"
 
@@ -168,7 +171,7 @@ function handleStackSpec(
         encoding.yOffset.field = encoding.color.field
     }
 
-    if (encoding?.y?.stack == false && builderState?.mark?.type == "bar") {
+    if (encoding?.y?.stack == false && layer?.mark?.type == "bar") {
       if (!includes(["nominal", "ordinal"], encoding.x.type))
         encoding.x.type = "nominal"
 

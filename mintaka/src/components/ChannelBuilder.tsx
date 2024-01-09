@@ -23,7 +23,7 @@ export interface Props<S> extends WithCustomState<S> {
   columns: PlainRecord<string | null>,
   config: Config,
   makeSetter: ChannelPropertySetter,
-  state: BuilderState,
+  layer: LayerState,
   statePath: StatePath,
   ui: UIComponents<S>,
   namedViewMode: NamedMode,
@@ -35,14 +35,14 @@ export function ChannelBuilder<S>({
   columns,
   config,
   makeSetter,
-  state,
+  layer,
   statePath,
   ui,
   namedViewMode,
   customState,
   setCustomState,
 }: Props<S>): ReactNode {
-  const channelState = state?.encoding?.[channelName] ?? {}
+  const channelState = layer?.encoding?.[channelName] ?? {}
   const validValues = config.channelPropertyValues
 
   const uiParams: PlainRecord<UIParam> = {
@@ -67,7 +67,7 @@ export function ChannelBuilder<S>({
   const cleanedProps = filterSection(
     "channelProperties", config, namedViewMode,
     (name) => config.selectChannelProperty(
-      name as ChannelPropName, channelName, state))
+      name as ChannelPropName, channelName, layer))
 
   if (!cleanedProps) return null
 

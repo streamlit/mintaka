@@ -72,16 +72,6 @@ export function useBuilderState(
   const [mark, setMark] = useReactiveState(getInitialMark, [getInitialMark])
   const [encoding, setEncoding] = useReactiveState(getInitialEncoding, [getInitialEncoding])
 
-  const reset = useCallback(() => {
-    setMark(getInitialMark())
-    setEncoding(getInitialEncoding())
-  }, [
-    getInitialEncoding,
-    getInitialMark,
-    setEncoding,
-    setMark,
-  ])
-
   const getMarkSetter = useCallback(
     (key: MarkPropName): MarkPropertyValueSetter => (
       (value: json): void => {
@@ -107,16 +97,32 @@ export function useBuilderState(
       )
     ), [encoding, setEncoding])
 
-  const state = {
-    reset,
-    preset,
-    setPreset,
+  const layer = {
     mark,
     encoding,
+    // TODO XXX setters need to set inside the layer AND update state.layers accordingly (immutable).
     setMark,
     setEncoding,
     getMarkSetter,
     getEncodingSetter,
+  }
+
+  const reset = useCallback(() => {
+    setMark(getInitialMark())
+    setEncoding(getInitialEncoding())
+  }, [
+    getInitialEncoding,
+    getInitialMark,
+    setEncoding,
+    setMark,
+  ])
+
+  const state = {
+    reset,
+    preset,
+    setPreset,
+    currentLayerIndex: 0,
+    layers: [layer],
   }
 
   return state

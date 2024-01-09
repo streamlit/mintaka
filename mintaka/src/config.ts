@@ -371,16 +371,16 @@ export const channelPropertyValues: ChannelPropertyValuesConfig = {
 
 export function selectMarkProperty(
   name: string,
-  state: BuilderState,
+  layer: LayerState,
 ): boolean {
-  const markType = state?.mark?.type
+  const markType = layer?.mark?.type
 
   switch (name) {
     case "shape":
       return markType == "point"
 
     case "filled":
-      return markType == "point" && state?.mark?.shape != "stroke"
+      return markType == "point" && layer?.mark?.shape != "stroke"
 
     case "point":
     case "interpolate":
@@ -388,7 +388,7 @@ export function selectMarkProperty(
 
     case "angle":
       return includes(["text", "image"], markType) ||
-          (markType == "point" && !includes(["circle", null, undefined], state?.mark?.shape))
+          (markType == "point" && !includes(["circle", null, undefined], layer?.mark?.shape))
 
     case "size":
       return includes(["point", "text", "image"], markType)
@@ -414,9 +414,9 @@ export function selectMarkProperty(
 
 export function selectChannel(
   name: string,
-  state: BuilderState,
+  layer: LayerState,
 ): boolean {
-  const markType = state?.mark?.type
+  const markType = layer?.mark?.type
 
   switch (name) {
     case "x":
@@ -425,11 +425,11 @@ export function selectChannel(
 
     case "xOffset":
       return includes(["bar", "point"], markType)
-        && includes(["ordinal", "nominal"], state?.encoding?.x?.type)
+        && includes(["ordinal", "nominal"], layer?.encoding?.x?.type)
 
     case "yOffset":
       return includes(["bar", "point"], markType)
-        && includes(["ordinal", "nominal"], state?.encoding?.y?.type)
+        && includes(["ordinal", "nominal"], layer?.encoding?.y?.type)
 
     case "x2":
     case "y2":
@@ -476,9 +476,9 @@ export function selectChannel(
 export function selectChannelProperty(
   name: string,
   channelName: ChannelName,
-  state: BuilderState,
+  layer: LayerState,
 ): boolean {
-  const channelState = state?.encoding?.[channelName] ?? {}
+  const channelState = layer?.encoding?.[channelName] ?? {}
 
   const fieldIsSet = Array.isArray(channelState.field)
     ? (channelState.field.length > 0 && channelState.field.some(f => f != null))
@@ -488,8 +488,8 @@ export function selectChannelProperty(
     && (channelState.value != null || channelState.datum != null)
 
   const is_color_channel_and_folded_dataset = (channelName == "color") && (
-    isArrayWith2PlusElements(state?.encoding?.x?.field) ||
-    isArrayWith2PlusElements(state?.encoding?.y?.field)
+    isArrayWith2PlusElements(layer?.encoding?.x?.field) ||
+    isArrayWith2PlusElements(layer?.encoding?.y?.field)
   )
 
   switch (name) {

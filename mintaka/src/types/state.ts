@@ -76,12 +76,7 @@ export type MarkState = PartialRecord<MarkPropName, json>
 export type EncodingState = PartialRecord<ChannelName, ChannelState>
 export type ChannelState = PartialRecord<ChannelPropName, json>
 
-export interface BuilderState {
-  reset: () => void,
-
-  setPreset: (preset: Preset) => void,
-  preset: Preset,
-
+export interface LayerState {
   mark: MarkState,
   // This is just the type returned by useState.
   setMark: Dispatch<SetStateAction<MarkState>>,
@@ -92,6 +87,16 @@ export interface BuilderState {
 
   getMarkSetter: MarkPropertySetter,
   getEncodingSetter: EncodingSetter,
+}
+
+export interface BuilderState {
+  reset: () => void,
+
+  setPreset: (preset: Preset) => void,
+  preset: Preset,
+
+  currentLayerIndex: number,
+  layers: LayerState[],
 }
 
 export type PropertyValues = Record<string, json>
