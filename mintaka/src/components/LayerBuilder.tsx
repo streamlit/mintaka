@@ -29,14 +29,22 @@ export function LayerBuilder<S>({
   customState,
   setCustomState,
 }: Props<S>): ReactNode {
-  const layer = state.layers[state.currentLayerIndex]
+  // TODO:
+  // - Add layer picker (reads from state.layers)
+  // - When new layer is selected...
+  //   1. Store old layer
+  //      state.layers[state.currentLayerIndex] = state.layer
+  //   2. Get new layer
+  //      state.currentLayerIndex = i
+  //      state.layer = state.layers[i]
 
   return (
     <ui.LayerContainer>
       <MarkBuilder
         config={config}
         makeSetter={state.getMarkSetter}
-        layer={layer}
+        state={state}
+        markState={state.layer.mark}
         ui={ui}
         namedViewMode={namedViewMode}
         customState={customState}
@@ -46,7 +54,8 @@ export function LayerBuilder<S>({
       <EncodingBuilder
         columnTypes={columnTypes}
         config={config}
-        layer={layer}
+        state={state}
+        encodingState={state.layer.encoding}
         namedViewMode={namedViewMode}
         ui={ui}
         customState={customState}

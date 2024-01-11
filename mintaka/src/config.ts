@@ -6,6 +6,7 @@ import {
   ChannelPropertiesConfig,
   ChannelPropertyValuesConfig,
   EncodingConfig,
+  LayerState,
   MarkConfig,
   MarkPropertyValuesConfig,
   ModeConfig,

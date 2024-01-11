@@ -41,7 +41,7 @@ export function generateVegaSpec(
   config: Config,
   baseSpec: VLSpec,
 ): VLSpec {
-  const layer = builderState.layers[builderState.currentLayerIndex]
+  const layer = builderState.layer
 
   const mark: PlainRecord<json> = Object.fromEntries(
     Object.entries(layer.mark)

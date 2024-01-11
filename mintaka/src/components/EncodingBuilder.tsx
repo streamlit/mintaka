@@ -5,6 +5,8 @@ import {
   ChannelName,
   ColumnTypes,
   Config,
+  EncodingConfig,
+  EncodingState,
   NamedMode,
   UIComponents,
   WithCustomState,
@@ -17,7 +19,8 @@ import { ChannelBuilder } from "./ChannelBuilder.tsx"
 export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,
   config: Config,
-  layer: LayerState,
+  state: BuilderState,
+  encodingState: EncodingState,
   ui: UIComponents<S>,
   namedViewMode: NamedMode,
 }
@@ -25,7 +28,8 @@ export interface Props<S> extends WithCustomState<S> {
 export function EncodingBuilder<S>({
   columnTypes,
   config,
-  layer,
+  state,
+  encodingState,
   ui,
   namedViewMode,
   customState,
@@ -43,7 +47,7 @@ export function EncodingBuilder<S>({
 
   const cleanedProps = filterSection(
     "encoding", config, namedViewMode,
-    (name) => config.selectChannel(name as ChannelName, layer))
+    (name) => config.selectChannel(name as ChannelName, state.layer))
 
   if (!cleanedProps) return null
 
@@ -57,13 +61,14 @@ export function EncodingBuilder<S>({
       setCustomState={setCustomState}
     >
 
-      {Object.entries(cleanedProps).map(([label, name]) => (
+      {Object.entries(cleanedProps as EncodingConfig).map(([label, name]) => (
         <ChannelBuilder
           channelName={name}
           channelLabel={label}
-          makeSetter={layer.getEncodingSetter(name)}
+          makeSetter={state.getEncodingSetter(name)}
           config={config}
-          layer={layer}
+          state={state}
+          channelState={encodingState?.[name]}
           statePath={statePath}
           ui={ui}
           columns={columnsLabelsToNames}

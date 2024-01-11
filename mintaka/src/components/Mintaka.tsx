@@ -136,8 +136,8 @@ export function Mintaka<S>({
     config,
     columnTypes,
     setGeneratedSpec,
-    state.mark,
-    state.encoding,
+    state.layer.mark,
+    state.layer.encoding,
     // Not including:
     // state,
   ])

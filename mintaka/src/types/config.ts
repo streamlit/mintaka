@@ -1,5 +1,5 @@
 import { Grouping, PlainRecord } from "./util.ts"
-import { MarkPropName, ChannelName, ChannelPropName, PropertyValues, BuilderState } from "./state.ts"
+import { MarkPropName, ChannelName, ChannelPropName, PropertyValues, BuilderState, LayerState } from "./state.ts"
 
 export interface Mode {
   presets?: boolean,
@@ -17,10 +17,10 @@ export type EncodingConfig = PlainRecord<ChannelName>
 export type ChannelPropertiesConfig = PlainRecord<ChannelPropName>
 export type MarkPropertyValuesConfig = Grouping<PropertyValues>
 export type ChannelPropertyValuesConfig = Grouping<PropertyValues>
-export type SelectMarkPropertyFunc = (name: string, state: BuilderState) => boolean
-export type SelectChannelFunc = (name: ChannelName, state: BuilderState) => boolean
+export type SelectMarkPropertyFunc = (name: string, layer: LayerState) => boolean
+export type SelectChannelFunc = (name: ChannelName, layer: LayerState) => boolean
 export type SelectChannelPropertyFunc = (
-  name: ChannelPropName, channelName: ChannelName, state: BuilderState) => boolean
+  name: ChannelPropName, channelName: ChannelName, layer: LayerState) => boolean
 
 export interface Config {
   modes: ModeConfig,

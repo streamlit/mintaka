@@ -4,7 +4,9 @@ import {
   BuilderState,
   ChannelName,
   ChannelPropName,
+  ChannelPropertiesConfig,
   ChannelPropertySetter,
+  ChannelState,
   Config,
   NamedMode,
   PlainRecord,
@@ -23,7 +25,8 @@ export interface Props<S> extends WithCustomState<S> {
   columns: PlainRecord<string | null>,
   config: Config,
   makeSetter: ChannelPropertySetter,
-  layer: LayerState,
+  state: BuilderState,
+  channelState?: ChannelState,
   statePath: StatePath,
   ui: UIComponents<S>,
   namedViewMode: NamedMode,
@@ -35,14 +38,14 @@ export function ChannelBuilder<S>({
   columns,
   config,
   makeSetter,
-  layer,
+  state,
+  channelState,
   statePath,
   ui,
   namedViewMode,
   customState,
   setCustomState,
 }: Props<S>): ReactNode {
-  const channelState = layer?.encoding?.[channelName] ?? {}
   const validValues = config.channelPropertyValues
 
   const uiParams: PlainRecord<UIParam> = {
@@ -67,7 +70,7 @@ export function ChannelBuilder<S>({
   const cleanedProps = filterSection(
     "channelProperties", config, namedViewMode,
     (name) => config.selectChannelProperty(
-      name as ChannelPropName, channelName, layer))
+      name as ChannelPropName, channelName, state.layer))
 
   if (!cleanedProps) return null
 
@@ -80,20 +83,21 @@ export function ChannelBuilder<S>({
       setCustomState={setCustomState}
     >
 
-      {Object.entries(cleanedProps).map(([label, name]: [string, ChannelPropName]) => (
-        <ui.GenericPickerWidget
-          statePath={[...statePath, channelName, name]}
-          widgetHint={uiParams[name]?.widgetHint ?? "json"}
-          label={label}
-          value={channelState[name]}
-          setValue={makeSetter(name)}
-          items={uiParams[name]?.validValues ?? validValues?.[name]}
-          viewMode={namedViewMode?.[0]}
-          customState={customState}
-          setCustomState={setCustomState}
-          key={name}
-        />
-      ))}
+      {Object.entries(cleanedProps as ChannelPropertiesConfig)
+        .map(([label, name]: [string, ChannelPropName]) => (
+          <ui.GenericPickerWidget
+            statePath={[...statePath, channelName, name]}
+            widgetHint={uiParams[name]?.widgetHint ?? "json"}
+            label={label}
+            value={channelState?.[name]}
+            setValue={makeSetter(name)}
+            items={uiParams[name]?.validValues ?? validValues?.[name]}
+            viewMode={namedViewMode?.[0]}
+            customState={customState}
+            setCustomState={setCustomState}
+            key={name}
+          />
+        ))}
 
     </ui.ChannelContainer>
   )

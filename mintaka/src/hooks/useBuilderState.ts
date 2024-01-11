@@ -39,8 +39,8 @@ export function useBuilderState(
 
   const getInitialMark = useCallback((): MarkState => {
     const markSource = (
-      !isEmpty(initialState?.mark)
-        ? initialState?.mark
+      !isEmpty(initialState?.layers?.[0]?.mark)
+        ? initialState?.layers?.[0]?.mark
         : !isEmpty(stateFromPreset.mark)
           ? stateFromPreset.mark
           : {}
@@ -55,8 +55,8 @@ export function useBuilderState(
 
   const getInitialEncoding = useCallback((): EncodingState => {
     const encodingSource = (
-      !isEmpty(initialState?.encoding)
-        ? initialState?.encoding
+      !isEmpty(initialState?.layers?.[0]?.encoding)
+        ? initialState?.layers?.[0]?.encoding
         : !isEmpty(stateFromPreset.encoding)
           ? stateFromPreset.encoding
           : {}
@@ -98,13 +98,8 @@ export function useBuilderState(
     ), [encoding, setEncoding])
 
   const layer = {
-    mark,
-    encoding,
-    // TODO XXX setters need to set inside the layer AND update state.layers accordingly (immutable).
-    setMark,
-    setEncoding,
-    getMarkSetter,
-    getEncodingSetter,
+    mark, // Immutable
+    encoding, // Immutable
   }
 
   const reset = useCallback(() => {
@@ -117,15 +112,20 @@ export function useBuilderState(
     setMark,
   ])
 
-  const state = {
+  return {
     reset,
-    preset,
+    preset,  // Immutable. Change via setPreset.
     setPreset,
-    currentLayerIndex: 0,
+
+    layer, // This is mutable, but layer.mark and layer.encoding arent. Change via setMark/setEncoding.
+    setMark,
+    setEncoding,
+    getMarkSetter,
+    getEncodingSetter,
+
+    currentLayerIndex: 0,  // Index of the layer that was copied to .layer
     layers: [layer],
   }
-
-  return state
 }
 
 function useReactiveState<T>(fn: () => T, deps: DependencyList): [T, Dispatch<SetStateAction<T>>] {
