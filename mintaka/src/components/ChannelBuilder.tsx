@@ -1,7 +1,6 @@
 import { ReactNode } from "react"
 
 import {
-  BuilderState,
   ChannelName,
   ChannelPropName,
   ChannelPropertiesConfig,
@@ -18,14 +17,14 @@ import {
 } from "../types/index.ts"
 
 import { filterSection } from "../modeParser.ts"
+import { BuilderStateC } from "mintaka/hooks/useBuilderState.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   channelName: ChannelName,
   channelLabel: string,
   columns: PlainRecord<string | null>,
   config: Config,
-  makeSetter: ChannelPropertySetter,
-  state: BuilderState,
+  state: BuilderStateC,
   channelState?: ChannelState,
   statePath: StatePath,
   ui: UIComponents<S>,
@@ -37,7 +36,6 @@ export function ChannelBuilder<S>({
   channelLabel,
   columns,
   config,
-  makeSetter,
   state,
   channelState,
   statePath,
@@ -70,7 +68,7 @@ export function ChannelBuilder<S>({
   const cleanedProps = filterSection(
     "channelProperties", config, namedViewMode,
     (name) => config.selectChannelProperty(
-      name as ChannelPropName, channelName, state.layer))
+      name as ChannelPropName, channelName, state.getCurrentLayer()))
 
   if (!cleanedProps) return null
 
@@ -90,7 +88,7 @@ export function ChannelBuilder<S>({
             widgetHint={uiParams[name]?.widgetHint ?? "json"}
             label={label}
             value={channelState?.[name]}
-            setValue={makeSetter(name)}
+            setValue={state.getChannelPropSetter(channelName, name)}
             items={uiParams[name]?.validValues ?? validValues?.[name]}
             viewMode={namedViewMode?.[0]}
             customState={customState}

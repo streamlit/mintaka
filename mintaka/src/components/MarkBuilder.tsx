@@ -1,11 +1,9 @@
 import { ReactNode } from "react"
 
 import {
-  BuilderState,
   Config,
   MarkConfig,
   MarkPropName,
-  MarkPropertySetter,
   MarkState,
   NamedMode,
   PlainRecord,
@@ -15,13 +13,13 @@ import {
 } from "../types/index.ts"
 
 import { filterSection } from "../modeParser.ts"
+import { BuilderStateC } from "mintaka/hooks/useBuilderState.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   config: Config,
   ui: UIComponents<S>,
-  state: BuilderState,
+  state: BuilderStateC,
   markState: MarkState,
-  makeSetter: MarkPropertySetter,
   namedViewMode: NamedMode,
 }
 
@@ -30,7 +28,6 @@ export function MarkBuilder<S>({
   ui,
   state,
   markState,
-  makeSetter,
   namedViewMode,
   customState,
   setCustomState,
@@ -50,10 +47,8 @@ export function MarkBuilder<S>({
 
   const cleanedProps = filterSection(
     "mark", config, namedViewMode,
-    (name) => config.selectMarkProperty(name as MarkPropName, state.layer))
+    (name) => config.selectMarkProperty(name as MarkPropName, state.getCurrentLayer()))
 
-
-  console.log('cleanedProps', cleanedProps)
   if (!cleanedProps) return null
 
   const statePath = ["mark"]
@@ -73,7 +68,7 @@ export function MarkBuilder<S>({
             widgetHint={uiParams[name]?.widgetHint ?? "json"}
             label={label}
             value={markState[name]}
-            setValue={makeSetter(name)}
+            setValue={state.getMarkSetter(name)}
             items={config?.markPropertyValues?.[name]}
             viewMode={namedViewMode?.[0]}
             customState={customState}

@@ -1,7 +1,6 @@
 import { ReactNode } from "react"
 
 import {
-  BuilderState,
   ChannelName,
   ColumnTypes,
   Config,
@@ -15,11 +14,12 @@ import {
 import { showSection, filterSection } from "../modeParser.ts"
 
 import { ChannelBuilder } from "./ChannelBuilder.tsx"
+import { BuilderStateC } from "mintaka/hooks/useBuilderState.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,
   config: Config,
-  state: BuilderState,
+  state: BuilderStateC,
   encodingState: EncodingState,
   ui: UIComponents<S>,
   namedViewMode: NamedMode,
@@ -47,7 +47,7 @@ export function EncodingBuilder<S>({
 
   const cleanedProps = filterSection(
     "encoding", config, namedViewMode,
-    (name) => config.selectChannel(name as ChannelName, state.layer))
+    (name) => config.selectChannel(name as ChannelName, state.getCurrentLayer()))
 
   if (!cleanedProps) return null
 
@@ -65,7 +65,6 @@ export function EncodingBuilder<S>({
         <ChannelBuilder
           channelName={name}
           channelLabel={label}
-          makeSetter={state.getEncodingSetter(name)}
           config={config}
           state={state}
           channelState={encodingState?.[name]}

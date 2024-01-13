@@ -5,6 +5,8 @@ import { Preset } from "./presets.ts"
 
 export type MarkPropName =
   | "angle"
+  | "dx"
+  | "dy"
   | "filled"
   | "interpolate"
   | "line"
@@ -84,16 +86,17 @@ export type LayerState = {
 export interface BuilderState {
   reset: () => void,
 
-  setPreset: (preset: Preset) => void,
   preset: Preset,
 
-  layer: LayerState,
-  setMark: Dispatch<SetStateAction<MarkState>>, // This is just the type returned by useState.
-  setEncoding: Dispatch<SetStateAction<EncodingState>>, // This is just the type returned by useState.
+  currentLayerIndex: number,
+  layers: LayerState[],
+
   getMarkSetter: MarkPropertySetter,
   getEncodingSetter: EncodingSetter,
+}
 
-  currentLayerIndex: number,
+export interface InitialState {
+  preset: Preset,
   layers: LayerState[],
 }
 

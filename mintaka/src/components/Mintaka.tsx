@@ -1,12 +1,12 @@
 import { ReactNode, useEffect, useCallback, useState, useMemo } from "react"
 
 import {
-  BuilderState,
   ChannelPropertiesConfig,
   ChannelPropertyValuesConfig,
   ColumnTypes,
   Config,
   EncodingConfig,
+  InitialState,
   MarkConfig,
   MarkPropertyValuesConfig,
   ModeConfig,
@@ -45,7 +45,7 @@ export interface Props<S> {
 
   // The initial state for the widgets in Mintaka.
   // This is only useful if presets is undefined.
-  initialState?: BuilderState,
+  initialState?: InitialState,
 
   // Customize presets to show.
   // The first preset will be automatically applied, overriding whatever was
@@ -111,7 +111,7 @@ export function Mintaka<S>({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [ /* Not including any of the above. None are allowed to change. */ ])
 
-  const state = useBuilderState(
+  const [stateChangeNum, state] = useBuilderState(
     columnTypes,
     config,
     initialState,
@@ -131,15 +131,12 @@ export function Mintaka<S>({
   useEffect(() => {
     const spec = generateVegaSpec(state, columnTypes, config, baseSpec ?? DEFAULT_BASE_SPEC)
     setGeneratedSpec(spec)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     config,
     columnTypes,
     setGeneratedSpec,
-    state.layer.mark,
-    state.layer.encoding,
-    // Not including:
-    // state,
+    stateChangeNum,
+    state,
   ])
 
   const utilContainerProps: UtilBlockProps = {

@@ -2,7 +2,6 @@ import includes from "lodash/includes"
 import merge from "lodash/merge"
 
 import {
-  BuilderState,
   ChannelName,
   ChannelPropName,
   ChannelState,
@@ -18,6 +17,7 @@ import {
 } from "./types/index.ts"
 
 import { haveAnyElementsInCommon } from "./collectionUtils.ts"
+import { BuilderStateC } from "./hooks/useBuilderState.ts"
 
 export const DEFAULT_BASE_SPEC = {
   mark: {
@@ -36,13 +36,39 @@ export const DEFAULT_BASE_SPEC = {
 }
 
 export function generateVegaSpec(
-  builderState: BuilderState,
+  builderState: BuilderStateC,
   columnTypes: ColumnTypes,
   config: Config,
   baseSpec: VLSpec,
 ): VLSpec {
-  const layer = builderState.layer
+  const layers = builderState.layers.map(layer =>
+    generateLayerSpec(layer, columnTypes, config))
 
+  const transforms: Array<PlainRecord<json>> = []
+  layers.forEach(layer => handleFieldListAndFolding(layer.encoding, transforms))
+
+  const builderSpec: JsonRecord = {
+    layer: layers
+  }
+
+  if (transforms.length > 0) {
+    builderSpec.transform = transforms
+  }
+
+  const outSpec = merge({}, baseSpec, builderSpec)
+
+  if (layers.length == 1) {
+    fixChartSizeIfFaceting(layers[0].encoding, outSpec)
+  }
+
+  return outSpec
+}
+
+function generateLayerSpec(
+  layer: LayerState,
+  columnTypes: ColumnTypes,
+  config: Config,
+) {
   const mark: PlainRecord<json> = Object.fromEntries(
     Object.entries(layer.mark)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -62,24 +88,12 @@ export function generateVegaSpec(
         return []
       }))
 
-  handleStackSpec(encoding, layer)
+  handleStackSpec(encoding)
 
-  const transforms: Array<PlainRecord<json>> = []
-  handleFieldListAndFolding(encoding, transforms)
-
-  const builderSpec: JsonRecord = {
+  return {
     mark,
     encoding,
   }
-
-  if (transforms.length > 0) {
-    builderSpec.transform = transforms
-  }
-
-  const outSpec = merge({}, baseSpec, builderSpec)
-  fixChartSizeIfFaceting(encoding, outSpec)
-
-  return outSpec
 }
 
 function buildChannelSpec(
@@ -158,10 +172,9 @@ function buildChannelSpec(
 
 function handleStackSpec(
   encoding: PlainRecord<PlainRecord<json>>,
-  layer: LayerState,
 ) {
   if (encoding?.color?.field != null) {
-    if (encoding?.x?.stack == false && layer?.mark?.type == "bar") {
+    if (encoding?.x?.stack == "mintaka-dodge") {
       if (!includes(["nominal", "ordinal"], encoding.y.type))
         encoding.y.type = "nominal"
 
@@ -171,7 +184,7 @@ function handleStackSpec(
         encoding.yOffset.field = encoding.color.field
     }
 
-    if (encoding?.y?.stack == false && layer?.mark?.type == "bar") {
+    if (encoding?.y?.stack == "mintaka-dodge") {
       if (!includes(["nominal", "ordinal"], encoding.x.type))
         encoding.x.type = "nominal"
 

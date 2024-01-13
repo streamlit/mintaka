@@ -66,7 +66,7 @@ export const PRESETS: Presets = {
     },
 
     encoding: {
-      y: { stack: false },
+      y: { stack: "mintaka-dodge" },
     },
 
     findColumns: {
@@ -130,7 +130,7 @@ export const PRESETS: Presets = {
     },
 
     encoding: {
-      y: { stack: false },
+      y: { stack: "mintaka-dodge" },
     },
 
     ifColumn: {
@@ -165,7 +165,7 @@ export const PRESETS: Presets = {
     },
 
     encoding: {
-      x: { stack: false },
+      x: { stack: "mintaka-dodge" },
     },
 
     ifColumn: {

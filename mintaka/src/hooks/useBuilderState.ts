@@ -2,11 +2,9 @@ import { useEffect, useState, useCallback, Dispatch, SetStateAction, DependencyL
 import isEmpty from "lodash/isEmpty"
 
 import {
-  BuilderState,
   Config,
   MarkPropertyValueSetter,
   ChannelName,
-  ChannelPropertySetter,
   ChannelPropertyValueSetter,
   json,
   MarkPropName,
@@ -16,116 +14,41 @@ import {
   ChannelPropName,
   Presets,
   ColumnTypes,
+  LayerState,
+  ChannelState,
+  InitialState,
 } from "../types/index.ts"
 
-import { parsePreset, ParsedPreset } from "../presetParser.ts"
+import { parsePreset } from "../presetParser.ts"
 import { PRESETS } from "../presets.ts"
 
 export function useBuilderState(
   columnTypes: ColumnTypes,
   config: Config,
-  initialState?: BuilderState,
+  initialState?: InitialState,
   presets?: Presets,
-): BuilderState {
-  const [preset, setPreset] = useReactiveState<Preset>(() => {
-      if (initialState?.preset) return initialState?.preset
-      if (presets) return Object.values(presets as Presets)[0]
-      return Object.values(PRESETS)[0]
-  }, [initialState, presets])
+): [number, BuilderStateC] {
+  const [changeNum, setChangeNum] = useState(0)
 
-  const [stateFromPreset] = useReactiveState<ParsedPreset>(() => {
-    return parsePreset(preset, columnTypes)
-  }, [preset, columnTypes])
+  const [state] = useState(() => new BuilderStateC(
+    columnTypes, config, initialState, presets))
 
-  const getInitialMark = useCallback((): MarkState => {
-    const markSource = (
-      !isEmpty(initialState?.layers?.[0]?.mark)
-        ? initialState?.layers?.[0]?.mark
-        : !isEmpty(stateFromPreset.mark)
-          ? stateFromPreset.mark
-          : {}
-    ) as MarkState
-
-    return Object.fromEntries(
-      Object.values(config?.mark ?? {}).map((name: MarkPropName) => [
-        name, markSource[name]
-      ])) as MarkState
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateFromPreset])
-
-  const getInitialEncoding = useCallback((): EncodingState => {
-    const encodingSource = (
-      !isEmpty(initialState?.layers?.[0]?.encoding)
-        ? initialState?.layers?.[0]?.encoding
-        : !isEmpty(stateFromPreset.encoding)
-          ? stateFromPreset.encoding
-          : {}
-    ) as EncodingState
-
-    return Object.fromEntries(
-      Object.values(config?.encoding ?? {}).map((name: ChannelName) => [
-        name, encodingSource[name]
-      ])) as EncodingState
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateFromPreset])
-
-  const [mark, setMark] = useReactiveState(getInitialMark, [getInitialMark])
-  const [encoding, setEncoding] = useReactiveState(getInitialEncoding, [getInitialEncoding])
-
-  const getMarkSetter = useCallback(
-    (key: MarkPropName): MarkPropertyValueSetter => (
-      (value: json): void => {
-        setMark({
-          ...mark,
-          [key]: value,
-        } as MarkState)
-      }
-    ), [mark, setMark])
-
-  const getEncodingSetter = useCallback(
-    (channel: ChannelName): ChannelPropertySetter => (
-      (key: ChannelPropName): ChannelPropertyValueSetter => (
-        (value: json): void => {
-          setEncoding({
-            ...encoding,
-            [channel]: {
-              ...encoding[channel],
-              [key]: value,
-            }
-          } as EncodingState)
-        }
-      )
-    ), [encoding, setEncoding])
-
-  const layer = {
-    mark, // Immutable
-    encoding, // Immutable
-  }
-
-  const reset = useCallback(() => {
-    setMark(getInitialMark())
-    setEncoding(getInitialEncoding())
+  state.onChange = useCallback(() => {
+    setChangeNum(changeNum + 1)
   }, [
-    getInitialEncoding,
-    getInitialMark,
-    setEncoding,
-    setMark,
+    setChangeNum,
+    changeNum,
   ])
 
-  return {
-    reset,
-    preset,  // Immutable. Change via setPreset.
-    setPreset,
+  useEffect(() => {
+    state.columnTypes = columnTypes
+    state.config = config
+    state.initialState = initialState
+    state.presets = presets
+    state.reset()
+  }, [columnTypes, config, initialState, presets])
 
-    layer, // This is mutable, but layer.mark and layer.encoding arent. Change via setMark/setEncoding.
-    setMark,
-    setEncoding,
-    getMarkSetter,
-    getEncodingSetter,
-
-    currentLayerIndex: 0,  // Index of the layer that was copied to .layer
-    layers: [layer],
-  }
+  return [changeNum, state]
 }
 
 function useReactiveState<T>(fn: () => T, deps: DependencyList): [T, Dispatch<SetStateAction<T>>] {
@@ -137,4 +60,185 @@ function useReactiveState<T>(fn: () => T, deps: DependencyList): [T, Dispatch<Se
   }, deps)
 
   return [state, setState]
+}
+
+export class BuilderStateC {
+  // Just some dummy values so Typescript doesn't complain.
+  preset: Preset = {}
+  currentLayerIndex: number = 0
+  layers: LayerState[] = []
+  // This is just the type returned by useState:
+  onChange = () => {}
+
+  columnTypes: ColumnTypes
+  config: Config
+  initialState: InitialState|undefined
+  presets: Presets|undefined
+
+  constructor(
+    columnTypes: ColumnTypes,
+    config: Config,
+    initialState: InitialState|undefined,
+    presets: Presets|undefined,
+  ) {
+    this.columnTypes = columnTypes
+    this.config = config
+    this.initialState = initialState
+    this.presets = presets
+
+    this.#reset()
+  }
+
+  #reset(preset?: Preset) {
+    if (preset) {
+      this.preset = preset
+    } else {
+      if (this.initialState?.preset) this.preset = this.initialState?.preset
+      else if (this.presets) this.preset = Object.values(this.presets as Presets)[0]
+      else this.preset = Object.values(PRESETS)[0]
+    }
+
+    const stateFromPreset = parsePreset(this.preset, this.columnTypes)
+
+    const markSource = (
+      !isEmpty(this.initialState?.layers?.[0]?.mark)
+        ? this.initialState?.layers?.[0]?.mark
+        : !isEmpty(stateFromPreset.mark)
+          ? stateFromPreset.mark
+          : {}
+    ) as MarkState
+
+    const mark = Object.fromEntries(
+      Object.values(this.config?.mark ?? {}).map((name: MarkPropName) => [
+        name, markSource[name]
+      ])) as MarkState
+
+    const encodingSource = (
+      !isEmpty(this.initialState?.layers?.[0]?.encoding)
+        ? this.initialState?.layers?.[0]?.encoding
+        : !isEmpty(stateFromPreset.encoding)
+          ? stateFromPreset.encoding
+          : {}
+    ) as EncodingState
+
+    const encoding = Object.fromEntries(
+      Object.values(this.config?.encoding ?? {}).map((name: ChannelName) => [
+        name, encodingSource[name]
+      ])) as EncodingState
+
+    const layer = { mark, encoding }
+    this.layers = [layer]
+    this.currentLayerIndex = 0
+  }
+
+  reset(): void {
+    this.#reset()
+    this.onChange()
+  }
+
+  setPreset(preset: Preset): void {
+    this.#reset(preset)
+    this.onChange()
+  }
+
+  getCurrentLayer(): LayerState {
+    return this.layers[this.currentLayerIndex]
+  }
+
+  selectLayer(i: number): void {
+    if (i < 0) i = this.layers.length + i
+    this.currentLayerIndex = i
+
+    this.onChange()
+  }
+
+  setCurrentLayer(newLayer: LayerState): void {
+    const i = this.currentLayerIndex
+
+    const before = this.layers.slice(0, i)
+    const after = this.layers.slice(i + 1)
+
+    this.layers = [...before, newLayer, ...after]
+
+    this.onChange()
+  }
+
+  removeCurrentLayer(): void {
+    if (this.layers.length == 1) return
+    const i = this.currentLayerIndex
+
+    const before = this.layers.slice(0, i)
+    const after = this.layers.slice(i + 1)
+
+    this.layers = [...before, ...after]
+    this.currentLayerIndex = i >= this.layers.length ? this.layers.length - 1 : i
+
+    this.onChange()
+  }
+
+  createNewLayer(): void {
+    const currLayer = this.getCurrentLayer()
+    const newLayer = {...currLayer}
+
+    this.layers = [...this.layers, newLayer]
+    this.currentLayerIndex = this.layers.length - 1
+
+    this.onChange()
+  }
+
+  setMarkProp(markPropName: MarkPropName, markPropValue: json): void {
+    const layer = this.getCurrentLayer()
+
+    const mark = {
+      ...layer.mark,
+      [markPropName]: markPropValue,
+    }
+
+    this.setCurrentLayer({
+      ...layer,
+      mark
+    })
+  }
+
+  setChannel(channelName: ChannelName, channelState: ChannelState): void {
+    const layer = this.getCurrentLayer()
+
+    const encoding = {
+      ...layer.encoding,
+      [channelName]: channelState,
+    }
+
+    this.setCurrentLayer({
+      ...layer,
+    encoding 
+    })
+  }
+
+  setChannelProp(
+    channelName: ChannelName, 
+    channelPropName: ChannelPropName,
+    channelPropValue: json,
+  ): void {
+    const layer = this.getCurrentLayer()
+    const channel = layer.encoding[channelName]
+
+    const newChannel = {
+      ...channel,
+      [channelPropName]: channelPropValue,
+    }
+
+    this.setChannel(channelName, newChannel)
+  }
+
+  getMarkSetter(key: MarkPropName): MarkPropertyValueSetter {
+    return (value: json): void => {
+      this.setMarkProp(key, value)
+    }
+  }
+
+  getChannelPropSetter(channel: ChannelName, key: ChannelPropName): ChannelPropertyValueSetter {
+    return (value: json): void => {
+      this.setChannelProp(channel, key, value)
+    }
+  }
 }

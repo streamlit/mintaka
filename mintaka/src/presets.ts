@@ -71,7 +71,7 @@ export const PRESETS: Presets = {
     },
 
     encoding: {
-      y: { stack: false },
+      y: { stack: "mintaka-dodge" },
     },
 
     ifColumn: {

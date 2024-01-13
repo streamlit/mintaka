@@ -1,7 +1,6 @@
-import { ReactNode } from "react"
+import { ReactNode, useCallback, useState } from "react"
 
 import {
-  BuilderState,
   ColumnTypes,
   Config,
   NamedMode,
@@ -11,11 +10,12 @@ import {
 
 import { MarkBuilder } from "./MarkBuilder.tsx"
 import { EncodingBuilder } from "./EncodingBuilder.tsx"
+import { BuilderStateC } from "mintaka/hooks/useBuilderState.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,
   config: Config,
-  state: BuilderState,
+  state: BuilderStateC,
   ui: UIComponents<S>,
   namedViewMode: NamedMode,
 }
@@ -29,22 +29,33 @@ export function LayerBuilder<S>({
   customState,
   setCustomState,
 }: Props<S>): ReactNode {
-  // TODO:
-  // - Add layer picker (reads from state.layers)
-  // - When new layer is selected...
-  //   1. Store old layer
-  //      state.layers[state.currentLayerIndex] = state.layer
-  //   2. Get new layer
-  //      state.currentLayerIndex = i
-  //      state.layer = state.layers[i]
+  const onLayerSelected = useCallback((ev: React.FormEvent<HTMLSelectElement>) => {
+    const newLayerIndex = parseInt(ev.currentTarget.value, 10)
+    state.selectLayer(newLayerIndex)
+  }, [state])
+
+  const addLayer = useCallback(() => {
+    state.createNewLayer()
+  }, [state])
+
+  const removeLayer = useCallback(() => {
+    state.removeCurrentLayer()
+  }, [state])
 
   return (
     <ui.LayerContainer>
+      <select onChange={onLayerSelected} key={state.currentLayerIndex}>
+        {state.layers.map((layer, i) => {
+          return <option value={i} key={i}>Layer {i}: {JSON.stringify(layer.mark.type || "blank")}</option>
+        })}
+      </select>
+      <button onClick={addLayer}>Add layer</button>
+      <button onClick={removeLayer}>Remove layer</button>
+
       <MarkBuilder
         config={config}
-        makeSetter={state.getMarkSetter}
         state={state}
-        markState={state.layer.mark}
+        markState={state.getCurrentLayer().mark}
         ui={ui}
         namedViewMode={namedViewMode}
         customState={customState}
@@ -55,7 +66,7 @@ export function LayerBuilder<S>({
         columnTypes={columnTypes}
         config={config}
         state={state}
-        encodingState={state.layer.encoding}
+        encodingState={state.getCurrentLayer().encoding}
         namedViewMode={namedViewMode}
         ui={ui}
         customState={customState}

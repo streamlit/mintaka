@@ -44,6 +44,10 @@ export const mark: MarkConfig = {
   "Size": "size",
   "Opacity": "opacity",
   "Tooltip": "tooltip",
+
+  // Positioning
+  "X offset": "dx",
+  "Y offset": "dy",
 }
 
 // NOTE: Ordering matters.
@@ -265,6 +269,7 @@ export const channelPropertyValues: ChannelPropertyValuesConfig = {
     "Stack": true,
     "Stack from center": "center",
     "Normalized": "normalize",
+    "Dodge": "mintaka-dodge",
     "No stacking": false,
   },
 
