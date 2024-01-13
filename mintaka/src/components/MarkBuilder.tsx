@@ -13,12 +13,12 @@ import {
 } from "../types/index.ts"
 
 import { filterSection } from "../modeParser.ts"
-import { BuilderStateC } from "mintaka/hooks/useBuilderState.ts"
+import { BuilderState } from "mintaka/hooks/useBuilderState.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   config: Config,
   ui: UIComponents<S>,
-  state: BuilderStateC,
+  state: BuilderState,
   markState: MarkState,
   namedViewMode: NamedMode,
 }

@@ -14,12 +14,12 @@ import {
 import { showSection, filterSection } from "../modeParser.ts"
 
 import { ChannelBuilder } from "./ChannelBuilder.tsx"
-import { BuilderStateC } from "mintaka/hooks/useBuilderState.ts"
+import { BuilderState } from "mintaka/hooks/useBuilderState.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,
   config: Config,
-  state: BuilderStateC,
+  state: BuilderState,
   encodingState: EncodingState,
   ui: UIComponents<S>,
   namedViewMode: NamedMode,

@@ -1,5 +1,5 @@
 import { Grouping, PlainRecord } from "./util.ts"
-import { MarkPropName, ChannelName, ChannelPropName, PropertyValues, BuilderState, LayerState } from "./state.ts"
+import { MarkPropName, ChannelName, ChannelPropName, PropertyValues, LayerState } from "./state.ts"
 
 export interface Mode {
   presets?: boolean,

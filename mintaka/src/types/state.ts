@@ -83,18 +83,6 @@ export type LayerState = {
   encoding: EncodingState,
 }
 
-export interface BuilderState {
-  reset: () => void,
-
-  preset: Preset,
-
-  currentLayerIndex: number,
-  layers: LayerState[],
-
-  getMarkSetter: MarkPropertySetter,
-  getEncodingSetter: EncodingSetter,
-}
-
 export interface InitialState {
   preset: Preset,
   layers: LayerState[],

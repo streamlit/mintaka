@@ -1,7 +1,6 @@
 import includes from "lodash/includes"
 
 import {
-  BuilderState,
   ChannelName,
   ChannelPropertiesConfig,
   ChannelPropertyValuesConfig,

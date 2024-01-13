@@ -17,7 +17,7 @@ import {
 } from "./types/index.ts"
 
 import { haveAnyElementsInCommon } from "./collectionUtils.ts"
-import { BuilderStateC } from "./hooks/useBuilderState.ts"
+import { BuilderState } from "./hooks/useBuilderState.ts"
 
 export const DEFAULT_BASE_SPEC = {
   mark: {
@@ -36,7 +36,7 @@ export const DEFAULT_BASE_SPEC = {
 }
 
 export function generateVegaSpec(
-  builderState: BuilderStateC,
+  builderState: BuilderState,
   columnTypes: ColumnTypes,
   config: Config,
   baseSpec: VLSpec,

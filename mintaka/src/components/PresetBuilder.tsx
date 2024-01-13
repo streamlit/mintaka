@@ -10,11 +10,11 @@ import {
 
 import { PRESETS } from "../presets.ts"
 import { showSection } from "../modeParser.ts"
-import { BuilderStateC } from "mintaka/hooks/useBuilderState.ts"
+import { BuilderState } from "mintaka/hooks/useBuilderState.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   presets?: Presets,
-  state: BuilderStateC,
+  state: BuilderState,
   ui: UIComponents<S>,
   namedViewMode: NamedMode,
 }

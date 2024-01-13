@@ -17,14 +17,14 @@ import {
 } from "../types/index.ts"
 
 import { filterSection } from "../modeParser.ts"
-import { BuilderStateC } from "mintaka/hooks/useBuilderState.ts"
+import { BuilderState } from "mintaka/hooks/useBuilderState.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   channelName: ChannelName,
   channelLabel: string,
   columns: PlainRecord<string | null>,
   config: Config,
-  state: BuilderStateC,
+  state: BuilderState,
   channelState?: ChannelState,
   statePath: StatePath,
   ui: UIComponents<S>,

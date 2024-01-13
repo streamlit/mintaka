@@ -10,12 +10,12 @@ import {
 
 import { MarkBuilder } from "./MarkBuilder.tsx"
 import { EncodingBuilder } from "./EncodingBuilder.tsx"
-import { BuilderStateC } from "mintaka/hooks/useBuilderState.ts"
+import { BuilderState } from "mintaka/hooks/useBuilderState.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,
   config: Config,
-  state: BuilderStateC,
+  state: BuilderState,
   ui: UIComponents<S>,
   namedViewMode: NamedMode,
 }

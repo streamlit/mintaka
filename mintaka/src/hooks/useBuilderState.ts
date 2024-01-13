@@ -27,10 +27,10 @@ export function useBuilderState(
   config: Config,
   initialState?: InitialState,
   presets?: Presets,
-): [number, BuilderStateC] {
+): [number, BuilderState] {
   const [changeNum, setChangeNum] = useState(0)
 
-  const [state] = useState(() => new BuilderStateC(
+  const [state] = useState(() => new BuilderState(
     columnTypes, config, initialState, presets))
 
   state.onChange = useCallback(() => {
@@ -62,7 +62,7 @@ function useReactiveState<T>(fn: () => T, deps: DependencyList): [T, Dispatch<Se
   return [state, setState]
 }
 
-export class BuilderStateC {
+export class BuilderState {
   // Just some dummy values so Typescript doesn't complain.
   preset: Preset = {}
   currentLayerIndex: number = 0
