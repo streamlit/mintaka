@@ -4,8 +4,10 @@ import {
   StructuralKey,
   Mode,
   NamedMode,
-  PlainRecord,
-} from "./types/index.ts"
+} from "./configTypes.ts"
+
+import { PlainRecord } from "./typeUtil.ts"
+
 import { objectFilter } from "./collectionUtils.ts"
 
 export function showSection(

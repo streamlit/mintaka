@@ -1,26 +1,16 @@
-import { useEffect, useState, useCallback, Dispatch, SetStateAction, DependencyList } from "react"
+import { useEffect, useState, useCallback } from "react"
 import isEmpty from "lodash/isEmpty"
 
 import {
   Config,
-  MarkPropertyValueSetter,
-  ChannelName,
-  ChannelPropertyValueSetter,
-  json,
-  MarkPropName,
-  Preset,
-  EncodingState,
-  MarkState,
-  ChannelPropName,
-  Presets,
   ColumnTypes,
-  LayerState,
-  ChannelState,
-  InitialState,
-} from "../types/index.ts"
+} from "../configTypes.ts"
 
 import { parsePreset } from "../presetParser.ts"
-import { PRESETS } from "../presets.ts"
+import { PRESETS } from "../presetDefaults.ts"
+import { ChannelName, ChannelPropName, ChannelPropertyValueSetter, ChannelState, EncodingState, InitialState, LayerState, MarkPropName, MarkPropertyValueSetter, MarkState } from "../stateTypes.ts"
+import { Presets, Preset } from "../presetTypes.ts"
+import { json } from "../typeUtil.ts"
 
 export function useBuilderState(
   columnTypes: ColumnTypes,
@@ -46,29 +36,18 @@ export function useBuilderState(
     state.initialState = initialState
     state.presets = presets
     state.reset()
-  }, [columnTypes, config, initialState, presets])
+  }, [columnTypes, config, initialState, presets, state])
 
   return [changeNum, state]
-}
-
-function useReactiveState<T>(fn: () => T, deps: DependencyList): [T, Dispatch<SetStateAction<T>>] {
-  const [state, setState] = useState(fn)
-
-  useEffect(() => {
-    setState(fn())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps)
-
-  return [state, setState]
 }
 
 export class BuilderState {
   // Just some dummy values so Typescript doesn't complain.
   preset: Preset = {}
-  currentLayerIndex: number = 0
+  currentLayerIndex = 0
   layers: LayerState[] = []
   // This is just the type returned by useState:
-  onChange = () => {}
+  onChange = () => undefined
 
   columnTypes: ColumnTypes
   config: Config

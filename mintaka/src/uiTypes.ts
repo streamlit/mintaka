@@ -1,6 +1,6 @@
 import { Dispatch, FunctionComponent, ReactNode, SetStateAction } from "react"
 
-import { PlainRecord } from "./index.ts"
+import { PlainRecord } from "./typeUtil.ts"
 
 type Children = ReactNode | ReactNode[]
 

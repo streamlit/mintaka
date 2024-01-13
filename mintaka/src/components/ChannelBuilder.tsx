@@ -1,23 +1,11 @@
 import { ReactNode } from "react"
 
-import {
-  ChannelName,
-  ChannelPropName,
-  ChannelPropertiesConfig,
-  ChannelPropertySetter,
-  ChannelState,
-  Config,
-  NamedMode,
-  PlainRecord,
-  StatePath,
-  UIComponents,
-  WidgetHint,
-  WithCustomState,
-  json,
-} from "../types/index.ts"
-
 import { filterSection } from "../modeParser.ts"
-import { BuilderState } from "mintaka/hooks/useBuilderState.ts"
+import { BuilderState } from "../hooks/useBuilderState.ts"
+import { Config, NamedMode, ChannelPropertiesConfig } from "../configTypes.ts"
+import { ChannelName, ChannelState, ChannelPropName } from "../stateTypes.ts"
+import { PlainRecord, json } from "../typeUtil.ts"
+import { WithCustomState, StatePath, UIComponents, WidgetHint } from "../uiTypes.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   channelName: ChannelName,

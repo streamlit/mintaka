@@ -2,18 +2,25 @@ import includes from "lodash/includes"
 import merge from "lodash/merge"
 import cloneDeep from "lodash/cloneDeep"
 
+import { ColumnTypes } from "./configTypes.ts"
+
 import {
-  ColumnTypes,
   EncodingState,
-  FindColumnsSpec,
-  Grouping,
   MarkPropName,
   MarkState,
-  PlainRecord,
+} from "./stateTypes.ts"
+
+import {
+  FindColumnsSpec,
   Preset,
   PresetColumnFilter,
+} from "./presetTypes.ts"
+
+import {
+  Grouping,
+  PlainRecord,
   json,
-} from "./types/index.ts"
+} from "./typeUtil.ts"
 
 import { objectFrom, deepClone } from "./collectionUtils.ts"
 

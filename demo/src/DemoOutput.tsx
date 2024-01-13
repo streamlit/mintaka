@@ -1,6 +1,6 @@
 import styles from "./demo.module.css"
 
-import { VLSpec } from "mintaka/types"
+import { VLSpec } from "mintaka"
 
 export default function DemoOutput({ generatedSpec }: VLSpec) {
   return (

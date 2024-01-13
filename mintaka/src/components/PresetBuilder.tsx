@@ -1,16 +1,20 @@
 import { ReactNode, useCallback } from "react"
 
 import {
-  NamedMode,
   Preset,
   Presets,
+} from "../presetTypes.ts"
+
+import {
   UIComponents,
   WithCustomState,
-} from "../types/index.ts"
+} from "../uiTypes.ts"
 
-import { PRESETS } from "../presets.ts"
+import { NamedMode } from "../configTypes.ts"
+
+import { PRESETS } from "../presetDefaults.ts"
 import { showSection } from "../modeParser.ts"
-import { BuilderState } from "mintaka/hooks/useBuilderState.ts"
+import { BuilderState } from "../hooks/useBuilderState.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   presets?: Presets,

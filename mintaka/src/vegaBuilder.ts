@@ -5,16 +5,23 @@ import {
   ChannelName,
   ChannelPropName,
   ChannelState,
+  EncodingState,
+  LayerState,
+} from "./stateTypes.ts"
+
+import {
   ColumnTypes,
   Config,
-  EncodingState,
-  JsonRecord,
-  LayerState,
-  PlainRecord,
-  VLSpec,
   VlFieldType,
+} from "./configTypes.ts"
+
+import {
+  JsonRecord,
+  PlainRecord,
   json,
-} from "./types/index.ts"
+} from "./typeUtil.ts"
+
+import { VLSpec } from "./vegaTypes.ts"
 
 import { haveAnyElementsInCommon } from "./collectionUtils.ts"
 import { BuilderState } from "./hooks/useBuilderState.ts"
@@ -42,7 +49,7 @@ export function generateVegaSpec(
   baseSpec: VLSpec,
 ): VLSpec {
   const layers = builderState.layers.map(layer =>
-    generateLayerSpec(layer, columnTypes, config))
+    generateLayerSpec(builderState, layer, columnTypes, config))
 
   const transforms: Array<PlainRecord<json>> = []
   layers.forEach(layer => handleFieldListAndFolding(layer.encoding, transforms))
@@ -65,6 +72,7 @@ export function generateVegaSpec(
 }
 
 function generateLayerSpec(
+  builderState: BuilderState,
   layer: LayerState,
   columnTypes: ColumnTypes,
   config: Config,
@@ -81,7 +89,7 @@ function generateLayerSpec(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
       .filter(([name]) =>
-        config.selectChannel(name as ChannelName, layer))
+        config.selectChannel(name as ChannelName, builderState, layer))
       .map(([name]) => {
         const channelSpec = buildChannelSpec(name as ChannelName, layer, columnTypes, config)
         if (channelSpec) return [name, channelSpec]

@@ -1,18 +1,5 @@
 import { describe, expect, test } from "vitest"
 
-import {
-  selectMarkProperty,
-  selectChannel,
-  selectChannelProperty,
-} from "./config.ts"
-
-import {
-  haveAnyElementsInCommon,
-  deepClone,
-  objectFilter,
-  objectFrom,
-} from "./collectionUtils.ts"
-
 import { generateVegaSpec } from "./vegaBuilder.ts"
 
 const trivialColumnTypes = {}

@@ -1,16 +1,10 @@
-import { ReactNode, useCallback, useState } from "react"
-
-import {
-  ColumnTypes,
-  Config,
-  NamedMode,
-  UIComponents,
-  WithCustomState,
-} from "../types/index.ts"
+import { ReactNode, useCallback } from "react"
 
 import { MarkBuilder } from "./MarkBuilder.tsx"
 import { EncodingBuilder } from "./EncodingBuilder.tsx"
-import { BuilderState } from "mintaka/hooks/useBuilderState.ts"
+import { BuilderState } from "../hooks/useBuilderState.ts"
+import { ColumnTypes, Config, NamedMode } from "../configTypes.ts"
+import { WithCustomState, UIComponents } from "../uiTypes.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,

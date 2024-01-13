@@ -1,19 +1,11 @@
 import { ReactNode } from "react"
 
-import {
-  Config,
-  MarkConfig,
-  MarkPropName,
-  MarkState,
-  NamedMode,
-  PlainRecord,
-  UIComponents,
-  WidgetHint,
-  WithCustomState,
-} from "../types/index.ts"
-
 import { filterSection } from "../modeParser.ts"
-import { BuilderState } from "mintaka/hooks/useBuilderState.ts"
+import { BuilderState } from "../hooks/useBuilderState.ts"
+import { Config, NamedMode, MarkConfig } from "../configTypes.ts"
+import { MarkState, MarkPropName } from "../stateTypes.ts"
+import { PlainRecord } from "../typeUtil.ts"
+import { WithCustomState, UIComponents, WidgetHint } from "../uiTypes.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   config: Config,

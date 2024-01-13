@@ -1,7 +1,9 @@
-import { Dispatch, SetStateAction } from "react"
+import {
+  PartialRecord,
+  json,
+} from "./typeUtil.ts"
 
-import { PartialRecord, json } from "./util.ts"
-import { Preset } from "./presets.ts"
+import { Preset } from "./presetTypes.ts"
 
 export type MarkPropName =
   | "angle"
@@ -24,6 +26,7 @@ export type ChannelName =
   | "angle"
   | "color"
   | "column"
+  | "detail"
   | "facet"
   | "latitude"
   | "latitude2"
@@ -36,9 +39,11 @@ export type ChannelName =
   | "shape"
   | "size"
   | "strokeDash"
+  | "strokeWidth"
   | "text"
   | "theta"
   | "theta2"
+  | "tooltip"
   | "url"
   | "x"
   | "x2"

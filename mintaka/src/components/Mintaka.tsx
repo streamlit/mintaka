@@ -1,24 +1,5 @@
 import { ReactNode, useEffect, useCallback, useState, useMemo } from "react"
 
-import {
-  ChannelPropertiesConfig,
-  ChannelPropertyValuesConfig,
-  ColumnTypes,
-  Config,
-  EncodingConfig,
-  InitialState,
-  MarkConfig,
-  MarkPropertyValuesConfig,
-  ModeConfig,
-  Presets,
-  SelectChannelFunc,
-  SelectChannelPropertyFunc,
-  SelectMarkPropertyFunc,
-  UIComponents,
-  UtilBlockProps,
-  VLSpec,
-} from "../types/index.ts"
-
 import * as configDefaults from "../config.ts"
 import { generateVegaSpec, DEFAULT_BASE_SPEC } from "../vegaBuilder.ts"
 
@@ -26,6 +7,11 @@ import { useBuilderState } from "../hooks/useBuilderState.ts"
 
 import { LayerBuilder } from "./LayerBuilder.tsx"
 import { PresetBuilder } from "./PresetBuilder.tsx"
+import { ColumnTypes, ModeConfig, MarkConfig, EncodingConfig, ChannelPropertiesConfig, MarkPropertyValuesConfig, ChannelPropertyValuesConfig, SelectMarkPropertyFunc, SelectChannelFunc, SelectChannelPropertyFunc, Config } from "../configTypes.ts"
+import { Presets } from "../presetTypes.ts"
+import { InitialState } from "../stateTypes.ts"
+import { UIComponents, UtilBlockProps } from "../uiTypes.ts"
+import { VLSpec } from "../vegaTypes.ts"
 
 export interface Props<S> {
   // This is how the Vega-Lite spec that Mintaka produces is output to you.
@@ -132,6 +118,7 @@ export function Mintaka<S>({
     const spec = generateVegaSpec(state, columnTypes, config, baseSpec ?? DEFAULT_BASE_SPEC)
     setGeneratedSpec(spec)
   }, [
+    baseSpec,
     config,
     columnTypes,
     setGeneratedSpec,

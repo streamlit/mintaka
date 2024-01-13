@@ -1,9 +1,4 @@
-import { VlFieldType } from "./types/index.ts"
-
-// TODO: Use Arrow fields to guess columnTypes:
-// arrowdata.schema.fields[0].name
-// arrowdata.schema.fields[0].type
-// arrowjs.type :: DataType.isDate, isTime, isTimestamp, isBool, isInt, isFloat
+import { VlFieldType } from "./configTypes.ts"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function simpleColumnTypeDetector(exampleValue: any): VlFieldType {

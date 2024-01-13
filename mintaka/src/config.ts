@@ -1,15 +1,20 @@
 import includes from "lodash/includes"
 
 import {
-  ChannelName,
   ChannelPropertiesConfig,
   ChannelPropertyValuesConfig,
   EncodingConfig,
-  LayerState,
   MarkConfig,
   MarkPropertyValuesConfig,
   ModeConfig,
-} from "./types/index.ts"
+} from "./configTypes.ts"
+
+import {
+  ChannelName,
+  LayerState,
+} from "./stateTypes.ts"
+
+import { BuilderState } from "./hooks/useBuilderState.ts"
 
 // For these constants, order matters! This is the order they'll appear in the UI.
 // (string keys in JS Objects are guaranteed to be ordered by insertion order)
@@ -67,7 +72,8 @@ export const encoding: EncodingConfig = {
   "Size": "size",
   "Opacity": "opacity",
   "Shape": "shape",
-  "Dash": "strokeDash",
+  "Stroke dash": "strokeDash",
+  "Stroke width": "strokeWidth",
   "Angle": "angle",
   "X 2": "x2",
   "Y 2": "y2",
@@ -78,9 +84,8 @@ export const encoding: EncodingConfig = {
   "Arc angle 2": "theta2",
   "X offset": "xOffset",
   "Y offset": "yOffset",
-  // strokeWidth
-  // detail
-  // tooltip
+  "Detail": "detail",
+  //"Tooltip": "tooltip",
 
   // Faceting
   "Facet": "facet",
@@ -419,6 +424,7 @@ export function selectMarkProperty(
 
 export function selectChannel(
   name: string,
+  state: BuilderState,
   layer: LayerState,
 ): boolean {
   const markType = layer?.mark?.type
@@ -467,11 +473,19 @@ export function selectChannel(
     case "shape":
       return includes(["point", "line", "area"], markType)
 
+    case "strokeWidth":
+      return includes(["line", "area"], markType)
+
     case "strokeDash":
       return includes(["line", "area"], markType)
 
     case "angle":
       return includes(["text", "image", "point"], markType)
+
+    case "facet":
+    case "row":
+    case "column":
+      return state.layers.length == 1
 
     default:
       return true

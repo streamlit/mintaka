@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
 
-import { ColumnTypes } from "mintaka/types"
+import { ColumnTypes } from "mintaka"
 
 export interface DemoProps {
     demo: DemoMeta,
