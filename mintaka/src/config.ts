@@ -14,7 +14,7 @@ import {
   LayerState,
 } from "./stateTypes.ts"
 
-import { BuilderState } from "./hooks/useBuilderState.ts"
+import { BuilderState } from "./BuilderState.ts"
 
 // For these constants, order matters! This is the order they'll appear in the UI.
 // (string keys in JS Objects are guaranteed to be ordered by insertion order)
@@ -30,6 +30,7 @@ export const modes: ModeConfig = {
 
   Advanced: {
     presets: false,
+    layers: true,
   },
 }
 
@@ -46,12 +47,13 @@ export const mark: MarkConfig = {
   "Radius": "radius",
   "Inner radius": "radius2",
   "Size": "size",
-  "Opacity": "opacity",
-  "Tooltip": "tooltip",
-
-  // Positioning
+  "Stroke dash": "strokeDash",
+  "Stroke width": "strokeWidth",
   "X offset": "dx",
   "Y offset": "dy",
+  "Color": "color",
+  "Opacity": "opacity",
+  "Tooltip": "tooltip",
 }
 
 // NOTE: Ordering matters.
@@ -175,6 +177,9 @@ export const markPropertyValues: MarkPropertyValuesConfig = {
     "Arrow": "arrow",
     "Wedge": "wedge",
     "Triangle": "triangle",
+    "Plus": "M-1,0 L1,0 M0,1 L0,-1",
+    "Minus": "M-1,0 L1,0",
+    "Chevron": "M-1,0.35 L0,-0.35 L1,0.35",
   },
 
   filled: {
@@ -291,7 +296,6 @@ export const channelPropertyValues: ChannelPropertyValuesConfig = {
   bin: {
     "Off": null,
     "On": true,
-    "Already binned": "binned",
   },
 
   zero: {
@@ -390,7 +394,9 @@ export function selectMarkProperty(
       return markType == "point"
 
     case "filled":
-      return markType == "point" && layer?.mark?.shape != "stroke"
+      return markType == "point" && !includes(
+        ["stroke", markPropertyValues.shape["Minus"], markPropertyValues.shape["Plus"]],
+        layer?.mark?.shape)
 
     case "point":
     case "interpolate":
@@ -416,6 +422,16 @@ export function selectMarkProperty(
 
     case "orient":
       return includes(["bar", "line", "area", "boxPlot"], markType)
+
+    case "strokeWidth":
+    case "strokeDash":
+      return includes(["line", "rule"], markType) ||
+        (markType == "area" && layer?.mark?.line == true) ||
+        (markType == "point" && !layer?.mark?.filled)
+
+    case "dx":
+    case "dy":
+      return markType == "text"
 
     default:
       return true
@@ -474,10 +490,10 @@ export function selectChannel(
       return includes(["point", "line", "area"], markType)
 
     case "strokeWidth":
-      return includes(["line", "area"], markType)
-
     case "strokeDash":
-      return includes(["line", "area"], markType)
+      return includes(["line", "rule"], markType) ||
+        (markType == "area" && layer?.mark?.line == true) ||
+        (markType == "point" && !layer?.mark?.filled)
 
     case "angle":
       return includes(["text", "image", "point"], markType)

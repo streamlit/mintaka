@@ -1,4 +1,4 @@
-import { ReactNode, useCallback } from "react"
+import { ReactNode, memo, useCallback } from "react"
 
 import {
   Preset,
@@ -14,7 +14,7 @@ import { NamedMode } from "../configTypes.ts"
 
 import { PRESETS } from "../presetDefaults.ts"
 import { showSection } from "../modeParser.ts"
-import { BuilderState } from "../hooks/useBuilderState.ts"
+import { BuilderState } from "../BuilderState.ts"
 
 export interface Props<S> extends WithCustomState<S> {
   presets?: Presets,
@@ -23,7 +23,7 @@ export interface Props<S> extends WithCustomState<S> {
   namedViewMode: NamedMode,
 }
 
-export function PresetBuilder<S>({
+function PresetBuilderRaw<S>({
   presets,
   state,
   ui,
@@ -66,3 +66,5 @@ export function PresetBuilder<S>({
     </ui.PresetsContainer>
   )
 }
+
+export const PresetBuilder = memo(PresetBuilderRaw) as typeof PresetBuilderRaw

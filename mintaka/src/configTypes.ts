@@ -1,9 +1,10 @@
 import { Grouping, PlainRecord } from "./typeUtil.ts"
 import { MarkPropName, ChannelName, ChannelPropName, PropertyValues, LayerState } from "./stateTypes.ts"
-import { BuilderState } from "./hooks/useBuilderState.ts"
+import { BuilderState } from "./BuilderState.ts"
 
 export interface Mode {
   presets?: boolean,
+  layers?: boolean,
   mark?: boolean|Set<string>,
   encoding?: boolean|Set<string>,
   channelProperties?: boolean|Set<string>,

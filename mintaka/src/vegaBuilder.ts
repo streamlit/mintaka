@@ -24,7 +24,7 @@ import {
 import { VLSpec } from "./vegaTypes.ts"
 
 import { haveAnyElementsInCommon } from "./collectionUtils.ts"
-import { BuilderState } from "./hooks/useBuilderState.ts"
+import { BuilderState } from "./BuilderState.ts"
 
 export const DEFAULT_BASE_SPEC = {
   mark: {

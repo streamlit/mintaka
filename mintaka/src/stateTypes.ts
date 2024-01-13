@@ -7,6 +7,7 @@ import { Preset } from "./presetTypes.ts"
 
 export type MarkPropName =
   | "angle"
+  | "color"
   | "dx"
   | "dy"
   | "filled"
@@ -19,6 +20,8 @@ export type MarkPropName =
   | "radius2"
   | "shape"
   | "size"
+  | "strokeDash"
+  | "strokeWidth"
   | "tooltip"
   | "type"
 

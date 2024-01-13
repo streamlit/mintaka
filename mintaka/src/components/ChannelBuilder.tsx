@@ -1,7 +1,7 @@
-import { ReactNode } from "react"
+import { ReactNode, memo } from "react"
 
 import { filterSection } from "../modeParser.ts"
-import { BuilderState } from "../hooks/useBuilderState.ts"
+import { BuilderState } from "../BuilderState.ts"
 import { Config, NamedMode, ChannelPropertiesConfig } from "../configTypes.ts"
 import { ChannelName, ChannelState, ChannelPropName } from "../stateTypes.ts"
 import { PlainRecord, json } from "../typeUtil.ts"
@@ -19,7 +19,7 @@ export interface Props<S> extends WithCustomState<S> {
   namedViewMode: NamedMode,
 }
 
-export function ChannelBuilder<S>({
+function ChannelBuilderRaw<S>({
   channelName,
   channelLabel,
   columns,
@@ -93,3 +93,5 @@ interface UIParam {
   widgetHint: WidgetHint,
   validValues?: PlainRecord<json>,
 }
+
+export const ChannelBuilder = memo(ChannelBuilderRaw) as typeof ChannelBuilderRaw

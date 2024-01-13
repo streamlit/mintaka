@@ -1,7 +1,7 @@
-import { ReactNode } from "react"
+import { ReactNode, memo } from "react"
 
 import { filterSection } from "../modeParser.ts"
-import { BuilderState } from "../hooks/useBuilderState.ts"
+import { BuilderState } from "../BuilderState.ts"
 import { Config, NamedMode, MarkConfig } from "../configTypes.ts"
 import { MarkState, MarkPropName } from "../stateTypes.ts"
 import { PlainRecord } from "../typeUtil.ts"
@@ -15,7 +15,7 @@ export interface Props<S> extends WithCustomState<S> {
   namedViewMode: NamedMode,
 }
 
-export function MarkBuilder<S>({
+function MarkBuilderRaw<S>({
   config,
   ui,
   state,
@@ -33,6 +33,7 @@ export function MarkBuilder<S>({
     orient: { widgetHint: "select" },
     point: { widgetHint: "toggle" },
     shape: { widgetHint: "select" },
+    strokeDash: { widgetHint: "json" },
     type: { widgetHint: "select" },
     tooltip: { widgetHint: "toggle" },
   }
@@ -76,3 +77,5 @@ export function MarkBuilder<S>({
 interface UIParam {
   widgetHint: WidgetHint,
 }
+
+export const MarkBuilder = memo(MarkBuilderRaw) as typeof MarkBuilderRaw

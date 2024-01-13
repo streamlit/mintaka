@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useCallback, useState, useMemo } from "react"
+import { ReactNode, useEffect, useCallback, useState, useMemo, Dispatch, SetStateAction } from "react"
 
 import * as configDefaults from "../config.ts"
 import { generateVegaSpec, DEFAULT_BASE_SPEC } from "../vegaBuilder.ts"
@@ -12,6 +12,7 @@ import { Presets } from "../presetTypes.ts"
 import { InitialState } from "../stateTypes.ts"
 import { UIComponents, UtilBlockProps } from "../uiTypes.ts"
 import { VLSpec } from "../vegaTypes.ts"
+import { BuilderState } from "mintaka/BuilderState.ts"
 
 export interface Props<S> {
   // This is how the Vega-Lite spec that Mintaka produces is output to you.
@@ -114,27 +115,24 @@ export function Mintaka<S>({
     setNamedViewMode([name, config?.modes?.[name]])
   }, [ config?.modes ])
 
-  useEffect(() => {
-    const spec = generateVegaSpec(state, columnTypes, config, baseSpec ?? DEFAULT_BASE_SPEC)
-    setGeneratedSpec(spec)
-  }, [
-    baseSpec,
-    config,
-    columnTypes,
-    setGeneratedSpec,
-    stateChangeNum,
-    state,
-  ])
-
   const utilContainerProps: UtilBlockProps = {
     modes: config?.modes ? Object.keys(config?.modes) : null,
     currentMode: namedViewMode[0],
     setMode: setViewMode,
-    reset: state.reset,
+    reset: () => state.reset(),
   }
 
   return (
     <ui.MintakaContainer>
+      <SpecUpdater
+        setGeneratedSpec={setGeneratedSpec}
+        state={state}
+        columnTypes={columnTypes}
+        config={config}
+        baseSpec={baseSpec}
+        stateChangeNum={stateChangeNum}
+        />
+
       <ui.TopUtilBlock {...utilContainerProps} />
 
       <PresetBuilder
@@ -159,4 +157,36 @@ export function Mintaka<S>({
       <ui.BottomUtilBlock {...utilContainerProps} />
     </ui.MintakaContainer>
   )
+}
+
+interface SpecUpdateProps {
+  setGeneratedSpec: (s: VLSpec) => void, 
+  state: BuilderState,
+  columnTypes: ColumnTypes,
+  config: Config,
+  baseSpec?: VLSpec,
+  stateChangeNum: number,
+}
+
+function SpecUpdater({
+  setGeneratedSpec, 
+  state,
+  columnTypes,
+  config,
+  baseSpec,
+  stateChangeNum,
+}: SpecUpdateProps): React.ReactNode {
+  useEffect(() => {
+    const spec = generateVegaSpec(state, columnTypes, config, baseSpec ?? DEFAULT_BASE_SPEC)
+    setGeneratedSpec(spec)
+  }, [
+    baseSpec,
+    config,
+    columnTypes,
+    setGeneratedSpec,
+    stateChangeNum,
+    state,
+  ])
+
+  return null
 }

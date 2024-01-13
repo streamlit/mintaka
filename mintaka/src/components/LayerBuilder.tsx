@@ -1,8 +1,8 @@
-import { ReactNode, useCallback } from "react"
+import { ReactNode, memo, useCallback } from "react"
 
 import { MarkBuilder } from "./MarkBuilder.tsx"
 import { EncodingBuilder } from "./EncodingBuilder.tsx"
-import { BuilderState } from "../hooks/useBuilderState.ts"
+import { BuilderState } from "../BuilderState.ts"
 import { ColumnTypes, Config, NamedMode } from "../configTypes.ts"
 import { WithCustomState, UIComponents } from "../uiTypes.ts"
 
@@ -14,7 +14,7 @@ export interface Props<S> extends WithCustomState<S> {
   namedViewMode: NamedMode,
 }
 
-export function LayerBuilder<S>({
+function LayerBuilderRaw<S>({
   columnTypes,
   config,
   state,
@@ -38,13 +38,17 @@ export function LayerBuilder<S>({
 
   return (
     <ui.LayerContainer>
-      <select onChange={onLayerSelected} key={state.currentLayerIndex}>
-        {state.layers.map((layer, i) => {
-          return <option value={i} key={i}>Layer {i}: {JSON.stringify(layer.mark.type || "blank")}</option>
-        })}
-      </select>
-      <button onClick={addLayer}>Add layer</button>
-      <button onClick={removeLayer}>Remove layer</button>
+      {namedViewMode[1].layers && (
+        <>
+          <select onChange={onLayerSelected} key={state.currentLayerIndex}>
+            {state.layers.map((layer, i) => {
+              return <option value={i} key={i}>Layer {i}: {JSON.stringify(layer.mark.type || "blank")}</option>
+            })}
+          </select>
+          <button onClick={addLayer}>Add layer</button>
+          <button onClick={removeLayer}>Remove layer</button>
+        </>
+      )}
 
       <MarkBuilder
         config={config}
@@ -69,3 +73,5 @@ export function LayerBuilder<S>({
     </ui.LayerContainer>
   )
 }
+
+export const LayerBuilder = memo(LayerBuilderRaw) as typeof LayerBuilderRaw

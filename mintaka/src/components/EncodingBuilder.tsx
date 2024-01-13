@@ -1,9 +1,9 @@
-import { ReactNode } from "react"
+import { ReactNode, memo } from "react"
 
 import { showSection, filterSection } from "../modeParser.ts"
 
 import { ChannelBuilder } from "./ChannelBuilder.tsx"
-import { BuilderState } from "../hooks/useBuilderState.ts"
+import { BuilderState } from "../BuilderState.ts"
 import { ColumnTypes, Config, NamedMode, EncodingConfig } from "../configTypes.ts"
 import { EncodingState, ChannelName } from "../stateTypes.ts"
 import { WithCustomState, UIComponents } from "../uiTypes.ts"
@@ -17,7 +17,7 @@ export interface Props<S> extends WithCustomState<S> {
   namedViewMode: NamedMode,
 }
 
-export function EncodingBuilder<S>({
+function EncodingBuilderRaw<S>({
   columnTypes,
   config,
   state,
@@ -73,3 +73,5 @@ export function EncodingBuilder<S>({
     </ui.EncodingContainer>
   )
 }
+
+export const EncodingBuilder = memo(EncodingBuilderRaw) as typeof EncodingBuilderRaw
