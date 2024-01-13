@@ -177,8 +177,7 @@ export const markPropertyValues: MarkPropertyValuesConfig = {
     "Arrow": "arrow",
     "Wedge": "wedge",
     "Triangle": "triangle",
-    "Plus": "M-1,0 L1,0 M0,1 L0,-1",
-    "Minus": "M-1,0 L1,0",
+    "Crosshair": "M-1,0 L1,0 M0,1 L0,-1",
     "Chevron": "M-1,0.35 L0,-0.35 L1,0.35",
   },
 
@@ -395,7 +394,7 @@ export function selectMarkProperty(
 
     case "filled":
       return markType == "point" && !includes(
-        ["stroke", markPropertyValues.shape["Minus"], markPropertyValues.shape["Plus"]],
+        ["stroke", markPropertyValues.shape["Crosshair"]],
         layer?.mark?.shape)
 
     case "point":

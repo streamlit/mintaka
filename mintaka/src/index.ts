@@ -9,7 +9,7 @@ export * from "./uiTypes.ts"
 export * from "./vegaTypes.ts"
 
 // Default configuration
-export * from "./config.ts"
+export * from "./configDefaults.ts"
 export * from "./presetDefaults.ts"
 
 // Utilities

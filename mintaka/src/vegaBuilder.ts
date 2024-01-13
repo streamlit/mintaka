@@ -183,23 +183,31 @@ function handleStackSpec(
 ) {
   if (encoding?.color?.field != null) {
     if (encoding?.x?.stack == "mintaka-dodge") {
-      if (!includes(["nominal", "ordinal"], encoding.y.type))
+      encoding.x.stack = false
+
+      if (!includes(["nominal", "ordinal"], encoding.y.type)) {
         encoding.y.type = "nominal"
+      }
 
       if (encoding.yOffset == null) encoding.yOffset = {}
 
-      if (encoding.yOffset.field == null)
+      if (encoding.yOffset.field == null) {
         encoding.yOffset.field = encoding.color.field
+      }
     }
 
     if (encoding?.y?.stack == "mintaka-dodge") {
-      if (!includes(["nominal", "ordinal"], encoding.x.type))
+      encoding.y.stack = false
+
+      if (!includes(["nominal", "ordinal"], encoding.x.type)) {
         encoding.x.type = "nominal"
+      }
 
       if (encoding.xOffset == null) encoding.xOffset = {}
 
-      if (encoding.xOffset.field == null)
+      if (encoding.xOffset.field == null) {
         encoding.xOffset.field = encoding.color.field
+      }
     }
   }
 }

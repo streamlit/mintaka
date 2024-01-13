@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useCallback, useState, useMemo, Dispatch, SetStateAction } from "react"
 
-import * as configDefaults from "../config.ts"
+import * as configDefaults from "../configDefaults.ts"
 import { generateVegaSpec, DEFAULT_BASE_SPEC } from "../vegaBuilder.ts"
 
 import { useBuilderState } from "../hooks/useBuilderState.ts"
