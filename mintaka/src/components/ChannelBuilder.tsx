@@ -56,7 +56,12 @@ function ChannelBuilderRaw<S>({
   const cleanedProps = filterSection(
     "channelProperties", config, namedViewMode,
     (name) => config.selectChannelProperty(
-      name as ChannelPropName, channelName, state.getCurrentLayer()))
+      name as ChannelPropName,
+      channelName,
+      state.getCurrentLayer(),
+      state.value,
+    )
+  )
 
   if (!cleanedProps) return null
 

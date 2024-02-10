@@ -1,8 +1,9 @@
-import { Dispatch, useState, useEffect, useCallback, SetStateAction, ReactNode, ChangeEvent, MouseEvent } from "react"
+import { Dispatch, useState, useEffect, useCallback, SetStateAction, ReactNode, ChangeEvent, MouseEvent, useRef } from "react"
 
 import {
   ChannelContainerProps,
   GenericPickerWidgetProps,
+  LayerPickerProps,
   SectionContainerProps,
   Setter,
   SimpleContainerProps,
@@ -36,7 +37,7 @@ const ALWAYS_VISIBLE_CHANNEL_PROPS = new Set([
   "field",
 ])
 
-export function MintakaContainer({children}: SimpleContainerProps) {
+export function MintakaContainer({ children }: SimpleContainerProps) {
   return (
     <div className={styles.MintakaContainer}>
       {children}
@@ -44,7 +45,7 @@ export function MintakaContainer({children}: SimpleContainerProps) {
   )
 }
 
-export function LayerContainer({children}: SimpleContainerProps) {
+export function LayerContainer({ children }: SimpleContainerProps) {
   return (
     <div className={styles.LayerContainer}>
       {children}
@@ -52,7 +53,7 @@ export function LayerContainer({children}: SimpleContainerProps) {
   )
 }
 
-export function EncodingContainer({children}: SimpleContainerProps) {
+export function EncodingContainer({ children }: SimpleContainerProps) {
   return (
     <div className={styles.EncodingContainer}>
       {children}
@@ -60,7 +61,41 @@ export function EncodingContainer({children}: SimpleContainerProps) {
   )
 }
 
-export function MegaToolbar({modes, currentMode, setMode, reset}: UtilBlockProps) {
+export function LayerPicker({
+  setCurrentLayer,
+  addLayer,
+  removeLayer,
+  moveLayer,
+  layers,
+  currentLayerIndex,
+}: LayerPickerProps) {
+  const layerItems = Object.fromEntries(layers.map((layer, i) => (
+    [
+      `Layer ${i}: ${layer.mark.type || "blank"}`,
+      i,
+    ]
+  )))
+
+  const setValue = useCallback((i: number) => {
+    setCurrentLayer(i)
+  }, [setCurrentLayer])
+
+  return (
+    <>
+      <SelectBox
+        label="Layers"
+        items={layerItems}
+        value={currentLayerIndex}
+        setValue={setValue}
+      />
+
+      <button onClick={addLayer}>Add layer</button>
+      <button onClick={removeLayer}>Remove layer</button>
+    </>
+  )
+}
+
+export function MegaToolbar({ modes, currentMode, setMode, reset }: UtilBlockProps) {
   return (
     <div className={styles.MegaToolbar}>
       {modes && (
@@ -80,7 +115,7 @@ export function EmptyBlock() {
   return null
 }
 
-export function ViewModeToolbar({modes, currentMode, setMode}: UtilBlockProps) {
+export function ViewModeToolbar({ modes, currentMode, setMode }: UtilBlockProps) {
   return (
     <div className={styles.ViewModeToolbar}>
       {modes && (
@@ -94,7 +129,7 @@ export function ViewModeToolbar({modes, currentMode, setMode}: UtilBlockProps) {
   )
 }
 
-export function ButtonToolbar({reset}: UtilBlockProps) {
+export function ButtonToolbar({ reset }: UtilBlockProps) {
   return (
     <div className={styles.ButtonToolbar}>
       <ResetButton onClick={reset} />
@@ -127,7 +162,7 @@ function ModePicker({
   currentMode,
   setMode,
 }: ModePickerProps) {
-  const [ radioValue, setRadioValue ] = useState(currentMode)
+  const [radioValue, setRadioValue] = useState(currentMode)
 
   const onClick = useCallback((ev: ChangeEvent) => {
     const newValue = (ev.currentTarget as HTMLInputElement).value
@@ -229,12 +264,12 @@ export function ChannelContainer({
 
 interface GenericContainerProps {
   title?: string,
-  children: ReactNode|ReactNode[],
+  children: ReactNode | ReactNode[],
   className?: string,
   minimizable?: boolean,
   startsMinimized?: boolean,
   hasSettingsDrawer?: boolean,
-  setCustomState?: Dispatch<SetStateAction<DrawerStates|undefined>>,
+  setCustomState?: Dispatch<SetStateAction<DrawerStates | undefined>>,
   customState?: DrawerStates,
   statePath?: string[],
 }
@@ -267,7 +302,7 @@ export function GenericContainer({
     if (setCustomState && statePath)
       setCustomState({ ...customState, [statePath.join(".")]: newValue })
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     drawerVisible,
     setDrawerVisible,
@@ -384,8 +419,8 @@ export function GenericPickerWidget({
       return (
         <TextInput
           label={widgetLabel}
-          value={value as string|null}
-          setValue={setValue as Dispatch<SetStateAction<string|null|undefined>>}
+          value={value as string | null}
+          setValue={setValue as Dispatch<SetStateAction<string | null | undefined>>}
         />
       )
   }
@@ -404,77 +439,79 @@ export function MultiSelect({
   value,
   setValue,
 }: SelectInputProps<any>) {
-  const NO_VALUE_LABEL = Object.keys(items)[0]
-  const valueArr =
-      Array.isArray(value) ? value :
-      value == null ? []
-      : [value]
+  items = items ?? {}
 
-  const getLabelFromValue = useCallback((v: any) => {
-    return Object.entries(items ?? {})
-      .find(([_, itemValue]) => itemValue == v)
-      ?.[0]
-  }, [items])
+  const getIndicesFromValue = useCallback((): number[] => {
+    const itemValues = Object.values(items)
+    const valueArr = Array.isArray(value) ? value : [value]
 
-  // We use labels for selectbox values since they're always strings,
-  // and HTML Selectbox only supports value strings.
-  const [multiselectValue, setMultiselectValue] = useState<any[]>([])
+    return valueArr.map(v => itemValues.indexOf(v))
+  }, [items, value])
+
+  const [selectedIndices, setSelectedIndices] =
+    useState<number[]>(() => getIndicesFromValue())
 
   useEffect(() => {
-    const newSelectboxValue = valueArr?.map(v => getLabelFromValue(v))
+    const indicesFromValue = getIndicesFromValue()
+    if (indicesFromValue.toString() == selectedIndices.toString()) return
 
-    if (!newSelectboxValue) return
+    setSelectedIndices(indicesFromValue)
+  }, [getIndicesFromValue])
 
-    if (newSelectboxValue?.length == multiselectValue.length
-      && newSelectboxValue?.every((v, i) => v == multiselectValue[i]))
-      return
+  const selectItem = useCallback((ev: ChangeEvent) => {
+    const el = ev.currentTarget as HTMLSelectElement
+    const newSelectedIndex = parseInt(el.value, 10)
 
-    setMultiselectValue(newSelectboxValue)
-  }, [value])
+    const selectboxIndexStr = el.dataset['selectboxIndex'] as string
+    const selectboxIndex = parseInt(selectboxIndexStr, 10)
 
-  const setValueFromLabel = useCallback((ev: ChangeEvent) => {
-    const el = ev.currentTarget as HTMLSelectElement 
-    const domLabel = el.value
-    const index = parseInt(el.dataset["index"] || "0", 10)
-
-    if (multiselectValue.length > 1 && domLabel == NO_VALUE_LABEL) {
-      multiselectValue.splice(index, 1)
+    if (selectedIndices.length > 1 && newSelectedIndex == 0) {
+      selectedIndices.splice(selectboxIndex, 1)
     } else {
-      multiselectValue[index] = domLabel
+      selectedIndices[selectboxIndex] = newSelectedIndex
     }
 
-    setMultiselectValue(multiselectValue)
+    setSelectedIndices(selectedIndices)
 
-    const newValue = multiselectValue.map(l => items[l])
+    const itemValues = Object.values(items)
+    const newValue = selectedIndices.map(i => itemValues[i])
     setValue(newValue)
-  }, [setValue, multiselectValue, setMultiselectValue])
+  }, [setValue, selectedIndices, setSelectedIndices, items])
 
   const addSeries = useCallback(() => {
-    setMultiselectValue([ ...multiselectValue, NO_VALUE_LABEL ])
-  }, [multiselectValue, setMultiselectValue])
+    setSelectedIndices([...selectedIndices, 0])
+  }, [selectedIndices, setSelectedIndices])
 
   return (
     <WidgetWrapper label={label}>
-      {multiselectValue.map((selectboxValue, i) => (
-        <div className={styles.MultiSelect} key={i}>
+      {selectedIndices.map((selectedIndex, selectboxIndex) => (
+        <div className={styles.MultiSelect} key={selectboxIndex}>
           <select
-            data-index={i}
             className={styles.MultiSelectEl}
-            value={selectboxValue}
-            onChange={setValueFromLabel}
+            value={selectedIndex}
+            data-selectbox-index={selectboxIndex}
+            onChange={selectItem}
           >
-            {Object.keys(items).map(label => (
-              <option value={label} key={label}>
-                {label}
-              </option>
-            ))}
+            {Object.keys(items)
+              .map((label, itemIndex) => (
+                <option value={itemIndex} key={label}>
+                  {label}
+                </option>
+              )).filter((_, itemIndex) =>
+                itemIndex == 0 ||
+                itemIndex == selectedIndex ||
+                selectedIndices.indexOf(itemIndex) == -1
+              )
+            }
           </select>
         </div>
       ))}
 
-      <a className={styles.MultiSelectAddSeries} onClick={addSeries}>
-        + Add series
-      </a>
+      { (selectedIndices.at(-1) ?? 0) > 0 && (
+        <a className={styles.MultiSelectAddSeries} onClick={addSeries}>
+          + Add series
+        </a>
+      )}
     </WidgetWrapper>
   )
 }
@@ -485,42 +522,38 @@ export function SelectBox({
   value,
   setValue,
 }: SelectInputProps<any>) {
-  const getLabelFromValue = useCallback((v: any) => {
-    return Object.entries(items ?? {})
-      .find(([_, itemValue]) => itemValue == v)
-      ?.[0]
-  }, [items])
+  const getIndexFromItems = useCallback(
+    (v: any): number => Object.values(items ?? {}).indexOf(v),
+    [items])
 
-  // We use labels for selectbox values since they're always strings,
-  // and HTML Selectbox only supports value strings.
-  // (BTW "" doesn't matter since the useEffect below will replace it)
-  const [selectboxValue, setSelectboxValue] = useState<string|undefined>("")
+  const [selectedIndex, setSelectedIndex] =
+    useState<number>(getIndexFromItems(value))
 
   useEffect(() => {
-    const currItemLabel = getLabelFromValue(value)
-    if (currItemLabel == selectboxValue) return
+    const indexFromValue = getIndexFromItems(value)
+    if (indexFromValue == selectedIndex) return
 
-    setSelectboxValue(currItemLabel)
+    setSelectedIndex(indexFromValue)
   }, [value])
 
-  const setValueFromLabel = useCallback((ev: ChangeEvent) => {
-    const label = (ev.currentTarget as HTMLSelectElement).value
-    setSelectboxValue(label)
+  const setValueFromIndex = useCallback((ev: ChangeEvent) => {
+    const index = parseInt((ev.currentTarget as HTMLSelectElement).value, 10)
+    setSelectedIndex(index)
 
-    const newValue = items[label]
+    const newValue = Object.values(items ?? {})[index]
     setValue(newValue)
-  }, [setValue, setSelectboxValue])
+  }, [setValue, setSelectedIndex, items])
 
   return (
     <WidgetWrapper label={label}>
       <div className={styles.SelectBox}>
         <select
           className={styles.SelectBoxEl}
-          value={selectboxValue}
-          onChange={setValueFromLabel}
+          value={selectedIndex}
+          onChange={setValueFromIndex}
         >
-          {Object.keys(items).map(label => (
-            <option value={label} key={label}>
+          {Object.keys(items).map((label, index) => (
+            <option value={index} key={label}>
               {label}
             </option>
           ))}
@@ -539,7 +572,7 @@ export function Toggle({
   let values: string[]
 
   if (Array.isArray(items)) {
-    values = items 
+    values = items
   } else {
     values = Object.values(items)
   }
@@ -567,8 +600,8 @@ export function Toggle({
 
 interface TextInputProps {
   label?: string,
-  value: string|null,
-  setValue: Dispatch<SetStateAction<string|null|undefined>>,
+  value: string | null,
+  setValue: Dispatch<SetStateAction<string | null | undefined>>,
 }
 
 export function TextInput({
@@ -587,14 +620,14 @@ export function TextInput({
 
   const clearValue = useCallback(
     () => setValue(null),
-  [setValue])
+    [setValue])
 
   const hasContent = value != null && value != ""
 
   const valueString = value == null
     ? value = ""
     : typeof value == "string"
-      ?value 
+      ? value
       : JSON.stringify(value)
 
   return (
@@ -624,7 +657,7 @@ export function HtmlLabel(props: Record<string, any>) {
 
 interface WidgetWrapperProps {
   label?: string,
-  children?: ReactNode|ReactNode[],
+  children?: ReactNode | ReactNode[],
 }
 
 export function WidgetWrapper({
@@ -633,7 +666,7 @@ export function WidgetWrapper({
 }: WidgetWrapperProps) {
   return (
     <>
-      { label &&
+      {label &&
         <HtmlLabel className={styles.WidgetWrapperLabel}>
           {label}
         </HtmlLabel>

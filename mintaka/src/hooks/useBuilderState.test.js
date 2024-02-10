@@ -296,15 +296,12 @@ describe('useBuilderState', () => {
       },
     }
 
-    const { result } = renderHook(() => useBuilderState(
+    const [ num, state ] = renderHook(() => useBuilderState(
       columnTypes, config, initialState, presets))
 
-    expect(typeof result.current.reset).toEqual('function')
-    expect(typeof result.current.setPreset).toEqual('function')
-    expect(typeof result.current.setMark).toEqual('function')
-    expect(typeof result.current.setEncoding).toEqual('function')
-    expect(typeof result.current.getMarkSetter).toEqual('function')
-    expect(typeof result.current.getEncodingSetter).toEqual('function')
+    expect(typeof state.reset).toEqual('function')
+    expect(typeof state.getEncodingSetter).toEqual('function')
+    expect(typeof state.getMarkSetter).toEqual('function')
 
     expect(result.current.preset).toEqual(Object.values(presets)[0])
     expect(result.current.mark).toEqual({

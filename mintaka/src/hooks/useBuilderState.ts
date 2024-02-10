@@ -1,11 +1,11 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 
 import {
   Config,
   ColumnTypes,
 } from "../configTypes.ts"
 
-import { InitialState } from "../stateTypes.ts"
+import { InitialState, StateValue } from "../stateTypes.ts"
 import { Presets } from "../presetTypes.ts"
 
 import { BuilderState } from "../BuilderState.ts"
@@ -15,26 +15,18 @@ export function useBuilderState(
   config: Config,
   initialState?: InitialState,
   presets?: Presets,
-): [number, BuilderState] {
-  const [changeNum, setChangeNum] = useState(0)
+): [BuilderState, StateValue] {
+  const [stateValue, setStateValue] = useState<StateValue>({
+    layers: [],
+    currentLayerIndex: 0,
+    preset: null,
+  })
 
-  const [state] = useState(() => new BuilderState(
-    columnTypes, config, initialState, presets))
+  const state = useMemo(() => (
+    new BuilderState(
+      columnTypes, config, initialState, presets,
+      (v) => setStateValue(v))
+  ), [columnTypes, config, initialState, presets, setStateValue])
 
-  state.onChange = useCallback(() => {
-    setChangeNum(changeNum + 1)
-  }, [
-    setChangeNum,
-    changeNum,
-  ])
-
-  useEffect(() => {
-    state.columnTypes = columnTypes
-    state.config = config
-    state.initialState = initialState
-    state.presets = presets
-    state.reset()
-  }, [columnTypes, config, initialState, presets, state])
-
-  return [changeNum, state]
+  return [state, stateValue]
 }

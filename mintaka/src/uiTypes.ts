@@ -1,6 +1,7 @@
 import { Dispatch, FunctionComponent, ReactNode, SetStateAction } from "react"
 
 import { PlainRecord } from "./typeUtil.ts"
+import { LayerState } from "./stateTypes.ts"
 
 type Children = ReactNode | ReactNode[]
 
@@ -17,6 +18,17 @@ export interface WithCustomState<S> {
 export type Setter<V> = (value: V) => void
 export type MintakaContainer = FunctionComponent<SimpleContainerProps>
 export type LayerContainer = FunctionComponent<SimpleContainerProps>
+
+export interface LayerPickerProps {
+  addLayer: () => void,
+  removeLayer: () => void,
+  moveLayer: (newIndex: number) => void,
+  setCurrentLayer: (newIndex: number) => void,
+  currentLayerIndex: number,
+  layers: LayerState[],
+}
+
+export type LayerPicker = FunctionComponent<LayerPickerProps>
 
 // Utils for settings and viewing the current view mode.
 export interface ModeBlockProps {
@@ -85,6 +97,7 @@ export interface UIComponents<S> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   GenericPickerWidget: GenericPickerWidget<any, S>,
   LayerContainer: LayerContainer,
+  LayerPicker: LayerPicker,
   MarkContainer: MarkContainer<S>,
   PresetsContainer: PresetsContainer<S>,
   TopUtilBlock: UtilBlock,

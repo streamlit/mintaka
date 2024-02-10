@@ -39,7 +39,12 @@ function EncodingBuilderRaw<S>({
 
   const cleanedProps = filterSection(
     "encoding", config, namedViewMode,
-    (name) => config.selectChannel(name as ChannelName, state, state.getCurrentLayer()))
+    (name) => config.selectChannel(
+      name as ChannelName,
+      state.getCurrentLayer(),
+      state.value,
+    )
+  )
 
   if (!cleanedProps) return null
 

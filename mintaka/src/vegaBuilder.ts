@@ -7,6 +7,7 @@ import {
   ChannelState,
   EncodingState,
   LayerState,
+  StateValue,
 } from "./stateTypes.ts"
 
 import {
@@ -24,7 +25,6 @@ import {
 import { VLSpec } from "./vegaTypes.ts"
 
 import { haveAnyElementsInCommon } from "./collectionUtils.ts"
-import { BuilderState } from "./BuilderState.ts"
 
 export const DEFAULT_BASE_SPEC = {
   mark: {
@@ -43,16 +43,23 @@ export const DEFAULT_BASE_SPEC = {
 }
 
 export function generateVegaSpec(
-  builderState: BuilderState,
+  stateValue: StateValue,
   columnTypes: ColumnTypes,
   config: Config,
   baseSpec: VLSpec,
 ): VLSpec {
-  const layers = builderState.layers.map(layer =>
-    generateLayerSpec(builderState, layer, columnTypes, config))
+  const layers = stateValue.layers.map(layer =>
+    generateLayerSpec(
+      layer,
+      stateValue,
+      columnTypes,
+      config,
+    )
+  )
 
   const transforms: Array<PlainRecord<json>> = []
-  layers.forEach(layer => handleFieldListAndFolding(layer.encoding, transforms))
+  layers.forEach((layer, i) => handleFieldListAndFolding(layer.encoding, transforms, i))
+  layers.forEach(layer => handleStackSpec(layer.encoding))
 
   const builderSpec: JsonRecord = {
     layer: layers
@@ -72,8 +79,8 @@ export function generateVegaSpec(
 }
 
 function generateLayerSpec(
-  builderState: BuilderState,
   layer: LayerState,
+  stateValue: StateValue,
   columnTypes: ColumnTypes,
   config: Config,
 ) {
@@ -82,21 +89,27 @@ function generateLayerSpec(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
       .filter(([name]) =>
-        config.selectMarkProperty(name, layer)))
+        config.selectMarkProperty(name, layer, stateValue))
+  )
 
   const encoding: PlainRecord<PlainRecord<json>> = Object.fromEntries(
     Object.entries(layer.encoding)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, v]) => v != null)
       .filter(([name]) =>
-        config.selectChannel(name as ChannelName, builderState, layer))
+        config.selectChannel(name as ChannelName, layer, stateValue))
       .map(([name]) => {
-        const channelSpec = buildChannelSpec(name as ChannelName, layer, columnTypes, config)
+        const channelSpec = buildChannelSpec(
+          name as ChannelName,
+          layer,
+          stateValue,
+          columnTypes,
+          config,
+        )
         if (channelSpec) return [name, channelSpec]
         return []
-      }))
-
-  handleStackSpec(encoding)
+      })
+  )
 
   return {
     mark,
@@ -107,6 +120,7 @@ function generateLayerSpec(
 function buildChannelSpec(
   channelName: ChannelName,
   layer: LayerState,
+  stateValue: StateValue,
   columnTypes: ColumnTypes,
   config: Config,
 ): json {
@@ -116,7 +130,12 @@ function buildChannelSpec(
 
   const s = Object.fromEntries(Object.entries(channelState)
     .filter(([name]) => config.selectChannelProperty(
-      name as ChannelPropName, channelName as ChannelName, layer)))
+      name as ChannelPropName,
+      channelName as ChannelName,
+      layer,
+      stateValue,
+    ))
+  )
 
   if (s.aggregate != null) channelSpec.aggregate = s.aggregate
 
@@ -228,6 +247,7 @@ const VALUES = "mtk--folded-values-"
 function handleFieldListAndFolding(
   encoding: PlainRecord<PlainRecord<json>>,
   transforms: Array<PlainRecord<json>>,
+  layerIndex: number,
 ) {
   Object.entries(encoding)
     .forEach(([channelName, channelSpec]) => {
@@ -239,7 +259,8 @@ function handleFieldListAndFolding(
           channelSpec,
           channelSpec.field as string[],
           encoding,
-          transforms)
+          transforms,
+          layerIndex)
       } else {
         channelSpec.field = channelSpec.field[0]
       }
@@ -252,11 +273,12 @@ function foldChannel(
   channelFields: string[],
   encoding: EncodingState,
   transforms: Array<PlainRecord<json>>,
+  layerIndex: number,
 ): void {
   const fields = channelFields.filter(x => x != null)
 
-  const values = VALUES + channelName
-  const keys = KEYS + channelName
+  const values = VALUES + layerIndex + channelName
+  const keys = KEYS + layerIndex + channelName
 
   channelSpec.field = values
 

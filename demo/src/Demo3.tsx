@@ -17,6 +17,7 @@ import {
   LayerContainer,
   MarkContainer,
   PresetsContainer,
+  LayerPicker,
 } from "./ui"
 
 import styles from "./demo.module.css"
@@ -39,6 +40,7 @@ export default function Demo({ demo, dataset, columnTypes }: DemoProps) {
               EncodingContainer,
               GenericPickerWidget,
               LayerContainer,
+              LayerPicker,
               MarkContainer,
               PresetsContainer,
               TopUtilBlock: EmptyBlock,

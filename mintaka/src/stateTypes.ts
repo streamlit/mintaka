@@ -86,14 +86,25 @@ export type MarkState = PartialRecord<MarkPropName, json>
 export type EncodingState = PartialRecord<ChannelName, ChannelState>
 export type ChannelState = PartialRecord<ChannelPropName, json>
 
-export type LayerState = {
+export interface LayerState {
   mark: MarkState,
   encoding: EncodingState,
 }
 
+export interface InitialLayerState {
+  mark?: MarkState,
+  encoding?: EncodingState,
+}
+
 export interface InitialState {
-  preset: Preset,
+  preset?: Preset,
+  layers?: InitialLayerState[],
+}
+
+export interface StateValue {
   layers: LayerState[],
+  currentLayerIndex: number,
+  preset: Preset|undefined|null,
 }
 
 export type PropertyValues = Record<string, json>

@@ -1,18 +1,17 @@
 import { ReactNode, useEffect, useCallback, useState, useMemo, Dispatch, SetStateAction } from "react"
 
-import * as configDefaults from "../configDefaults.ts"
+import { DEFAULT_CONFIG } from "../configDefaults.ts"
 import { generateVegaSpec, DEFAULT_BASE_SPEC } from "../vegaBuilder.ts"
 
 import { useBuilderState } from "../hooks/useBuilderState.ts"
 
 import { LayerBuilder } from "./LayerBuilder.tsx"
-import { PresetBuilder } from "./PresetBuilder.tsx"
+import { PresetPicker } from "./PresetPicker.tsx"
 import { ColumnTypes, ModeConfig, MarkConfig, EncodingConfig, ChannelPropertiesConfig, MarkPropertyValuesConfig, ChannelPropertyValuesConfig, SelectMarkPropertyFunc, SelectChannelFunc, SelectChannelPropertyFunc, Config } from "../configTypes.ts"
 import { Presets } from "../presetTypes.ts"
-import { InitialState } from "../stateTypes.ts"
+import { InitialState, StateValue } from "../stateTypes.ts"
 import { UIComponents, UtilBlockProps } from "../uiTypes.ts"
 import { VLSpec } from "../vegaTypes.ts"
-import { BuilderState } from "mintaka/BuilderState.ts"
 
 export interface Props<S> {
   // This is how the Vega-Lite spec that Mintaka produces is output to you.
@@ -86,19 +85,19 @@ export function Mintaka<S>({
   }
 
   const config = useMemo<Config>(() => ({
-    modes: modes ?? configDefaults.modes,
-    mark: mark ?? configDefaults.mark,
-    encoding: encoding ?? configDefaults.encoding,
-    channelProperties: channelProperties ?? configDefaults.channelProperties,
-    markPropertyValues: markPropertyValues ?? configDefaults.markPropertyValues,
-    channelPropertyValues: channelPropertyValues ?? configDefaults.channelPropertyValues,
-    selectMarkProperty: selectMarkProperty ?? configDefaults.selectMarkProperty,
-    selectChannel: selectChannel ?? configDefaults.selectChannel,
-    selectChannelProperty: selectChannelProperty ?? configDefaults.selectChannelProperty,
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [ /* Not including any of the above. None are allowed to change. */ ])
+    modes: modes ?? DEFAULT_CONFIG.modes,
+    mark: mark ?? DEFAULT_CONFIG.mark,
+    encoding: encoding ?? DEFAULT_CONFIG.encoding,
+    channelProperties: channelProperties ?? DEFAULT_CONFIG.channelProperties,
+    markPropertyValues: markPropertyValues ?? DEFAULT_CONFIG.markPropertyValues,
+    channelPropertyValues: channelPropertyValues ?? DEFAULT_CONFIG.channelPropertyValues,
+    selectMarkProperty: selectMarkProperty ?? DEFAULT_CONFIG.selectMarkProperty,
+    selectChannel: selectChannel ?? DEFAULT_CONFIG.selectChannel,
+    selectChannelProperty: selectChannelProperty ?? DEFAULT_CONFIG.selectChannelProperty,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [ /* Not including any of the above. None are allowed to change. */])
 
-  const [stateChangeNum, state] = useBuilderState(
+  const [state, stateValue] = useBuilderState(
     columnTypes,
     config,
     initialState,
@@ -108,12 +107,12 @@ export function Mintaka<S>({
   // Some state for the developer to use however they want.
   const [customState, setCustomState] = useState<S>()
 
-  const [ namedViewMode, setNamedViewMode ] =
+  const [namedViewMode, setNamedViewMode] =
     useState(Object.entries(config?.modes ?? {})?.[0])
 
   const setViewMode = useCallback((name: string) => {
     setNamedViewMode([name, config?.modes?.[name]])
-  }, [ config?.modes ])
+  }, [config?.modes])
 
   const utilContainerProps: UtilBlockProps = {
     modes: config?.modes ? Object.keys(config?.modes) : null,
@@ -126,23 +125,23 @@ export function Mintaka<S>({
     <ui.MintakaContainer>
       <SpecUpdater
         setGeneratedSpec={setGeneratedSpec}
-        state={state}
+        stateValue={stateValue}
         columnTypes={columnTypes}
         config={config}
         baseSpec={baseSpec}
-        stateChangeNum={stateChangeNum}
-        />
+      />
 
       <ui.TopUtilBlock {...utilContainerProps} />
 
-      <PresetBuilder
+      <PresetPicker
         state={state}
         ui={ui}
         presets={presets}
+        preset={state.value.preset}
         namedViewMode={namedViewMode}
         customState={customState}
         setCustomState={setCustomState}
-        />
+      />
 
       <LayerBuilder
         columnTypes={columnTypes}
@@ -152,7 +151,7 @@ export function Mintaka<S>({
         namedViewMode={namedViewMode}
         customState={customState}
         setCustomState={setCustomState}
-        />
+      />
 
       <ui.BottomUtilBlock {...utilContainerProps} />
     </ui.MintakaContainer>
@@ -160,32 +159,34 @@ export function Mintaka<S>({
 }
 
 interface SpecUpdateProps {
-  setGeneratedSpec: (s: VLSpec) => void, 
-  state: BuilderState,
+  setGeneratedSpec: (s: VLSpec) => void,
+  stateValue: StateValue,
   columnTypes: ColumnTypes,
   config: Config,
   baseSpec?: VLSpec,
-  stateChangeNum: number,
 }
 
 function SpecUpdater({
-  setGeneratedSpec, 
-  state,
+  setGeneratedSpec,
+  stateValue,
   columnTypes,
   config,
   baseSpec,
-  stateChangeNum,
 }: SpecUpdateProps): React.ReactNode {
   useEffect(() => {
-    const spec = generateVegaSpec(state, columnTypes, config, baseSpec ?? DEFAULT_BASE_SPEC)
+    const spec = generateVegaSpec(
+      stateValue,
+      columnTypes,
+      config,
+      baseSpec ?? DEFAULT_BASE_SPEC,
+    )
     setGeneratedSpec(spec)
   }, [
     baseSpec,
     config,
     columnTypes,
     setGeneratedSpec,
-    stateChangeNum,
-    state,
+    stateValue,
   ])
 
   return null

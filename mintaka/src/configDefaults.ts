@@ -3,6 +3,7 @@ import includes from "lodash/includes"
 import {
   ChannelPropertiesConfig,
   ChannelPropertyValuesConfig,
+  Config,
   EncodingConfig,
   MarkConfig,
   MarkPropertyValuesConfig,
@@ -12,9 +13,8 @@ import {
 import {
   ChannelName,
   LayerState,
+  StateValue,
 } from "./stateTypes.ts"
-
-import { BuilderState } from "./BuilderState.ts"
 
 // For these constants, order matters! This is the order they'll appear in the UI.
 // (string keys in JS Objects are guaranteed to be ordered by insertion order)
@@ -277,7 +277,7 @@ export const channelPropertyValues: ChannelPropertyValuesConfig = {
     "Stack": true,
     "Stack from center": "center",
     "Normalized": "normalize",
-    "Dodge": "mintaka-dodge",
+    "Dodge": "mintaka-dodge",  // Special property we added.
     "No stacking": false,
   },
 
@@ -385,6 +385,7 @@ export const channelPropertyValues: ChannelPropertyValuesConfig = {
 export function selectMarkProperty(
   name: string,
   layer: LayerState,
+  stateValue: StateValue,
 ): boolean {
   const markType = layer?.mark?.type
 
@@ -439,8 +440,8 @@ export function selectMarkProperty(
 
 export function selectChannel(
   name: string,
-  state: BuilderState,
   layer: LayerState,
+  stateValue: StateValue,
 ): boolean {
   const markType = layer?.mark?.type
 
@@ -500,7 +501,7 @@ export function selectChannel(
     case "facet":
     case "row":
     case "column":
-      return state.layers.length == 1
+      return stateValue.layers.length == 1
 
     default:
       return true
@@ -511,6 +512,7 @@ export function selectChannelProperty(
   name: string,
   channelName: ChannelName,
   layer: LayerState,
+  stateValue: StateValue,
 ): boolean {
   const channelState = layer?.encoding?.[channelName] ?? {}
 
@@ -586,7 +588,19 @@ export function selectChannelProperty(
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isArrayWith2PlusElements(obj: any): boolean {
-    if (!obj) return false
-    if (!Array.isArray(obj)) return false
-    return obj.length > 1
+  if (!obj) return false
+  if (!Array.isArray(obj)) return false
+  return obj.length > 1
+}
+
+export const DEFAULT_CONFIG: Config = {
+  modes,
+  mark,
+  encoding,
+  markPropertyValues,
+  channelProperties,
+  channelPropertyValues,
+  selectMarkProperty,
+  selectChannel,
+  selectChannelProperty,
 }

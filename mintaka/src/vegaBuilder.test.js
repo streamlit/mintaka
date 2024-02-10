@@ -59,6 +59,52 @@ describe("generateVegaSpec", () => {
     })
   })
 
+  test("simple state with two layers gets converted to vega", () => {
+    const state = {
+      layers: [{
+        mark: {
+          type: "area",
+          point: true,
+        },
+        encoding: {
+          x: { field: "foo", type: "quantitative" },
+          y: { field: "bar", type: "nominal" },
+        },
+      }, {
+        mark: {
+          type: "line",
+        },
+        encoding: {
+          x: { field: "baz", type: "temporal" },
+          y: { field: "boz", type: "quantitative" },
+        },
+      }],
+    }
+    const out = generateVegaSpec(
+      state, trivialColumnTypes, trivialConfig, trivialBaseSpec)
+
+    expect(out).toEqual({
+      layer: [{
+        mark: {
+          type: "area",
+          point: true,
+        },
+        encoding: {
+          x: { field: "foo", type: "quantitative" },
+          y: { field: "bar", type: "nominal" },
+        },
+      }, {
+        mark: {
+          type: "line",
+        },
+        encoding: {
+          x: { field: "baz", type: "temporal" },
+          y: { field: "boz", type: "quantitative" },
+        },
+      }],
+    })
+  })
+
   test("ability to filter properties", () => {
     const state = {
       layers: [{

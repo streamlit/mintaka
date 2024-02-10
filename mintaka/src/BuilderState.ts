@@ -6,144 +6,168 @@ import {
 } from "./configTypes.ts"
 
 import {
-    ChannelName,
-    ChannelPropName,
-    ChannelPropertyValueSetter,
-    ChannelState,
-    EncodingState,
-    InitialState,
-    LayerState,
-    MarkPropName,
-    MarkPropertyValueSetter,
-    MarkState,
+  ChannelName,
+  ChannelPropName,
+  ChannelPropertyValueSetter,
+  ChannelState,
+  EncodingState,
+  StateValue,
+  InitialState,
+  LayerState,
+  MarkPropName,
+  MarkPropertyValueSetter,
+  MarkState,
 } from "./stateTypes.ts"
 
 import { parsePreset } from "./presetParser.ts"
-import { PRESETS } from "./presetDefaults.ts"
 import { Presets, Preset } from "./presetTypes.ts"
 import { json } from "./typeUtil.ts"
+import { PRESETS } from "./presetDefaults.ts"
+
+function emptyValue(): StateValue {
+  return {
+    preset: null,
+    currentLayerIndex: 0,
+    layers: [{ mark: {}, encoding: {} }],
+  }
+}
 
 export class BuilderState {
   // Just some dummy values so Typescript doesn't complain.
-  preset: Preset = {}
-  currentLayerIndex = 0
-  layers: LayerState[] = []
-  // This is just the type returned by useState:
-  onChange = () => undefined
+  value: StateValue = emptyValue()
 
-  columnTypes: ColumnTypes
-  config: Config
-  initialState: InitialState|undefined
-  presets: Presets|undefined
+  _columnTypes: ColumnTypes
+  _config: Config
+  _initialState: InitialState | undefined | null
+  _presets: Presets | undefined | null
+  _onChange: (v: StateValue) => void = () => undefined
 
   constructor(
     columnTypes: ColumnTypes,
     config: Config,
-    initialState: InitialState|undefined,
-    presets: Presets|undefined,
+    initialState: InitialState | undefined | null,
+    presets: Presets | undefined | null,
+    onChange: (v: StateValue) => void,
   ) {
-    this.columnTypes = columnTypes
-    this.config = config
-    this.initialState = initialState
-    this.presets = presets
+    this._columnTypes = columnTypes
+    this._config = config
+    this._initialState = initialState
+    this._presets = presets
+    this._onChange = onChange
 
-    this._resetRaw()
+    this.reset()
   }
 
-  _resetRaw(preset?: Preset) {
-    if (preset) {
-      this.preset = preset
-    } else {
-      if (this.initialState?.preset) this.preset = this.initialState?.preset
-      else if (this.presets) this.preset = Object.values(this.presets as Presets)[0]
-      else this.preset = Object.values(PRESETS)[0]
+  _resetRaw(preset?: Preset | null): StateValue {
+    if (!preset) {
+      if (this._initialState?.preset) preset = this._initialState?.preset
+      else if (this._presets) preset = Object.values(this._presets as Presets)[0]
+      else preset = Object.values(PRESETS)[0]
     }
 
-    const stateFromPreset = parsePreset(this.preset, this.columnTypes)
+    const stateFromPreset = parsePreset(preset, this._columnTypes)
 
     const markSource = (
-      !isEmpty(this.initialState?.layers?.[0]?.mark)
-        ? this.initialState?.layers?.[0]?.mark
+      !isEmpty(this._initialState?.layers?.[0]?.mark)
+        ? this._initialState?.layers?.[0]?.mark
         : !isEmpty(stateFromPreset.mark)
           ? stateFromPreset.mark
           : {}
     ) as MarkState
 
     const mark = Object.fromEntries(
-      Object.values(this.config?.mark ?? {}).map((name: MarkPropName) => [
+      Object.values(this._config?.mark ?? {}).map((name: MarkPropName) => [
         name, markSource[name]
       ])) as MarkState
 
     const encodingSource = (
-      !isEmpty(this.initialState?.layers?.[0]?.encoding)
-        ? this.initialState?.layers?.[0]?.encoding
+      !isEmpty(this._initialState?.layers?.[0]?.encoding)
+        ? this._initialState?.layers?.[0]?.encoding
         : !isEmpty(stateFromPreset.encoding)
           ? stateFromPreset.encoding
           : {}
     ) as EncodingState
 
     const encoding = Object.fromEntries(
-      Object.values(this.config?.encoding ?? {}).map((name: ChannelName) => [
+      Object.values(this._config?.encoding ?? {}).map((name: ChannelName) => [
         name, encodingSource[name]
       ])) as EncodingState
 
-    const layer = { mark, encoding }
-    this.layers = [layer]
-    this.currentLayerIndex = 0
+    const currentLayer = { mark, encoding }
+
+    return {
+      preset,
+      currentLayerIndex: 0,
+      layers: [currentLayer],
+    }
   }
 
   reset(): void {
-    this._resetRaw(this.preset)
-    this.onChange()
+    this.value = this._resetRaw(this.value.preset)
+    this._onChange(this.value)
   }
 
   setPreset(preset: Preset): void {
-    this._resetRaw(preset)
-    this.onChange()
+    this.value = this._resetRaw(preset)
+    this._onChange(this.value)
   }
 
   getCurrentLayer(): LayerState {
-    return this.layers[this.currentLayerIndex]
+    return this.value.layers[this.value.currentLayerIndex]
   }
 
   selectLayer(i: number): void {
-    if (i < 0) i = this.layers.length + i
-    this.currentLayerIndex = i
+    if (i < 0) i = this.value.layers.length + i
 
-    this.onChange()
+    this.value = {
+      ...this.value,
+      currentLayerIndex: i
+    }
+
+    this._onChange(this.value)
   }
 
   setCurrentLayer(newLayer: LayerState): void {
-    const i = this.currentLayerIndex
+    const i = this.value.currentLayerIndex
 
-    const before = this.layers.slice(0, i)
-    const after = this.layers.slice(i + 1)
+    const before = this.value.layers.slice(0, i)
+    const after = this.value.layers.slice(i + 1)
 
-    this.layers = [...before, newLayer, ...after]
+    this.value = {
+      ...this.value,
+      layers: [...before, newLayer, ...after]
+    }
 
-    this.onChange()
+    this._onChange(this.value)
   }
 
   removeCurrentLayer(): void {
-    if (this.layers.length == 1) return
-    const i = this.currentLayerIndex
+    if (this.value.layers.length == 1) return
+    const i = this.value.currentLayerIndex
 
-    const before = this.layers.slice(0, i)
-    const after = this.layers.slice(i + 1)
+    const before = this.value.layers.slice(0, i)
+    const after = this.value.layers.slice(i + 1)
 
-    this.layers = [...before, ...after]
-    this.currentLayerIndex = i >= this.layers.length ? this.layers.length - 1 : i
+    const newIndex = i >= this.value.layers.length - 1
+      ? this.value.layers.length - 2
+      : i
 
-    this.onChange()
+    this.value = {
+      ...this.value,
+      layers: [...before, ...after],
+      currentLayerIndex: newIndex,
+    }
+
+    this._onChange(this.value)
   }
 
   moveCurrentLayer(newIndex: number): void {
-    if (newIndex >= this.layers.length) return
-    const i = this.currentLayerIndex
+    if (newIndex >= this.value.layers.length) return
+    const i = this.value.currentLayerIndex
 
-    let before = this.layers.slice(0, i)
-    let after = this.layers.slice(i + 1)
-    const layer = this.layers[i]
+    let before = this.value.layers.slice(0, i)
+    let after = this.value.layers.slice(i + 1)
+    const layer = this.value.layers[i]
 
     const tempLayers = [...before, ...after]
 
@@ -151,20 +175,26 @@ export class BuilderState {
     before = tempLayers.slice(0, j)
     after = tempLayers.slice(i + 1)
 
-    this.layers = [...before, layer, ...after]
-    this.currentLayerIndex = j
+    this.value = {
+      ...this.value,
+      layers: [...before, layer, ...after],
+      currentLayerIndex: j,
+    }
 
-    this.onChange()
+    this._onChange(this.value)
   }
 
-  createNewLayer(): void {
+  createNewLayerAndSetAsCurrent(): void {
     const currLayer = this.getCurrentLayer()
-    const newLayer = {...currLayer}
+    const newLayer = { ...currLayer }
 
-    this.layers = [...this.layers, newLayer]
-    this.currentLayerIndex = this.layers.length - 1
+    this.value = {
+      ...this.value,
+      layers: [...this.value.layers, newLayer],
+      currentLayerIndex: this.value.layers.length,
+    }
 
-    this.onChange()
+    this._onChange(this.value)
   }
 
   setMarkProp(markPropName: MarkPropName, markPropValue: json): void {
@@ -191,12 +221,12 @@ export class BuilderState {
 
     this.setCurrentLayer({
       ...layer,
-    encoding 
+      encoding
     })
   }
 
   setChannelProp(
-    channelName: ChannelName, 
+    channelName: ChannelName,
     channelPropName: ChannelPropName,
     channelPropValue: json,
   ): void {

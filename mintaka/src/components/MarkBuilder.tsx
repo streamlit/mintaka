@@ -40,7 +40,9 @@ function MarkBuilderRaw<S>({
 
   const cleanedProps = filterSection(
     "mark", config, namedViewMode,
-    (name) => config.selectMarkProperty(name as MarkPropName, state.getCurrentLayer()))
+    (name) => config.selectMarkProperty(
+      name as MarkPropName, state.getCurrentLayer(), state.value)
+  )
 
   if (!cleanedProps) return null
 

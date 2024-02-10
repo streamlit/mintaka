@@ -1,10 +1,10 @@
 import { ReactNode, memo, useCallback } from "react"
 
-import { MarkBuilder } from "./MarkBuilder.tsx"
-import { EncodingBuilder } from "./EncodingBuilder.tsx"
 import { BuilderState } from "../BuilderState.ts"
 import { ColumnTypes, Config, NamedMode } from "../configTypes.ts"
-import { WithCustomState, UIComponents } from "../uiTypes.ts"
+import { UIComponents, WithCustomState } from "../uiTypes.ts"
+import { EncodingBuilder } from "./EncodingBuilder.tsx"
+import { MarkBuilder } from "./MarkBuilder.tsx"
 
 export interface Props<S> extends WithCustomState<S> {
   columnTypes: ColumnTypes,
@@ -23,31 +23,33 @@ function LayerBuilderRaw<S>({
   customState,
   setCustomState,
 }: Props<S>): ReactNode {
-  const onLayerSelected = useCallback((ev: React.FormEvent<HTMLSelectElement>) => {
-    const newLayerIndex = parseInt(ev.currentTarget.value, 10)
-    state.selectLayer(newLayerIndex)
+  const setCurrentLayer = useCallback((newIndex: number) => {
+    state.selectLayer(newIndex)
   }, [state])
 
   const addLayer = useCallback(() => {
-    state.createNewLayer()
+    state.createNewLayerAndSetAsCurrent()
   }, [state])
 
   const removeLayer = useCallback(() => {
     state.removeCurrentLayer()
   }, [state])
 
+  const moveLayer = useCallback((newIndex: number) => {
+    state.moveCurrentLayer(newIndex)
+  }, [state])
+
   return (
     <ui.LayerContainer>
       {namedViewMode[1].layers && (
-        <>
-          <select onChange={onLayerSelected} key={state.currentLayerIndex}>
-            {state.layers.map((layer, i) => {
-              return <option value={i} key={i}>Layer {i}: {JSON.stringify(layer.mark.type || "blank")}</option>
-            })}
-          </select>
-          <button onClick={addLayer}>Add layer</button>
-          <button onClick={removeLayer}>Remove layer</button>
-        </>
+        <ui.LayerPicker
+          setCurrentLayer={setCurrentLayer}
+          addLayer={addLayer}
+          removeLayer={removeLayer}
+          moveLayer={moveLayer}
+          layers={state.value.layers}
+          currentLayerIndex={state.value.currentLayerIndex}
+        />
       )}
 
       <MarkBuilder
