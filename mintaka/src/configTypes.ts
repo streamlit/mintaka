@@ -4,6 +4,7 @@ import { MarkPropName, ChannelName, ChannelPropName, PropertyValues, LayerState,
 export interface Mode {
   presets?: boolean,
   layers?: boolean,
+  //coordinateSystem?: boolean,  // TODO
   mark?: boolean|Set<string>,
   encoding?: boolean|Set<string>,
   channelProperties?: boolean|Set<string>,

@@ -6,6 +6,7 @@ import {
 import { Preset } from "./presetTypes.ts"
 
 export type MarkPropName =
+  | "align"
   | "angle"
   | "color"
   | "dx"

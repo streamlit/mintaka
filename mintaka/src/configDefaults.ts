@@ -47,12 +47,13 @@ export const mark: MarkConfig = {
   "Radius": "radius",
   "Inner radius": "radius2",
   "Size": "size",
-  "Stroke dash": "strokeDash",
-  "Stroke width": "strokeWidth",
+  "Align": "align",
   "X offset": "dx",
   "Y offset": "dy",
   "Color": "color",
   "Opacity": "opacity",
+  "Stroke dash": "strokeDash",
+  "Stroke width": "strokeWidth",
   "Tooltip": "tooltip",
 }
 
@@ -177,8 +178,8 @@ export const markPropertyValues: MarkPropertyValuesConfig = {
     "Arrow": "arrow",
     "Wedge": "wedge",
     "Triangle": "triangle",
-    "Crosshair": "M-1,0 L1,0 M0,1 L0,-1",
-    "Chevron": "M-1,0.35 L0,-0.35 L1,0.35",
+    "Crosshair": "M-1,0 L1,0 M0,1 L0,-1",  // Special property we added.
+    "Chevron": "M-1,0.35 L0,-0.35 L1,0.35",  // Special property we added.
   },
 
   filled: {
@@ -195,6 +196,13 @@ export const markPropertyValues: MarkPropertyValuesConfig = {
     "Hidden": null,
     "Visible": true,
   },
+
+  align: {
+    "Default": null,
+    "Left": "left",
+    "Center": "center",
+    "Right": "right",
+  }
 }
 
 // NOTE: Ordering matters.
@@ -404,7 +412,7 @@ export function selectMarkProperty(
 
     case "angle":
       return includes(["text", "image"], markType) ||
-          (markType == "point" && !includes(["circle", null, undefined], layer?.mark?.shape))
+        (markType == "point" && !includes(["circle", null, undefined], layer?.mark?.shape))
 
     case "size":
       return includes(["point", "text", "image"], markType)
@@ -421,14 +429,19 @@ export function selectMarkProperty(
       return markType == "area"
 
     case "orient":
-      return includes(["bar", "line", "area", "boxPlot"], markType)
+      return includes(["bar", "line", "area", "boxplot", "rule"], markType)
 
     case "strokeWidth":
     case "strokeDash":
       return includes(["line", "rule"], markType) ||
         (markType == "area" && layer?.mark?.line == true) ||
-        (markType == "point" && !layer?.mark?.filled)
+        (markType == "point" && (
+          !layer?.mark?.filled ||
+          includes(
+            ["stroke", markPropertyValues.shape["Crosshair"]], layer?.mark?.shape)
+        ))
 
+    case "align":
     case "dx":
     case "dy":
       return markType == "text"
@@ -473,6 +486,8 @@ export function selectChannel(
     case "radius":
     case "radius2":
       return markType == "arc" // OR there's an Arc layer in the chart
+    // return stateValue.layers.some(
+    //   layer => includes(["arc", "geoshape"], layer.mark.type))
 
     case "text":
       return markType == "text"
