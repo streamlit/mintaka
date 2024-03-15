@@ -17,7 +17,7 @@ export interface WithCustomState<S> {
 
 export type Setter<V> = (value: V) => void
 export type MintakaContainer = FunctionComponent<SimpleContainerProps>
-export type LayerContainer = FunctionComponent<SimpleContainerProps>
+export type LayerBuilder = FunctionComponent<SimpleContainerProps>
 
 export interface LayerPickerProps {
   addLayer: () => void,
@@ -96,7 +96,7 @@ export interface UIComponents<S> {
   EncodingContainer: EncodingContainer<S>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   GenericPickerWidget: GenericPickerWidget<any, S>,
-  LayerContainer: LayerContainer,
+  LayerBuilder: LayerBuilder,
   LayerPicker: LayerPicker,
   MarkContainer: MarkContainer<S>,
   PresetsContainer: PresetsContainer<S>,

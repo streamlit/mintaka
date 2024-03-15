@@ -174,7 +174,7 @@ get structured in the DOM:
 
     * `<GenericPickerWidget>`
 
-  * `<LayerContainer>`
+  * `<LayerBuilder>`
 
     * `<MarkContainer>` _(if exists in current viewMode)_
       * title: "Mark"

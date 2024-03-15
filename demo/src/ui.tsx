@@ -45,9 +45,9 @@ export function MintakaContainer({ children }: SimpleContainerProps) {
   )
 }
 
-export function LayerContainer({ children }: SimpleContainerProps) {
+export function LayerBuilder({ children }: SimpleContainerProps) {
   return (
-    <div className={styles.LayerContainer}>
+    <div className={styles.LayerBuilder}>
       {children}
     </div>
   )

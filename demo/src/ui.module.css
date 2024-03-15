@@ -11,7 +11,7 @@
   }
 }
 
-.LayerContainer {
+.LayerBuilder {
   display: flex;
   flex-direction: column;
   flex: auto;
@@ -353,7 +353,7 @@
   margin-top: -1px;
 }
 
-.LayerContainer > .GenericContainerMinimized:first-child {
+.LayerBuilder > .GenericContainerMinimized:first-child {
   margin-top: 0;
 }
 

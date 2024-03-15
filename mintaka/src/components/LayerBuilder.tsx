@@ -40,7 +40,7 @@ function LayerBuilderRaw<S>({
   }, [state])
 
   return (
-    <ui.LayerContainer>
+    <ui.LayerBuilder>
       {namedViewMode[1].layers && (
         <ui.LayerPicker
           setCurrentLayer={setCurrentLayer}
@@ -72,7 +72,7 @@ function LayerBuilderRaw<S>({
         customState={customState}
         setCustomState={setCustomState}
       />
-    </ui.LayerContainer>
+    </ui.LayerBuilder>
   )
 }
 
