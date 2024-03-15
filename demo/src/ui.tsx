@@ -71,7 +71,7 @@ export function LayerPicker({
 }: LayerPickerProps) {
   const layerItems = Object.fromEntries(layers.map((layer, i) => (
     [
-      `Layer ${i}: ${layer.mark.type || "blank"}`,
+      `${layer.mark.type || "blank"} layer ${i}`,
       i,
     ]
   )))
@@ -81,7 +81,7 @@ export function LayerPicker({
   }, [setCurrentLayer])
 
   return (
-    <>
+    <div className={styles.LayerManager}>
       <SelectBox
         label="Layers"
         items={layerItems}
@@ -89,9 +89,11 @@ export function LayerPicker({
         setValue={setValue}
       />
 
-      <button onClick={addLayer}>Add layer</button>
-      <button onClick={removeLayer}>Remove layer</button>
-    </>
+      <div className={styles.LayerButtons}>
+        <button onClick={addLayer}>+</button>
+        <button onClick={removeLayer}>&minus;</button>
+      </div>
+    </div>
   )
 }
 

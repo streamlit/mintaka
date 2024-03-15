@@ -48,6 +48,7 @@
   padding-bottom: 1rem;
 }
 
+.LayerButtons button,
 .ResetButton {
   padding: 0.125rem 0.5rem;
   font-size: var(--label-size);
@@ -57,6 +58,7 @@
   user-select: none;
 }
 
+.LayerButtons button:hover,
 .ResetButton:hover,
 .ResetButton:focus-visible,
 .ModePickerLabel:hover,
@@ -141,6 +143,37 @@
   display: none;
 }
 
+.LayerManager {
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  align-items: center;
+  padding: 0.25rem 0 1rem 0;
+}
+
+.LayerManager .WidgetWrapperLabel {
+  width: 33.333%;
+}
+
+.LayerButtons {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  align-items: center;
+}
+
+.LayerButtons button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right-width: 0.5px;
+}
+
+.LayerButtons button:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left-width: 0.5px;
+}
+
 .SelectBoxEl,
 .MultiSelectEl,
 .TextInputEl {
@@ -188,6 +221,7 @@
   background-color: var(--input-bg-color-hover);
 }
 
+.LayerButtons button:focus-visible,
 .SelectBoxEl:focus-visible,
 .MultiSelectEl:focus-visible,
 .TextInputEl:focus-visible {
@@ -371,7 +405,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.25rem;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .GenericContainerToolbar {
